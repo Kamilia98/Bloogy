@@ -19,7 +19,7 @@ export class AuthService {
 
   async login(loginDto: LoginDto) {
     const user = await this.userModel.findOne({ email: loginDto.email });
-    console.log(user);
+
     if (!user) {
       throw new UnauthorizedException('Invalid credentials');
     }
@@ -32,8 +32,30 @@ export class AuthService {
     }
     const payload = { sub: user._id, email: user.email };
     return {
-      access_token: this.jwtService.sign(payload),
+      token: this.jwtService.sign(payload),
+      user: user,
     };
+  }
+
+  // Add this array to temporarily store invalidated tokens
+  private blacklistedTokens: string[] = [];
+
+  async logout(token: string) {
+    // Optional: validate token before blacklisting
+    try {
+      console.log('token', token);
+      const decoded = this.jwtService.verify(token);
+      console.log('decoded', decoded);
+      this.blacklistedTokens.push(token);
+      return { message: 'Logged out successfully' };
+    } catch (error) {
+      throw new UnauthorizedException('Invalid token');
+    }
+  }
+
+  // Utility method (optional): check if a token is blacklisted
+  isTokenBlacklisted(token: string): boolean {
+    return this.blacklistedTokens.includes(token);
   }
 
   async register(registerDto: RegisterDto) {
