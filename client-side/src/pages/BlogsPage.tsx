@@ -2,15 +2,16 @@ import { useEffect } from 'react';
 import { useState } from 'react';
 
 import type { Blog } from '../models/BlogModel';
+import axios from 'axios';
 
 export default function BlogsPage() {
   const [blogs, setBlogs] = useState<Blog[]>([]);
 
   useEffect(() => {
     const fetchBlogs = async () => {
-      const response = await fetch('/api/blogs');
-      const data = await response.json();
-      setBlogs(data);
+      const response = await axios.get('http://localhost:3000/blogs');
+      console.log(response.data);
+      setBlogs(response.data);
     };
     fetchBlogs();
   }, []);
