@@ -22,6 +22,8 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
     }),
 
     AuthModule,
+    UsersModule,
+    BlogsModule,
   ],
   controllers: [AppController],
   providers: [AppService],

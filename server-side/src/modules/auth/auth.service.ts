@@ -7,9 +7,9 @@ import { LoginDto } from './dto/login.dto';
 import { RegisterDto } from './dto/register.dto';
 import { Model } from 'mongoose';
 import { InjectModel } from '@nestjs/mongoose';
-import { User, UserDocument } from '../user/schemas/user.schema';
 import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcrypt';
+import { User, UserDocument } from '../users/schemas/user.schema';
 @Injectable()
 export class AuthService {
   constructor(
@@ -52,7 +52,6 @@ export class AuthService {
     return {
       _id: savedUser._id,
       email: savedUser.email,
-      role: savedUser.role,
     };
   }
 }
