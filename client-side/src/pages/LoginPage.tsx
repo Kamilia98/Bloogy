@@ -1,11 +1,16 @@
 import { useState } from 'react';
+import { useAuth } from '../contexts/AuthProvider';
 
 export default function LoginPage() {
+  const { login, logout } = useAuth();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
 
   const handleLogin = () => {
-    console.log(email, password);
+    login(email, password);
+  };
+  const handleLogout = () => {
+    logout();
   };
 
   return (
@@ -22,6 +27,7 @@ export default function LoginPage() {
         onChange={(e) => setPassword(e.target.value)}
       />
       <button onClick={handleLogin}>Login</button>
+      <button onClick={handleLogout}>Logout</button>
     </div>
   );
 }
