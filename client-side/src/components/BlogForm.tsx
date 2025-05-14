@@ -15,36 +15,8 @@ import SaveIcon from '@mui/icons-material/Save';
 import DeleteIcon from '@mui/icons-material/Delete';
 import SectionEditor from './SectionEditor';
 import SectionPreview from './SectionPreview';
-
-export interface Section {
-  content: string;
-  fontSize: number;
-  fontWeight: number;
-  fontColor: string;
-  fontFamily: string;
-  fontStyle: string;
-  fontVariant: string;
-  lineHeight: number;
-  letterSpacing: number;
-  textAlign: string;
-  textTransform: string;
-  textDecoration: string;
-  textShadow: string;
-  textOverflow: string;
-  sectionType: string;
-  listIndex?: number;
-  isQuote: boolean;
-  isCodeBlock: boolean;
-  isHighlight: boolean;
-  backgroundColor?: string;
-}
-
-export interface BlogData {
-  title: string;
-  content: string;
-  sections: Section[];
-  userId?: string;
-}
+import type { Section } from '../models/SectionModel';
+import type { Blog } from '../models/BlogModel';
 
 const defaultSection: Section = {
   content: '',
@@ -90,11 +62,11 @@ function TabPanel(props: TabPanelProps) {
 }
 
 interface BlogFormProps {
-  onSubmit: (data: BlogData) => void;
+  onSubmit: (data: Blog) => void;
 }
 
 const BlogForm = ({ onSubmit }: BlogFormProps) => {
-  const [blogData, setBlogData] = useState<BlogData>({
+  const [blogData, setBlogData] = useState<Blog>({
     title: '',
     content: '',
     sections: [{ ...defaultSection }],
