@@ -1,7 +1,5 @@
 import { useDispatch } from 'react-redux';
 
-import axios from 'axios';
-
 import Button from './ui/Button';
 import useAuth from '../contexts/AuthProvider';
 import toast from 'react-hot-toast';
@@ -19,7 +17,7 @@ export function DeleteConfirmationModal({
   selectedBlog,
 }: DeleteConfirmationModalProps) {
   const dispatch = useDispatch<AppDispatch>();
-  const { token, logout } = useAuth();
+  const { token } = useAuth();
 
   const handleDelete = async () => {
     if (!selectedBlog || !token) return;
@@ -27,17 +25,10 @@ export function DeleteConfirmationModal({
     try {
       await dispatch(deleteBlog({ id: selectedBlog._id, token })).unwrap();
       toast.success('Blog deleted successfully!');
-    } catch (err) {
-      if (axios.isAxiosError(err)) {
-        toast.error(
-          err.response?.data?.message || err.message || 'Failed to delete blog'
-        );
-        if (err.response?.status === 401) {
-          logout();
-        }
-      } else {
-        toast.error('An unexpected error occurred');
-      }
+    } catch (err: any) {
+      toast.error(
+        err.response?.data?.message || err.message || 'Failed to delete blog'
+      );
     } finally {
       setDeleteModalOpen(false);
     }
@@ -56,16 +47,20 @@ export function DeleteConfirmationModal({
             Are you sure you want to delete "{selectedBlog?.title}"? This action cannot be undone.
           </p>
           <div className="flex justify-end gap-3">
-            <Button
-              label="Cancel"
-              variant="outline"
-              onClick={() => setDeleteModalOpen(false)}
-            />
-            <Button
-              label="Delete"
-              variant="danger"
-              onClick={handleDelete}
-            />
+            <div>
+              <Button
+                label="Cancel"
+                variant="outline"
+                onClick={() => setDeleteModalOpen(false)}
+              />
+            </div>
+            <div>
+              <Button
+                label="Delete"
+                variant="danger"
+                onClick={handleDelete}
+              />
+            </div>
           </div>
         </div>
       </div>
