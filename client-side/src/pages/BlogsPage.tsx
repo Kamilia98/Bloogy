@@ -25,12 +25,12 @@ export default function BlogsPage() {
   // Categories - replace with your actual categories
 
   const blogsCategories: string[] = [];
+
   for (const cat in CATEGORY) {
     blogsCategories.push(cat as string);
   }
 
   const categories = ['all', ...blogsCategories];
-  console.log(typeof categories);
 
   const fetchBlogs = async () => {
     try {
@@ -97,8 +97,8 @@ export default function BlogsPage() {
       if (axios.isAxiosError(error)) {
         toast.error(
           error.response?.data?.message ||
-            error.message ||
-            'Failed to delete blog',
+          error.message ||
+          'Failed to delete blog',
         );
 
         if (error.response?.status === 401) {
@@ -149,11 +149,10 @@ export default function BlogsPage() {
               <button
                 key={category}
                 onClick={() => setActiveCategory(category as CATEGORY | 'all')}
-                className={`rounded-full px-4 py-1 text-sm font-medium ${
-                  activeCategory === category
-                    ? 'bg-[#4364F7] text-white'
-                    : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-                }`}
+                className={`rounded-full px-4 py-1 text-sm font-medium ${activeCategory === category
+                  ? 'bg-[#4364F7] text-white'
+                  : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                  }`}
               >
                 {category.charAt(0).toUpperCase() + category.slice(1)}
               </button>
