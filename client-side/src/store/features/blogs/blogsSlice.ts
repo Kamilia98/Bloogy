@@ -21,25 +21,46 @@ const initialState: BlogsState = {
 // Async thunks
 export const fetchBlogs = createAsyncThunk(
   'blogs/fetchBlogs',
-
   async (params: Record<string, any>) => {
     const response = await axios.get('/api/blogs', { params });
     return response.data;
   },
 );
 
+export const fetchBlogById = createAsyncThunk(
+  'blogs/fetchBlogById',
+  async (id: string) => {
+    const response = await axios.get(`/api/blogs/${id}`);
+    return response.data;
+  },
+);
+
 export const addBlog = createAsyncThunk(
   'blogs/addBlog',
-  async (blog: Omit<Blog, 'id' | 'createdAt' | 'updatedAt'>) => {
-    const response = await axios.post('/api/blogs', blog);
+  async ({
+    token,
+    blog,
+  }: {
+    token: string;
+    blog: Omit<Blog, 'id' | 'createdAt' | 'updatedAt'>;
+  }) => {
+    const response = await axios.post('/api/blogs', blog, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
     return response.data;
   },
 );
 
 export const updateBlog = createAsyncThunk(
   'blogs/updateBlog',
-  async (blog: Blog) => {
-    const response = await axios.put(`/api/blogs/${blog._id}`, blog);
+  async ({ token, blog }: { token: string; blog: Blog }) => {
+    const response = await axios.patch(`/api/blogs/${blog._id}`, blog, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
     return response.data;
   },
 );
@@ -76,6 +97,26 @@ const blogsSlice = createSlice({
         state.status = 'failed';
         state.error = action.error.message || 'Failed to fetch blogs';
       })
+
+      // Fetch blog by ID
+      .addCase(fetchBlogById.pending, (state) => {
+        state.status = 'loading';
+      })
+
+      .addCase(
+        fetchBlogById.fulfilled,
+        (state, action: PayloadAction<Blog>) => {
+          state.status = 'succeeded';
+          const index = state.items.findIndex(
+            (blog) => blog._id === action.payload._id,
+          );
+          if (index !== -1) {
+            state.items[index] = action.payload;
+          } else {
+            state.items.push(action.payload);
+          }
+        },
+      )
 
       // Add blog
       .addCase(addBlog.fulfilled, (state, action: PayloadAction<Blog>) => {
