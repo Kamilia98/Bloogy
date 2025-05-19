@@ -36,9 +36,8 @@ export default function AppNavbar() {
 
   return (
     <nav
-      className={`fixed top-0 z-30 w-full transition-all duration-300 ${
-        isScrolled ? 'bg-white shadow-md' : 'bg-transparent'
-      }`}
+      className={`fixed top-0 z-30 w-full transition-all duration-300 ${isScrolled ? 'bg-white shadow-md' : 'bg-transparent'
+        }`}
     >
       <div className="container mx-auto max-w-7xl px-4 py-4">
         <div className="flex items-center justify-between">
@@ -123,7 +122,7 @@ export default function AppNavbar() {
         <div className="absolute top-full w-full bg-white shadow-lg md:hidden">
           <div className="container mx-auto max-w-7xl px-4 py-4">
             <div className="flex flex-col space-y-4">
-              <Link
+              {/* <Link
                 to="/"
                 className="py-2 font-medium text-gray-700 hover:text-[#4364F7]"
                 onClick={() => setIsMenuOpen(false)}
@@ -143,7 +142,7 @@ export default function AppNavbar() {
                 onClick={() => setIsMenuOpen(false)}
               >
                 About
-              </Link>
+              </Link> */}
 
               <div className="pt-4">
                 {Auth.user ? (
