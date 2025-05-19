@@ -1,11 +1,12 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Mail, Lock, LogIn, Loader2, Eye, EyeOff } from 'lucide-react';
-import { AnimatePresence, motion } from 'framer-motion';
+import { motion } from 'framer-motion';
 import useAuth from '../contexts/AuthProvider';
 import { Link } from 'react-router-dom';
 import Input from '../components/ui/Input';
 import Button from '../components/ui/Button';
 import validateEmail from '../utlils/validateEmail';
+import SocialLogin from '../components/common/SocialLogin';
 
 export default function LoginPage() {
   const [isLoading, setIsLoading] = useState(false);
@@ -16,29 +17,11 @@ export default function LoginPage() {
   const [passwordError, setPasswordError] = useState('');
   const [rememberMe, setRememberMe] = useState(false);
 
-  const handleEmailChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const value = e.target.value;
-    setEmail(value);
+  useEffect(() => {
+    Auth.checkGoogleLogin();
+  }, []);
 
-    if (!value) {
-      setEmailError('Email is required.');
-    } else if (!validateEmail(value)) {
-      setEmailError('Please enter a valid email address.');
-    } else {
-      setEmailError('');
-    }
-  };
 
-  const handlePasswordChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const value = e.target.value;
-    setPassword(value);
-
-    if (!value) {
-      setPasswordError('Password is required.');
-    } else {
-      setPasswordError('');
-    }
-  };
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -74,15 +57,15 @@ export default function LoginPage() {
   const [showPassword, setShowPassword] = useState(false);
 
   return (
-    <>
+    <div className="flex flex-col gap-8">
       {/* Welcome Text */}
       <motion.header
         initial={{ opacity: 0, y: 10 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.2, duration: 0.5 }}
-        className="mb-8"
+        className="flex flex-col gap-1"
       >
-        <h1 className="mb-1 text-3xl font-bold text-gray-800">Welcome Back</h1>
+        <h1 className="text-3xl font-bold text-gray-800">Welcome Back</h1>
         <p className="text-gray-600">
           Please login to your account to continue
         </p>
@@ -94,7 +77,7 @@ export default function LoginPage() {
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ delay: 0.3, duration: 0.5 }}
-        className="space-y-6"
+        className="flex flex-col gap-6"
         aria-label="Login form"
       >
         {/* Email */}
@@ -103,73 +86,48 @@ export default function LoginPage() {
           label="Email Address"
           placeholder="Your Email"
           value={email}
-          onChange={handleEmailChange}
+          onChange={(e) => setEmail(e.target.value)}
           error={emailError}
-          icon={<Mail size={20} />}
+          leftIcon={<Mail size={20} />}
         />
 
         {/* Password */}
         <div>
-          <div className="mb-1 flex items-center justify-between">
-            <label
-              htmlFor="password"
-              className="text-sm font-medium text-gray-700"
-            >
-              Password
-            </label>
+          <div className="relative">
             <Link
               to="/auth/forget-password"
-              className="text-sm text-[#4364F7] hover:text-[#42d9fc]"
+              className="absolute right-0 text-sm text-[#4364F7] hover:text-[#42d9fc]"
             >
               Forgot password?
             </Link>
-          </div>
-          <div className="relative">
-            <Lock
-              className="absolute inset-y-0 left-3 my-auto text-gray-500"
-              size={20}
-            />
-            <input
+            <Input
               id="password"
+              label="Password"
               placeholder="Your Password"
-              value={password}
-              onChange={handlePasswordChange}
-              className="w-full rounded-lg border border-gray-300 py-3 pr-4 pl-10 focus:ring-2 focus:ring-[#42d9fc] focus:outline-none"
-              aria-required="true"
               type={showPassword ? 'text' : 'password'}
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              error={passwordError}
+              leftIcon={<Lock size={20} />}
+              rightIcon={
+                showPassword ? (
+                  <EyeOff
+                    className="cursor-pointer"
+                    onClick={() => setShowPassword(!showPassword)}
+                  />
+                ) : (
+                  <Eye
+                    className="cursor-pointer"
+                    onClick={() => setShowPassword(!showPassword)}
+                  />
+                )
+              }
             />
-            {showPassword ? (
-              <Eye
-                className="absolute inset-y-0 right-3 my-auto cursor-pointer text-gray-500"
-                size={20}
-                onClick={() => setShowPassword(!showPassword)}
-              />
-            ) : (
-              <EyeOff
-                className="absolute inset-y-0 right-3 my-auto cursor-pointer text-gray-500"
-                size={20}
-                onClick={() => setShowPassword(!showPassword)}
-              />
-            )}
           </div>
-          <AnimatePresence>
-            {passwordError && (
-              <motion.p
-                key="passwordError"
-                initial={{ opacity: 0, height: 0 }}
-                animate={{ opacity: 1, height: 'auto' }}
-                exit={{ opacity: 0, height: 0 }}
-                transition={{ duration: 0.4 }}
-                className="mt-1 text-sm text-red-500"
-              >
-                {passwordError}
-              </motion.p>
-            )}
-          </AnimatePresence>
         </div>
 
         {/* Remember Me */}
-        <div className="flex items-center">
+        <div className="flex items-center gap-2">
           <input
             id="remember-me"
             name="remember-me"
@@ -178,7 +136,7 @@ export default function LoginPage() {
             onChange={() => setRememberMe(!rememberMe)}
             className="h-4 w-4 rounded border-gray-300 text-[#4364F7] focus:ring-[#42d9fc]"
           />
-          <label htmlFor="remember-me" className="ml-2 text-sm text-gray-700">
+          <label htmlFor="remember-me" className="text-sm text-gray-700">
             Remember me
           </label>
         </div>
@@ -199,50 +157,21 @@ export default function LoginPage() {
 
       {/* Divider */}
       <motion.div
-        className="my-8 flex items-center"
+        className="flex items-center gap-4"
         initial={{ opacity: 0, y: 10 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.4, duration: 0.5 }}
       >
         <div className="flex-1 border-t border-gray-300" />
-        <span className="px-4 text-sm text-gray-500">OR CONTINUE WITH</span>
+        <span className="text-sm text-gray-500">OR CONTINUE WITH</span>
         <div className="flex-1 border-t border-gray-300" />
       </motion.div>
 
       {/* Social Login */}
-      <motion.div
-        className="flex space-x-4"
-        initial={{ opacity: 0, y: 10 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.4, duration: 0.5 }}
-      >
-        {/* Google */}
-        <button
-          type="button"
-          aria-label="Sign in with Google"
-          className="flex flex-1 items-center justify-center rounded-lg border border-gray-300 bg-white px-4 py-3 font-medium text-gray-700 transition duration-300 hover:bg-gray-50"
-        >
-          <img src="/icons/google.svg" alt="Google" className="mr-2 h-5 w-5" />
-          Google
-        </button>
-
-        {/* Facebook */}
-        <button
-          type="button"
-          aria-label="Sign in with Facebook"
-          className="flex flex-1 items-center justify-center rounded-lg border border-[#1877F2] bg-[#1877F2] px-4 py-3 font-medium text-white transition duration-300 hover:bg-[#0e6edf]"
-        >
-          <img
-            src="/icons/facebook.svg"
-            alt="Facebook"
-            className="mr-2 h-5 w-5"
-          />
-          Facebook
-        </button>
-      </motion.div>
+      <SocialLogin />
 
       <motion.div
-        className="mt-8 text-center text-gray-600"
+        className="text-center text-gray-600"
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ delay: 0.5, duration: 0.5 }}
@@ -255,6 +184,6 @@ export default function LoginPage() {
           Sign Up
         </Link>
       </motion.div>
-    </>
+    </div>
   );
 }
