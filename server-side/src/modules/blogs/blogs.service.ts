@@ -1,4 +1,8 @@
-import { ForbiddenException, Injectable, NotFoundException } from '@nestjs/common';
+import {
+  ForbiddenException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { CreateBlogDto } from './dto/create-blog.dto';
 import { UpdateBlogDto } from './dto/update-blog.dto';
 import { Blog, BlogDocument } from './schemas/blog.schema';
@@ -26,12 +30,30 @@ export class BlogsService {
     return blog.save();
   }
 
-  async findAll() {
-    return this.blogModel.find({ isDeleted: false });
+  async findAll(category?: string, search?: string, limit?: number) {
+    const query: any = { isDeleted: false };
+
+    if (category) {
+      query.category = category;
+    }
+
+    if (search) {
+      const searchRegex = new RegExp(search, 'i');
+      query.$or = [{ title: searchRegex }];
+    }
+
+    const blogs = await this.blogModel
+      .find(query)
+      .limit(limit ? Number(limit) : 0)
+      .populate('user', 'name email');
+
+    return blogs;
   }
 
   async findOne(id: string) {
-    const blog = await this.blogModel.findById(id);
+    const blog = await this.blogModel
+      .findById(id)
+      .populate('user', 'name email');
     if (!blog || blog.isDeleted) {
       throw new NotFoundException('Blog not found');
     }

@@ -50,9 +50,6 @@ export class Section {
   @Prop({ default: 'paragraph' })
   sectionType: string;
 
-  @Prop()
-  listIndex?: number;
-
   @Prop({ default: false })
   isQuote: boolean;
 

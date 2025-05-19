@@ -11,6 +11,12 @@ export class Blog {
   @Prop({ required: true })
   title: string;
 
+  @Prop({ required: true })
+  thumbnail: string;
+
+  @Prop({ required: true })
+  category: string;
+
   @Prop({
     type: mongoose.Schema.Types.ObjectId,
     ref: User.name,
@@ -26,3 +32,6 @@ export class Blog {
 }
 
 export const BlogSchema = SchemaFactory.createForClass(Blog);
+
+// Add timestamps option
+BlogSchema.set('timestamps', true);

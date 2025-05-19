@@ -8,6 +8,7 @@ import {
   Delete,
   UseGuards,
   Req,
+  Query,
 } from '@nestjs/common';
 import { BlogsService } from './blogs.service';
 import { CreateBlogDto } from './dto/create-blog.dto';
@@ -28,8 +29,12 @@ export class BlogsController {
   }
 
   @Get()
-  findAll() {
-    return this.blogsService.findAll();
+  findAll(
+    @Query('category') category?: string,
+    @Query('search') search?: string,
+    @Query('limit') limit?: number,
+  ) {
+    return this.blogsService.findAll(category, search, limit);
   }
 
   @Get(':id')
@@ -54,6 +59,7 @@ export class BlogsController {
   @UseGuards(JwtAuthGuard)
   @Delete(':id')
   remove(@Param('id') id: string) {
+    console.log(id);
     return this.blogsService.remove(id);
   }
 }
