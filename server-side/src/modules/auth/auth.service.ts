@@ -10,11 +10,15 @@ import { InjectModel } from '@nestjs/mongoose';
 import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcrypt';
 import { User, UserDocument } from '../users/schemas/user.schema';
+import { ForgetPasswordDto } from './dto/forgetPassword.dto';
+import { ResetPasswordDto } from './dto/resetPassword.dto';
+import { MailService } from '../../services/mail.service';
 @Injectable()
 export class AuthService {
   constructor(
     @InjectModel(User.name) private userModel: Model<UserDocument>,
     private jwtService: JwtService,
+    private mailService: MailService,
   ) {}
 
   async login(loginDto: LoginDto) {
@@ -33,7 +37,7 @@ export class AuthService {
     const payload = { sub: user._id, email: user.email };
     return {
       token: this.jwtService.sign(payload),
-      user: user,
+      user: { _id: user._id, name: user.name, email: user.email },
     };
   }
 
@@ -59,6 +63,7 @@ export class AuthService {
   }
 
   async register(registerDto: RegisterDto) {
+    console.log(registerDto);
     const existingUser = await this.userModel.findOne({
       email: registerDto.email,
     });
@@ -70,10 +75,78 @@ export class AuthService {
     const user = new this.userModel(registerDto);
     user.password = await bcrypt.hash(user.password, 10);
     const savedUser = await user.save();
+    console.log(savedUser);
 
     return {
       _id: savedUser._id,
       email: savedUser.email,
     };
+  }
+
+  async forgetPassword(forgetPasswordDto: ForgetPasswordDto) {
+    const user = await this.userModel.findOne({
+      email: forgetPasswordDto.email,
+    });
+    if (!user) {
+      throw new BadRequestException('User with this email does not exist');
+    }
+
+    const token = this.jwtService.sign({ email: user.email });
+    const html = `
+  <div style="font-family: Arial, sans-serif; max-width: 600px; margin: auto; background-color: #f9f9f9; padding: 30px; border-radius: 10px; border: 1px solid #ddd;">
+    
+    <div style="text-align: center; margin-bottom: 30px;">
+      <img src="https://iili.io/3rVbVdF.png" alt="Bloogy Logo" style="height: 50px;" />
+    </div>
+
+    <h2 style="color: #333; text-align: center;">Password Reset Request</h2>
+    
+    <p style="font-size: 16px; color: #555; line-height: 1.5;">
+      Hello ${user.name || ''},<br><br>
+      We received a request to reset your password. Click the button below to set a new one:
+    </p>
+
+    <div style="text-align: center; margin: 30px 0;">
+      <a href="${process.env.FRONTEND_URL}/auth/reset-password?token=${token}"
+        style="display: inline-block; padding: 12px 24px; font-size: 16px; font-weight: bold; color: #fff; background-color: #4364F7; text-decoration: none; border-radius: 6px;">
+        Reset Password
+      </a>
+    </div>
+
+    <p style="font-size: 14px; color: #999; line-height: 1.4;">
+      If you didn’t request this, you can safely ignore this email.
+    </p>
+
+    <p style="font-size: 14px; color: #999; line-height: 1.4;">
+      This link will expire in 1 hour for security reasons.
+    </p>
+  </div>
+`;
+
+    try {
+      await this.mailService.sendMail(user.email, 'Password Reset', '', html);
+    } catch (error) {
+      console.log(error);
+      throw new BadRequestException('Failed to send email');
+    }
+
+    return { message: 'Password reset email sent' };
+  }
+
+  async resetPassword(resetPasswordDto: ResetPasswordDto) {
+    const user = await this.userModel.findOne({
+      email: resetPasswordDto.email,
+    });
+    if (!user) {
+      throw new BadRequestException('User with this email does not exist');
+    }
+    user.password = await bcrypt.hash(resetPasswordDto.password, 10);
+    await user.save();
+    return { message: 'Password reset successfully' };
+  }
+
+  async validateResetToken(token: string) {
+    const decoded = this.jwtService.verify(token);
+    return decoded;
   }
 }

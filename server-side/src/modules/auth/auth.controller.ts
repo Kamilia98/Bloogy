@@ -5,12 +5,15 @@ import {
   UnauthorizedException,
   UseGuards,
   Headers,
+  Get,
+  Param,
 } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { JwtAuthGuard } from './guards/jwt-auth.guard';
 import { LoginDto } from './dto/login.dto';
 import { RegisterDto } from './dto/register.dto';
-
+import { ForgetPasswordDto } from './dto/forgetPassword.dto';
+import { ResetPasswordDto } from './dto/resetPassword.dto';
 @Controller('auth')
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
@@ -28,11 +31,25 @@ export class AuthController {
   @UseGuards(JwtAuthGuard)
   async logout(@Headers('authorization') authHeader: string) {
     const token = authHeader?.replace('Bearer ', '');
-    console.log('token', token);
     if (!token) {
       throw new UnauthorizedException('No token provided');
     }
 
     return await this.authService.logout(token);
+  }
+
+  @Post('forget-password')
+  forgetPassword(@Body() forgetPasswordDto: ForgetPasswordDto) {
+    return this.authService.forgetPassword(forgetPasswordDto);
+  }
+
+  @Post('reset-password')
+  resetPassword(@Body() resetPasswordDto: ResetPasswordDto) {
+    return this.authService.resetPassword(resetPasswordDto);
+  }
+
+  @Get('validate-reset-token/:token')
+  validateResetToken(@Param('token') token: string) {
+    return this.authService.validateResetToken(token);
   }
 }
