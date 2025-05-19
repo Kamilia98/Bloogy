@@ -13,6 +13,7 @@ import { User, UserDocument } from '../users/schemas/user.schema';
 import { ForgetPasswordDto } from './dto/forgetPassword.dto';
 import { ResetPasswordDto } from './dto/resetPassword.dto';
 import { MailService } from '../../services/mail.service';
+
 @Injectable()
 export class AuthService {
   constructor(
@@ -41,15 +42,64 @@ export class AuthService {
     };
   }
 
-  // Add this array to temporarily store invalidated tokens
+  async googleSignUp(req, res) {
+    if (!req.user) {
+      throw new UnauthorizedException('No user from google');
+    }
+    const { email, name } = req.user;
+
+    let user = await this.userModel.findOne({ email });
+
+    if (!user) {
+      user = new this.userModel({
+        email,
+        name,
+        password: await bcrypt.hash(Math.random().toString(36).slice(-8), 10),
+      });
+      await user.save();
+    }
+
+    const payload = { sub: user._id, email: user.email };
+    const token = this.jwtService.sign(payload);
+
+    res.cookie('jwt', token);
+    res.cookie('user', JSON.stringify(user));
+
+    res.redirect(`${process.env.FRONTEND_URL}/auth/login`);
+  }
+
+  async facebookSignUp(req, res) {
+    if (!req.user) {
+      throw new UnauthorizedException('No user from facebook');
+    }
+
+    const { email, name } = req.user;
+
+    let user = await this.userModel.findOne({ email }).select('+password');
+    if (!user) {
+      user = new this.userModel({
+        email,
+        name,
+        password: await bcrypt.hash(Math.random().toString(36).slice(-8), 10),
+      });
+      await user.save();
+    }
+    const payload = { sub: user._id, email: user.email };
+    const token = this.jwtService.sign(payload);
+    res.cookie('jwt', token);
+    res.cookie('user', JSON.stringify(user));
+    res.redirect(`${process.env.FRONTEND_URL}/auth/login`);
+  }
+
   private blacklistedTokens: string[] = [];
 
-  async logout(token: string) {
-    // Optional: validate token before blacklisting
+  async logout(authHeader: string) {
+    const token = authHeader.split(' ')[1];
+    if (!token) {
+      throw new UnauthorizedException('Token not provided');
+    }
+
     try {
-      console.log('token', token);
-      const decoded = this.jwtService.verify(token);
-      console.log('decoded', decoded);
       this.blacklistedTokens.push(token);
       return { message: 'Logged out successfully' };
     } catch (error) {
@@ -57,13 +107,11 @@ export class AuthService {
     }
   }
 
-  // Utility method (optional): check if a token is blacklisted
   isTokenBlacklisted(token: string): boolean {
     return this.blacklistedTokens.includes(token);
   }
 
   async register(registerDto: RegisterDto) {
-    console.log(registerDto);
     const existingUser = await this.userModel.findOne({
       email: registerDto.email,
     });
@@ -75,7 +123,6 @@ export class AuthService {
     const user = new this.userModel(registerDto);
     user.password = await bcrypt.hash(user.password, 10);
     const savedUser = await user.save();
-    console.log(savedUser);
 
     return {
       _id: savedUser._id,
@@ -114,7 +161,7 @@ export class AuthService {
     </div>
 
     <p style="font-size: 14px; color: #999; line-height: 1.4;">
-      If you didn’t request this, you can safely ignore this email.
+      If you didn't request this, you can safely ignore this email.
     </p>
 
     <p style="font-size: 14px; color: #999; line-height: 1.4;">
@@ -126,7 +173,6 @@ export class AuthService {
     try {
       await this.mailService.sendMail(user.email, 'Password Reset', '', html);
     } catch (error) {
-      console.log(error);
       throw new BadRequestException('Failed to send email');
     }
 
