@@ -2,32 +2,35 @@ import {
   createContext,
   useState,
   useContext,
-  useEffect,
   type ReactNode,
+  useEffect,
+  useMemo,
 } from 'react';
 import axios from 'axios';
 import toast, { Toaster } from 'react-hot-toast';
+import type { User } from '../models/UserModel';
 
 // ============================
-// Types
+// Context Interface
 // ============================
-interface User {
-  id: string;
-  username: string;
-  email: string;
-}
-
 interface AuthContextType {
   isLoggedIn: boolean;
   token: string | null;
   user: User | null;
-  login: (email: string, password: string) => Promise<void>;
+  login: (
+    email: string,
+    password: string,
+    rememberMe: boolean,
+  ) => Promise<void>;
   register: (
     username: string,
     email: string,
     password: string,
   ) => Promise<void>;
   logout: () => Promise<void>;
+  forgetPassword: (email: string) => Promise<void>;
+  resetPassword: (email: string, password: string) => Promise<void>;
+  validateResetToken: (token: string) => Promise<void>;
 }
 
 // ============================
@@ -39,57 +42,58 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 // Provider Component
 // ============================
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
-  const [isLoggedIn, setIsLoggedIn] = useState<boolean>(
-    () => localStorage.getItem('isLoggedIn') === 'true',
-  );
+ const getInitialStorage = () => {
+   const token =
+     localStorage.getItem('token') || sessionStorage.getItem('token');
+   const user = localStorage.getItem('user') || sessionStorage.getItem('user');
+   const isLoggedIn = !!token;
 
-  const [user, setUser] = useState<User | null>(() => {
-    const storedUser = localStorage.getItem('user');
-    try {
-      return storedUser ? JSON.parse(storedUser) : null;
-    } catch {
-      return null;
-    }
-  });
+   return {
+     token,
+     user: user && typeof user === 'string' ? JSON.parse(user) : user,
+     isLoggedIn,
+   };
+ };
 
-  const [token, setToken] = useState<string | null>(() =>
-    localStorage.getItem('token'),
-  );
+  const initial = useMemo(() => getInitialStorage(), []);
 
-  // ============================
-  // Local Storage Sync
-  // ============================
-  useEffect(() => {
-    localStorage.setItem('isLoggedIn', JSON.stringify(isLoggedIn));
-  }, [isLoggedIn]);
-
-  useEffect(() => {
-    if (user) {
-      localStorage.setItem('user', JSON.stringify(user));
-    } else {
-      localStorage.removeItem('user');
-    }
-  }, [user]);
-
-  useEffect(() => {
-    if (token) {
-      localStorage.setItem('token', token);
-    } else {
-      localStorage.removeItem('token');
-    }
-  }, [token]);
+  const [isLoggedIn, setIsLoggedIn] = useState<boolean>(initial.isLoggedIn);
+  const [user, setUser] = useState<User | null>(initial.user);
+  const [token, setToken] = useState<string | null>(initial.token);
 
   // ============================
   // Auth Functions
   // ============================
-  const login = async (email: string, password: string) => {
+
+  useEffect(() => {
+    console.log('user', user);
+  }, [user]);
+  const login = async (
+    email: string,
+    password: string,
+    rememberMe: boolean,
+  ) => {
     try {
-      const response = await axios.post('/auth/login', { email, password });
+      const response = await axios.post('/api/auth/login', { email, password });
       const { token, user } = response.data;
 
       setIsLoggedIn(true);
       setToken(token);
       setUser(user);
+
+      // Clear both storages first
+      localStorage.clear();
+      sessionStorage.clear();
+
+      console.log(rememberMe);
+
+      if (rememberMe) {
+        localStorage.setItem('token', token);
+        localStorage.setItem('user', JSON.stringify(user));
+      } else {
+        sessionStorage.setItem('token', token);
+        sessionStorage.setItem('user', JSON.stringify(user));
+      }
 
       toast.success('Logged in successfully!');
     } catch (error: any) {
@@ -104,13 +108,11 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
   const logout = async () => {
     try {
-      console.log(token);
       await axios.post(
-        '/auth/logout',
+        '/api/auth/logout',
         {},
         {
           headers: {
-            'Content-Type': 'application/json',
             Authorization: `Bearer ${token}`,
           },
         },
@@ -119,22 +121,25 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       setIsLoggedIn(false);
       setToken(null);
       setUser(null);
+
+      localStorage.clear();
+      sessionStorage.clear();
+
       toast.success('Logged out successfully!');
     } catch (error: any) {
-      console.log('error', error);
       toast.error(
         error?.response?.data?.message || error.message || 'Logout failed',
       );
     }
   };
 
-  const register = async (
-    username: string,
-    email: string,
-    password: string,
-  ) => {
+  const register = async (name: string, email: string, password: string) => {
     try {
-      await axios.post('/auth/register', { name: username, email, password });
+      await axios.post('/api/auth/register', {
+        name,
+        email,
+        password,
+      });
       toast.success('Registered successfully!');
     } catch (error: any) {
       toast.error(
@@ -142,6 +147,52 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
           error.message ||
           'Registration failed',
       );
+      throw error;
+    }
+  };
+
+  const forgetPassword = async (email: string) => {
+    try {
+      await axios.post('/api/auth/forget-password', { email });
+      toast.success('Password reset email sent!');
+    } catch (error: any) {
+      toast.error(
+        error?.response?.data?.message ||
+          error.message ||
+          'Password reset failed',
+      );
+      throw error;
+    }
+  };
+
+  const resetPassword = async (email: string, password: string) => {
+    try {
+      await axios.post('/api/auth/reset-password', { email, password });
+      toast.success('Password reset successfully!');
+    } catch (error: any) {
+      toast.error(
+        error?.response?.data?.message ||
+          error.message ||
+          'Password reset failed',
+      );
+      throw error;
+    }
+  };
+
+  const validateResetToken = async (token: string) => {
+    try {
+      const response = await axios.get(
+        `/api/auth/validate-reset-token/${token}`,
+      );
+      return response.data;
+    } catch (error: any) {
+      toast.error(
+        error?.response?.data?.message ||
+          error.message ||
+          'Password reset failed',
+      );
+      console.log(error);
+      throw error;
     }
   };
 
@@ -155,6 +206,9 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     login,
     logout,
     register,
+    forgetPassword,
+    resetPassword,
+    validateResetToken,
   };
 
   return (
