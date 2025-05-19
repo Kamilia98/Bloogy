@@ -3,17 +3,28 @@ import { cloneElement, isValidElement, type InputHTMLAttributes } from 'react';
 
 interface InputProps extends InputHTMLAttributes<HTMLInputElement> {
   label: string;
-  icon?: React.ReactNode;
+  leftIcon?: React.ReactNode;
+  rightIcon?: React.ReactNode;
   error?: string;
 }
 
-export default function Input({ label, icon, error, ...props }: InputProps) {
-  const iconWithProps =
-    isValidElement(icon) &&
-    cloneElement(icon as React.ReactElement<{ className?: string }>, {
+export default function Input({ label, leftIcon, rightIcon, error, ...props }: InputProps) {
+
+
+  const leftIconWithProps =
+    isValidElement(leftIcon) &&
+    cloneElement(leftIcon as React.ReactElement<{ className?: string }>, {
       className:
         'absolute inset-y-0 left-3 text-gray-500 my-auto ' +
-        ((icon.props as { className?: string })?.className || ''),
+        ((leftIcon.props as { className?: string })?.className || ''),
+    });
+
+  const rightIconWithProps =
+    isValidElement(rightIcon) &&
+    cloneElement(rightIcon as React.ReactElement<{ className?: string }>, {
+      className:
+        'absolute inset-y-0 right-3 text-gray-500 my-auto ' +
+        ((rightIcon.props as { className?: string })?.className || ''),
     });
 
   return (
@@ -25,11 +36,13 @@ export default function Input({ label, icon, error, ...props }: InputProps) {
         {label}
       </label>
       <div className="relative">
-        {iconWithProps}
+        {leftIconWithProps}
         <input
           {...props}
-          className={`w-full ${icon ? 'pl-10' : 'pl-4'} rounded-lg border border-gray-300 py-3 pr-4 focus:ring-2 focus:ring-[#42d9fc] focus:outline-none`}
+          className={`w-full ${leftIcon ? 'pl-10' : 'pl-4'} rounded-lg border border-gray-300 py-3 pr-4 focus:ring-2 focus:ring-[#42d9fc] focus:outline-none`}
         />
+        {rightIconWithProps}
+
       </div>
       <AnimatePresence>
         {error && (
