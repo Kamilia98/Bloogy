@@ -8,8 +8,6 @@ import axios from 'axios';
 import Loading from '../components/common/Loading';
 import BlogCard from '../components/BlogCard';
 import { DeleteConfirmationModal } from '../components/DeleteConfirmationModal';
-import toast from 'react-hot-toast';
-import useAuth from '../contexts/AuthProvider';
 
 export default function BlogDetailsPage() {
   const { id: blogId } = useParams();
@@ -18,10 +16,8 @@ export default function BlogDetailsPage() {
   const [error, setError] = useState<string | null>(null);
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
   const [relatedBlogs, setRelatedBlogs] = useState<Blog[]>([]);
-  const [selectedrelatedBlog, setSelectedRelatedBlog] = useState<Blog | null>();
+  const [selectedrelatedBlog, setSelectedRelatedBlog] = useState<Blog | null>(null);
   const navigate = useNavigate();
-
-  const Auth = useAuth();
 
   // Fetch blog data
   useEffect(() => {
@@ -66,42 +62,6 @@ export default function BlogDetailsPage() {
   const confirmDelete = (blog: Blog) => {
     setSelectedRelatedBlog(blog);
     setDeleteModalOpen(true);
-  };
-
-  const handleDeleteBlog = async () => {
-    if (!selectedrelatedBlog || !Auth.token) return;
-
-    try {
-      await axios.delete(`/api/blogs/${selectedrelatedBlog._id}`, {
-        headers: {
-          Authorization: `Bearer ${Auth.token}`,
-        },
-      });
-
-      if (blog?.category) fetchRelatedBlogs(blog?.category);
-
-      setDeleteModalOpen(false);
-      setSelectedRelatedBlog(null);
-
-      // Show success notification
-      toast.success('Blog deleted successfully!');
-    } catch (error) {
-      console.error('Error deleting blog:', error);
-
-      if (axios.isAxiosError(error)) {
-        toast.error(
-          error.response?.data?.message ||
-          error.message ||
-          'Failed to delete blog',
-        );
-
-        if (error.response?.status === 401) {
-          Auth.logout();
-        }
-      } else {
-        toast.error('An unexpected error occurred');
-      }
-    }
   };
 
   if (isLoading) {
@@ -166,9 +126,8 @@ export default function BlogDetailsPage() {
 
             {deleteModalOpen && (
               <DeleteConfirmationModal
-                title={selectedrelatedBlog?.title || ''}
                 setDeleteModalOpen={setDeleteModalOpen}
-                handleDeleteBlog={handleDeleteBlog}
+                selectedBlog={selectedrelatedBlog}
               />
             )}
           </div>
