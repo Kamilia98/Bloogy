@@ -1,0 +1,133 @@
+import { Calendar, User } from 'lucide-react';
+import type { Blog } from '../models/BlogModel';
+import { formatDate } from '../utlils/formateDate';
+import type { Section } from '../models/SectionModel';
+
+export default function BlogComponent(blog: Omit<Blog, '_id'>) {
+  const renderSection = (section: Section, index: number) => {
+    const style = {
+      fontSize: `${section.fontSize}px`,
+      fontWeight: section.fontWeight,
+      color: section.fontColor,
+      fontFamily: section.fontFamily,
+      fontStyle: section.fontStyle,
+      fontVariant: section.fontVariant,
+      lineHeight: section.lineHeight,
+      letterSpacing: `${section.letterSpacing}px`,
+      textAlign: section.textAlign as React.CSSProperties['textAlign'],
+      textTransform:
+        section.textTransform as React.CSSProperties['textTransform'],
+      textDecoration: section.textDecoration,
+      textShadow: section.textShadow,
+      textOverflow: section.textOverflow,
+      backgroundColor: section.backgroundColor || 'transparent',
+    };
+
+    // Apply additional classes based on special formatting
+    const specialClasses = [
+      section.isQuote ? 'border-l-4 border-gray-300 pl-4 italic' : '',
+      section.isHighlight ? 'bg-yellow-50 px-2 py-1 rounded' : '',
+    ]
+      .filter(Boolean)
+      .join(' ');
+
+    switch (section.sectionType) {
+      case 'heading':
+        const HeadingTag = section.fontSize >= 24 ? 'h2' : 'h3';
+        return (
+          <HeadingTag
+            key={index}
+            className={`mt-6 mb-4 font-bold ${specialClasses}`}
+            style={style}
+          >
+            {section.content}
+          </HeadingTag>
+        );
+
+      case 'paragraph':
+        return (
+          <p key={index} className={`mb-4 ${specialClasses}`} style={style}>
+            {section.content}
+          </p>
+        );
+
+      case 'list':
+        const lines = section.content.split('\n');
+        return (
+          <ul key={index} className={`mb-4 ml-5 list-disc ${specialClasses}`}>
+            {lines.map((line, i) => (
+              <li key={i} style={style}>
+                {line}
+              </li>
+            ))}
+          </ul>
+        );
+
+      case 'image':
+        return (
+          <figure key={index} className="mb-6">
+            <img
+              src={section.content}
+              alt="Blog content"
+              className="w-full rounded-lg"
+            />
+          </figure>
+        );
+
+      default:
+        return (
+          <div key={index} className={`mb-4 ${specialClasses}`} style={style}>
+            {section.content}
+          </div>
+        );
+    }
+  };
+
+  return (
+    <>
+      {/* Blog Header */}
+      <div className="mb-8">
+        {blog.thumbnail && (
+          <div className="mb-6 overflow-hidden rounded-xl">
+            <img
+              src={blog.thumbnail}
+              alt={blog.title}
+              className="h-64 w-full object-cover object-center sm:h-96"
+            />
+          </div>
+        )}
+
+        <h1 className="mb-4 text-3xl font-bold text-gray-900 sm:text-4xl">
+          {blog.title}
+        </h1>
+
+        <div className="mb-4 flex flex-wrap items-center gap-4 text-sm text-gray-600">
+          {blog.createdAt && (
+            <div className="flex items-center">
+              <Calendar size={16} className="mr-1" />
+              {formatDate(blog.createdAt)}
+            </div>
+          )}
+          <div className="flex items-center">
+            <User size={16} className="mr-1" />
+            {blog.user ? blog.user.name : 'Unknown author'}
+          </div>
+          {blog.category && (
+            <div className="inline-block rounded-full bg-[#4364F7]/10 px-3 py-1 text-xs font-medium text-[#4364F7]">
+              {blog.category}
+            </div>
+          )}
+        </div>
+      </div>
+
+      {/* Blog Content */}
+      <div className="prose prose-lg max-w-none">
+        {blog.sections && blog.sections.length > 0 ? (
+          blog.sections.map((section, index) => renderSection(section, index))
+        ) : (
+          <p className="text-gray-600">No content available for this blog.</p>
+        )}
+      </div>
+    </>
+  );
+}
