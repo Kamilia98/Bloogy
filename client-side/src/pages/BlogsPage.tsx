@@ -1,113 +1,69 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { PlusCircle, Loader2, Search } from 'lucide-react';
+import { PlusCircle, Search } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import useAuth from '../contexts/AuthProvider';
 import Button from '../components/ui/Button';
 import Hero from '../components/Hero';
 // Blog type definitions
 import { CATEGORY, type Blog } from '../models/BlogModel';
-import axios from 'axios';
+import { useDispatch, useSelector } from 'react-redux';
+import { fetchBlogs } from '../store/features/blogs/blogsSlice'; // Adjust path as needed
 import BlogCard from '../components/BlogCard';
-import toast from 'react-hot-toast';
 import { DeleteConfirmationModal } from '../components/DeleteConfirmationModal';
+import type { AppDispatch, RootState } from '../store';
+import Loading from '../components/common/Loading';
 
 export default function BlogsPage() {
-  const [blogs, setBlogs] = useState<Blog[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
-  const [deleteModalOpen, setDeleteModalOpen] = useState(false);
-  const [selectedBlog, setSelectedBlog] = useState<Blog | null>(null);
+  const dispatch = useDispatch<AppDispatch>();
+  const navigate = useNavigate();
+  const Auth = useAuth();
+
+  // Select blogs and status from Redux store
+  const blogs = useSelector((state: RootState) => state.blogs.items);
+  const status = useSelector((state: RootState) => state.blogs.status);
+  const error = useSelector((state: RootState) => state.blogs.error);
+
+  // Local states for search and filter
   const [searchTerm, setSearchTerm] = useState('');
   const [activeCategory, setActiveCategory] = useState<CATEGORY | 'all'>('all');
-  const Auth = useAuth();
-  const navigate = useNavigate();
 
-  // Categories - replace with your actual categories
+  // Modal states
+  const [deleteModalOpen, setDeleteModalOpen] = useState(false);
+  const [selectedBlog, setSelectedBlog] = useState<Blog | null>(null);
 
-  const blogsCategories: string[] = [];
-
-  for (const cat in CATEGORY) {
-    blogsCategories.push(cat as string);
-  }
-
+  // Generate categories list
+  const blogsCategories: string[] = Object.keys(CATEGORY);
   const categories = ['all', ...blogsCategories];
 
-  const fetchBlogs = async () => {
-    try {
-      const params: { category?: string; search?: string } = {};
-      if (activeCategory !== 'all') params.category = activeCategory;
-      if (searchTerm) params.search = searchTerm;
-      // Replace with your actual API call
-      const response = await axios.get('/api/blogs', {
-        params,
-      });
-      const data = await response.data;
-      setBlogs(data);
-      setIsLoading(false);
-    } catch (error) {
-      console.error('Error fetching blogs:', error);
-      setIsLoading(false);
+  // Fetch blogs whenever searchTerm or activeCategory change
+  useEffect(() => {
+    const params: Record<string, any> = {};
+
+    if (searchTerm) {
+      params.search = searchTerm;
     }
-  };
+    if (activeCategory !== 'all') {
+      params.category = activeCategory;
+    }
 
-  useEffect(() => {
-    fetchBlogs();
-  }, []);
+    dispatch(fetchBlogs(params));
+  }, [searchTerm, activeCategory, dispatch]);
 
-  // Filter blogs based on search and category
-  useEffect(() => {
-    fetchBlogs();
-  }, [searchTerm, activeCategory]);
-
+  // Handle create new blog
   const handleCreateBlog = () => {
     navigate('/blogs/add');
   };
 
+  // Handle edit blog
   const handleEditBlog = (blogId: string) => {
     navigate(`/blogs/edit/${blogId}`);
   };
 
+  // Confirm delete modal
   const confirmDelete = (blog: Blog) => {
     setSelectedBlog(blog);
     setDeleteModalOpen(true);
-  };
-
-  const handleDeleteBlog = async () => {
-    if (!selectedBlog || !Auth.token) return;
-
-    try {
-      await axios.delete(`/api/blogs/${selectedBlog._id}`, {
-        headers: {
-          Authorization: `Bearer ${Auth.token}`,
-        },
-      });
-
-      // Optimistic update - remove the blog from state immediately
-      setBlogs((prevBlogs) =>
-        prevBlogs.filter((blog) => blog._id !== selectedBlog._id),
-      );
-      setDeleteModalOpen(false);
-      setSelectedBlog(null);
-
-      // Show success notification
-      toast.success('Blog deleted successfully!');
-    } catch (error) {
-      console.error('Error deleting blog:', error);
-
-      if (axios.isAxiosError(error)) {
-        toast.error(
-          error.response?.data?.message ||
-          error.message ||
-          'Failed to delete blog',
-        );
-
-        if (error.response?.status === 401) {
-          Auth.logout();
-        }
-      } else {
-        toast.error('An unexpected error occurred');
-      }
-    }
   };
 
   return (
@@ -168,13 +124,11 @@ export default function BlogsPage() {
             transition={{ delay: 0.2, duration: 0.5 }}
             className="mb-8 flex justify-end"
           >
-            <div>
-              <Button
-                onClick={handleCreateBlog}
-                label="Create New Blog"
-                icon={<PlusCircle size={18} />}
-              />
-            </div>
+            <Button
+              onClick={handleCreateBlog}
+              label="Create New Blog"
+              icon={<PlusCircle size={18} />}
+            />
           </motion.div>
         )}
 
@@ -185,9 +139,11 @@ export default function BlogsPage() {
           transition={{ delay: 0.3, duration: 0.5 }}
           className="space-y-6"
         >
-          {isLoading ? (
-            <div className="flex justify-center py-12">
-              <Loader2 className="animate-spin text-[#4364F7]" size={40} />
+          {status === 'loading' ? (
+            <Loading />
+          ) : status === 'failed' ? (
+            <div className="text-center text-red-500">
+              Error loading blogs: {error}
             </div>
           ) : blogs.length === 0 ? (
             <div className="rounded-lg bg-gray-50 py-12 text-center">
@@ -218,9 +174,8 @@ export default function BlogsPage() {
         <AnimatePresence>
           {deleteModalOpen && (
             <DeleteConfirmationModal
-              title={selectedBlog?.title || ''}
               setDeleteModalOpen={setDeleteModalOpen}
-              handleDeleteBlog={handleDeleteBlog}
+              selectedBlog={selectedBlog}
             />
           )}
         </AnimatePresence>
