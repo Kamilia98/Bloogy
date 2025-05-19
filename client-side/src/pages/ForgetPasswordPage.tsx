@@ -13,26 +13,20 @@ export default function ForgotPasswordPage() {
   const [emailError, setEmailError] = useState('');
   const [isSubmitted, setIsSubmitted] = useState(false);
 
-  const handleEmailChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const value = e.target.value;
-    setEmail(value);
-
-    if (!value) {
-      setEmailError('Email is required.');
-    } else if (!validateEmail(value)) {
-      setEmailError('Please enter a valid email address.');
-    } else {
-      setEmailError('');
-    }
-  };
-
   const handleResendEmail = () => {
     setIsLoading(true);
     setTimeout(() => {
       setIsLoading(false);
     }, 1500);
 
-    Auth.forgetPassword(email);
+    Auth.forgetPassword(email)
+      .then(() => {
+        setIsSubmitted(true);
+      })
+      .catch((error) => {
+        console.error('Error sending reset link:', error);
+        setIsSubmitted(false);
+      });
   };
 
   const handleSubmit = () => {
@@ -49,17 +43,18 @@ export default function ForgotPasswordPage() {
     if (!valid) return;
 
     setIsLoading(true);
-    // Simulate API request
+
     Auth.forgetPassword(email)
       .then(() => {
-        setIsLoading(false);
         setIsSubmitted(true);
+        setEmailError('');
       })
       .catch((error) => {
-        console.log(error);
+        console.error('Error sending reset link:', error);
+        setEmailError('Failed to send reset link. Please try again.');
+      })
+      .finally(() => {
         setIsLoading(false);
-        setIsSubmitted(false);
-        console.log(error.response.data.message);
       });
   };
 
@@ -118,9 +113,9 @@ export default function ForgotPasswordPage() {
                 label="Email Address"
                 placeholder="Your Email"
                 value={email}
-                onChange={handleEmailChange}
+                onChange={(e) => setEmail(e.target.value)}
                 error={emailError}
-                icon={<Mail size={20} />}
+                leftIcon={<Mail size={20} />}
               />
 
               {/* Submit */}
