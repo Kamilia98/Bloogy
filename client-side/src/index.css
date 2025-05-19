@@ -20,8 +20,12 @@
     @apply from-primary to-secondary hover:from-tertiary hover:to-quaternary bg-gradient-to-r text-white;
   }
 
+  .btn-secondary {
+    @apply bg-tertiary hover:bg-tertiary/90 text-white;
+  }
+
   .btn-outline {
-    @apply border-outline text-outline hover:bg-outline border hover:text-white;
+    @apply border border-gray-300 bg-white text-gray-900 hover:bg-gray-100;
   }
 
   .btn-danger {
