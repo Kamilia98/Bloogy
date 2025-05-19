@@ -1,16 +1,48 @@
+import { useDispatch } from 'react-redux';
+
+import axios from 'axios';
+
 import Button from './ui/Button';
+import useAuth from '../contexts/AuthProvider';
+import toast from 'react-hot-toast';
+import { deleteBlog } from '../store/features/blogs/blogsSlice';
+import type { AppDispatch } from '../store';
+import type { Blog } from '../models/BlogModel';
 
 interface DeleteConfirmationModalProps {
-  title: string;
   setDeleteModalOpen: (open: boolean) => void;
-  handleDeleteBlog: () => void;
+  selectedBlog: Blog | null;
 }
 
 export function DeleteConfirmationModal({
-  title,
   setDeleteModalOpen,
-  handleDeleteBlog,
+  selectedBlog,
 }: DeleteConfirmationModalProps) {
+  const dispatch = useDispatch<AppDispatch>();
+  const { token, logout } = useAuth();
+
+  const handleDelete = async () => {
+    if (!selectedBlog || !token) return;
+
+    try {
+      await dispatch(deleteBlog({ id: selectedBlog._id, token })).unwrap();
+      toast.success('Blog deleted successfully!');
+    } catch (err) {
+      if (axios.isAxiosError(err)) {
+        toast.error(
+          err.response?.data?.message || err.message || 'Failed to delete blog'
+        );
+        if (err.response?.status === 401) {
+          logout();
+        }
+      } else {
+        toast.error('An unexpected error occurred');
+      }
+    } finally {
+      setDeleteModalOpen(false);
+    }
+  };
+
   return (
     <>
       <div
@@ -21,24 +53,19 @@ export function DeleteConfirmationModal({
         <div className="w-full max-w-md rounded-lg bg-white p-6 shadow-xl">
           <h3 className="mb-4 text-xl font-bold text-gray-800">Delete Blog</h3>
           <p className="mb-6 text-gray-600">
-            Are you sure you want to delete "{title}"? This action cannot be
-            undone.
+            Are you sure you want to delete "{selectedBlog?.title}"? This action cannot be undone.
           </p>
           <div className="flex justify-end gap-3">
-            <div>
-              <Button
-                label="Cancel"
-                variant="outline"
-                onClick={() => setDeleteModalOpen(false)}
-              ></Button>
-            </div>
-            <div>
-              <Button
-                label="Delete"
-                variant="danger"
-                onClick={handleDeleteBlog}
-              />
-            </div>
+            <Button
+              label="Cancel"
+              variant="outline"
+              onClick={() => setDeleteModalOpen(false)}
+            />
+            <Button
+              label="Delete"
+              variant="danger"
+              onClick={handleDelete}
+            />
           </div>
         </div>
       </div>
