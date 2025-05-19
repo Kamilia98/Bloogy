@@ -27,15 +27,22 @@ import Button from '../components/ui/Button';
 import SectionStyleEditor from '../components/SectionStyleEditor';
 import BackButton from './common/BackButton';
 import BlogComponent from './Blog';
-import axios from 'axios';
 import ImageUploader from './common/ImageUploader';
 import Loading from './common/Loading';
+import { useDispatch } from 'react-redux';
+import type { AppDispatch } from '../store';
+import {
+  addBlog,
+  fetchBlogById,
+  updateBlog,
+} from '../store/features/blogs/blogsSlice';
 
 export default function BlogForm() {
   const { id } = useParams<{ id: string }>();
   const isEditMode = Boolean(id);
   const navigate = useNavigate();
   const Auth = useAuth();
+  const dispatch = useDispatch<AppDispatch>();
 
   // Form state
   const [title, setTitle] = useState('');
@@ -85,41 +92,26 @@ export default function BlogForm() {
   const handleThumbnailChange = (thumbnailUrl: string) => {
     setThumbnail(thumbnailUrl);
   };
+
   // Fetch blog data if in edit mode
   useEffect(() => {
     if (isEditMode && id) {
-      const fetchBlog = async () => {
-        try {
-          // Replace with your actual API call
-          const response = await fetch(`/api/blogs/${id}`);
-
-          if (!response.ok) {
-            throw new Error(`Failed to fetch blog: ${response.status}`);
-          }
-
-          const data = await response.json();
-
-          if (data) {
-            setTitle(data.title);
-            setCategory(data.category);
-            setThumbnail(data.thumbnail || '');
-
-            setSections(
-              data.sections && data.sections.length > 0
-                ? data.sections
-                : [createDefaultSection('paragraph')],
-            );
-          }
-
-          setIsLoading(false);
-        } catch (error) {
-          console.error('Error fetching blog:', error);
-          setIsLoading(false);
+      setIsLoading(true);
+      dispatch(fetchBlogById(id))
+        .unwrap()
+        .then((blog: Blog) => {
+          setTitle(blog.title);
+          setThumbnail(blog.thumbnail);
+          setCategory(blog.category);
+          setSections(blog.sections || []);
+        })
+        .catch((err) => {
           toast.error('Failed to load blog data');
-        }
-      };
-
-      fetchBlog();
+          console.error('Error fetching blog:', err);
+        })
+        .finally(() => {
+          setIsLoading(false);
+        });
     }
   }, [id, isEditMode]);
 
@@ -157,11 +149,14 @@ export default function BlogForm() {
   };
 
   // Handle section content change
-  const handleSectionChange = (index: number, content: string) => {
-    const newSections = [...sections];
-    newSections[index].content = content;
-    setSections(newSections);
+  const handleSectionChange = (index: number, newContent: string) => {
+    setSections(prevSections =>
+      prevSections.map((section, i) =>
+        i === index ? { ...section, content: newContent } : section
+      )
+    );
   };
+
 
   // Handle section style change
   const handleSectionStyleChange = (
@@ -215,17 +210,14 @@ export default function BlogForm() {
       toast.error('Title is required');
       return;
     }
-
     if (!category) {
       toast.error('Category is required');
       return;
     }
 
-    // Filter out empty sections
     const validSections = sections.filter(
       (section) => section.content.trim() !== '',
     );
-
     if (validSections.length === 0) {
       toast.error('At least one non-empty section is required');
       return;
@@ -233,32 +225,36 @@ export default function BlogForm() {
 
     setIsSaving(true);
 
+    const blogData: Partial<Blog> = {
+      title,
+      category,
+      thumbnail,
+      sections: validSections,
+      user: Auth.user || undefined,
+    };
+
     try {
-      const blogData: Partial<Blog> = {
-        title,
-        category,
-        thumbnail,
-        sections: validSections,
-        user: Auth.user || undefined,
-      };
-
-      // Replace with your actual API call
-      const url = isEditMode ? `/api/blogs/${id}` : '/api/blogs';
-      const method = isEditMode ? 'PATCH' : 'POST';
-
-      await axios({
-        method,
-        url,
-        headers: {
-          Authorization: `Bearer ${Auth.token}`,
-        },
-        data: blogData,
-      });
-
+      if (isEditMode && id) {
+        // Dispatch update
+        await dispatch(
+          updateBlog({
+            token: Auth.token ?? '',
+            blog: { _id: id, ...blogData } as Blog,
+          }),
+        ).unwrap();
+      } else {
+        // Dispatch add
+        await dispatch(
+          addBlog({
+            token: Auth.token ?? '',
+            blog: blogData as Omit<Blog, 'id' | 'createdAt' | 'updatedAt'>,
+          }),
+        ).unwrap();
+      }
       toast.success(`Blog ${isEditMode ? 'updated' : 'created'} successfully!`);
       navigate('/blogs');
-    } catch (error) {
-      console.error('Error saving blog:', error);
+    } catch (err) {
+      console.error('Error saving blog:', err);
       toast.error('Failed to save blog. Please try again.');
     } finally {
       setIsSaving(false);
@@ -516,7 +512,7 @@ export default function BlogForm() {
                           className={cn(
                             'rounded p-1.5 text-gray-500 transition-colors hover:bg-gray-200 hover:text-[#4364F7]',
                             index === sections.length - 1 &&
-                              'cursor-not-allowed opacity-50',
+                            'cursor-not-allowed opacity-50',
                           )}
                           aria-label="Move section down"
                         >
@@ -529,7 +525,7 @@ export default function BlogForm() {
                           className={cn(
                             'rounded p-1.5 text-gray-500 transition-colors hover:bg-gray-200 hover:text-red-500',
                             sections.length <= 1 &&
-                              'cursor-not-allowed opacity-50',
+                            'cursor-not-allowed opacity-50',
                           )}
                           aria-label="Remove section"
                           disabled={sections.length <= 1}
@@ -581,7 +577,7 @@ export default function BlogForm() {
                         className={cn(
                           'w-full resize-y rounded border-0 bg-transparent px-1 py-2 text-gray-800 focus:ring-1 focus:ring-[#4364F7]/20 focus:outline-none',
                           section.isQuote &&
-                            'border-l-4 border-gray-300 pl-4 italic',
+                          'border-l-4 border-gray-300 pl-4 italic',
                           section.isHighlight && 'bg-yellow-50',
                         )}
                         style={getSectionStyle(section)}
