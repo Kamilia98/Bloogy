@@ -179,16 +179,23 @@ export class AuthService {
     return { message: 'Password reset email sent' };
   }
 
-  async resetPassword(resetPasswordDto: ResetPasswordDto) {
-    const user = await this.userModel.findOne({
-      email: resetPasswordDto.email,
-    });
+  async resetPassword(resetPasswordDto: ResetPasswordDto, req) {
+    console.log(req.headers);
+    const token = req.headers.authorization.split(' ')[1];
+    if (!token) {
+      throw new UnauthorizedException('Token not provided');
+    }
+    console.log('Token:', token);
+    const decoded = this.jwtService.verify(token);
+    const user = await this.userModel.findOne({ email: decoded.email });
     if (!user) {
       throw new BadRequestException('User with this email does not exist');
     }
-    user.password = await bcrypt.hash(resetPasswordDto.password, 10);
-    await user.save();
-    return { message: 'Password reset successfully' };
+    const { password } = resetPasswordDto;
+    const hashedPassword = await bcrypt.hash(password, 10);
+    await this.userModel.findByIdAndUpdate(user._id, {
+      password: hashedPassword,
+    });
   }
 
   async validateResetToken(token: string) {
