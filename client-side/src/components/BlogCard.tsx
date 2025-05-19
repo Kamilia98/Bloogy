@@ -22,7 +22,6 @@ const BlogCard = ({
   const Auth = useAuth();
   // Check if a blog belongs to the current user
   const isUserBlog = (blog: Blog) => {
-    console.log(Auth.user, blog.user);
     return Auth.user && blog.user._id === Auth.user._id;
   };
 
