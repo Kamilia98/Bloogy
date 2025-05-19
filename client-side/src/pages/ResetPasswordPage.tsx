@@ -3,11 +3,13 @@ import { Lock, Eye, EyeOff, Loader2, Check, AlertTriangle } from 'lucide-react';
 import { AnimatePresence, motion } from 'framer-motion';
 import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import Button from '../components/ui/Button';
-import axios from 'axios';
 import validatePassword from '../utlils/validatePassword';
 import useAuth from '../contexts/AuthProvider';
+import Input from '../components/ui/Input';
+import PasswordTips from '../components/common/PasswordTips';
 export default function ResetPasswordPage() {
   const Auth = useAuth();
+  const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState(false);
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
@@ -20,7 +22,6 @@ export default function ResetPasswordPage() {
   const [isTokenChecking, setIsTokenChecking] = useState(true);
 
   const [params] = useSearchParams();
-  const navigate = useNavigate();
 
   // Simulate token validation
   useEffect(() => {
@@ -29,6 +30,7 @@ export default function ResetPasswordPage() {
       setIsTokenChecking(false);
       return;
     }
+
     const validateToken = async () => {
       const token = params.get('token');
       if (!token) {
@@ -36,47 +38,19 @@ export default function ResetPasswordPage() {
         setIsTokenChecking(false);
         return;
       }
-      try {
-        await Auth.validateResetToken(token);
-        setIsTokenValid(true);
-        setIsTokenChecking(false);
-      } catch (error) {
-        setIsTokenValid(false);
-        setIsTokenChecking(false);
-      }
+      Auth.validateResetToken(token)
+        .then(() => {
+          setIsTokenValid(true);
+          setIsTokenChecking(false);
+        })
+        .catch(() => {
+          setIsTokenValid(false);
+          setIsTokenChecking(false);
+        });
     };
+
     validateToken();
   }, [params]);
-
-  const handlePasswordChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const value = e.target.value;
-    setPassword(value);
-
-    if (!value) {
-      setPasswordError('Password is required.');
-    } else {
-      if (!validatePassword(value)) {
-        setPasswordError('Password must be at least 8 characters.');
-      } else {
-        setPasswordError('');
-      }
-    }
-  };
-
-  const handleConfirmPasswordChange = (
-    e: React.ChangeEvent<HTMLInputElement>,
-  ) => {
-    const value = e.target.value;
-    setConfirmPassword(value);
-
-    if (!value) {
-      setConfirmPasswordError('Please confirm your password.');
-    } else if (value !== password) {
-      setConfirmPasswordError('Passwords do not match.');
-    } else {
-      setConfirmPasswordError('');
-    }
-  };
 
   const handleSubmit = () => {
     let valid = true;
@@ -84,11 +58,13 @@ export default function ResetPasswordPage() {
     if (!password) {
       setPasswordError('Password is required.');
       valid = false;
+    } else if (!validatePassword(password)) {
+      setPasswordError(
+        'Password must contain at least 8 characters, one uppercase letter, one lowercase letter, and one number.',
+      );
+      valid = false;
     } else {
-      if (!validatePassword(password)) {
-        setPasswordError('Password must be at least 8 characters.');
-        valid = false;
-      }
+      setPasswordError('');
     }
 
     if (!confirmPassword) {
@@ -102,6 +78,19 @@ export default function ResetPasswordPage() {
     if (!valid) return;
 
     setIsLoading(true);
+    Auth.resetPassword(password)
+      .then(() => {
+        setIsSubmitted(true);
+        setIsLoading(false);
+        setTimeout(() => {
+          navigate('/auth/login');
+        }, 3000);
+      })
+      .catch((error) => {
+        setIsLoading(false);
+        console.error('Error resetting password:', error);
+        setPasswordError('Failed to reset password. Please try again.');
+      });
   };
 
   if (isTokenChecking) {
@@ -163,147 +152,59 @@ export default function ResetPasswordPage() {
               transition={{ delay: 0.3, duration: 0.5 }}
               className="space-y-6"
             >
-              {/* Password */}
-              <div>
-                <div className="mb-1">
-                  <label
-                    htmlFor="password"
-                    className="text-sm font-medium text-gray-700"
-                  >
-                    New Password
-                  </label>
-                </div>
-                <div className="relative">
-                  <Lock
-                    className="absolute inset-y-0 left-3 my-auto text-gray-500"
-                    size={20}
-                  />
-                  <input
-                    id="password"
-                    placeholder="Enter new password"
-                    value={password}
-                    onChange={handlePasswordChange}
-                    className="w-full rounded-lg border border-gray-300 py-3 pr-10 pl-10 focus:ring-2 focus:ring-[#42d9fc] focus:outline-none"
-                    type={showPassword ? 'text' : 'password'}
-                  />
-                  {showPassword ? (
-                    <Eye
-                      className="absolute inset-y-0 right-3 my-auto cursor-pointer text-gray-500"
-                      size={20}
-                      onClick={() => setShowPassword(!showPassword)}
-                    />
-                  ) : (
-                    <EyeOff
-                      className="absolute inset-y-0 right-3 my-auto cursor-pointer text-gray-500"
-                      size={20}
-                      onClick={() => setShowPassword(!showPassword)}
-                    />
-                  )}
-                </div>
+              <div className="flex flex-col gap-2">
+                <Input
+                  id="password"
+                  label="Password"
+                  placeholder="Create Password"
+                  type={showPassword ? 'text' : 'password'}
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  error={passwordError}
+                  leftIcon={<Lock size={20} />}
+                  rightIcon={
+                    showPassword ? (
+                      <Eye
+                        onClick={() => setShowPassword(false)}
+                        className="cursor-pointer text-gray-500"
+                      />
+                    ) : (
+                      <EyeOff
+                        onClick={() => setShowPassword(true)}
+                        className="cursor-pointer text-gray-500"
+                      />
+                    )
+                  }
+                />
 
-                {/* Password strength tips */}
-                <motion.div
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  className="mt-2 rounded-md bg-gray-50 p-3"
-                >
-                  <p className="mb-1 text-xs font-medium text-gray-700">
-                    Password must contain:
-                  </p>
-                  <ul className="space-y-1 text-xs text-gray-600">
-                    <li
-                      className={`flex items-center ${password.length >= 8 ? 'text-green-600' : ''}`}
-                    >
-                      <div
-                        className={`mr-1 h-1.5 w-1.5 rounded-full ${password.length >= 8 ? 'bg-green-600' : 'bg-gray-400'}`}
-                      ></div>
-                      At least 8 characters
-                    </li>
-                    <li
-                      className={`flex items-center ${/[A-Z]/.test(password) ? 'text-green-600' : ''}`}
-                    >
-                      <div
-                        className={`mr-1 h-1.5 w-1.5 rounded-full ${/[A-Z]/.test(password) ? 'bg-green-600' : 'bg-gray-400'}`}
-                      ></div>
-                      One uppercase letter
-                    </li>
-                    <li
-                      className={`flex items-center ${/[a-z]/.test(password) ? 'text-green-600' : ''}`}
-                    >
-                      <div
-                        className={`mr-1 h-1.5 w-1.5 rounded-full ${/[a-z]/.test(password) ? 'bg-green-600' : 'bg-gray-400'}`}
-                      ></div>
-                      One lowercase letter
-                    </li>
-                    <li
-                      className={`flex items-center ${/[0-9]/.test(password) ? 'text-green-600' : ''}`}
-                    >
-                      <div
-                        className={`mr-1 h-1.5 w-1.5 rounded-full ${/[0-9]/.test(password) ? 'bg-green-600' : 'bg-gray-400'}`}
-                      ></div>
-                      One number
-                    </li>
-                  </ul>
-                </motion.div>
+                {/* Password Strength Tips */}
+                <PasswordTips password={password} />
               </div>
 
               {/* Confirm Password */}
-              <div>
-                <div className="mb-1">
-                  <label
-                    htmlFor="confirmPassword"
-                    className="text-sm font-medium text-gray-700"
-                  >
-                    Confirm Password
-                  </label>
-                </div>
-                <div className="relative">
-                  <Lock
-                    className="absolute inset-y-0 left-3 my-auto text-gray-500"
-                    size={20}
-                  />
-                  <input
-                    id="confirmPassword"
-                    placeholder="Confirm new password"
-                    value={confirmPassword}
-                    onChange={handleConfirmPasswordChange}
-                    className="w-full rounded-lg border border-gray-300 py-3 pr-10 pl-10 focus:ring-2 focus:ring-[#42d9fc] focus:outline-none"
-                    type={showConfirmPassword ? 'text' : 'password'}
-                  />
-                  {showConfirmPassword ? (
+              <Input
+                id="confirmPassword"
+                label="Confirm Password"
+                placeholder="Re-enter Password"
+                type={showConfirmPassword ? 'text' : 'password'}
+                value={confirmPassword}
+                onChange={(e) => setConfirmPassword(e.target.value)}
+                error={confirmPasswordError}
+                leftIcon={<Lock size={20} />}
+                rightIcon={
+                  showConfirmPassword ? (
                     <Eye
-                      className="absolute inset-y-0 right-3 my-auto cursor-pointer text-gray-500"
-                      size={20}
-                      onClick={() =>
-                        setShowConfirmPassword(!showConfirmPassword)
-                      }
+                      onClick={() => setShowConfirmPassword(false)}
+                      className="cursor-pointer text-gray-500"
                     />
                   ) : (
                     <EyeOff
-                      className="absolute inset-y-0 right-3 my-auto cursor-pointer text-gray-500"
-                      size={20}
-                      onClick={() =>
-                        setShowConfirmPassword(!showConfirmPassword)
-                      }
+                      onClick={() => setShowConfirmPassword(true)}
+                      className="cursor-pointer text-gray-500"
                     />
-                  )}
-                </div>
-                <AnimatePresence>
-                  {confirmPasswordError && (
-                    <motion.p
-                      key="confirmPasswordError"
-                      initial={{ opacity: 0, height: 0 }}
-                      animate={{ opacity: 1, height: 'auto' }}
-                      exit={{ opacity: 0, height: 0 }}
-                      transition={{ duration: 0.4 }}
-                      className="mt-1 text-sm text-red-500"
-                    >
-                      {confirmPasswordError}
-                    </motion.p>
-                  )}
-                </AnimatePresence>
-              </div>
-
+                  )
+                }
+              />
               {/* Submit */}
               <div onClick={handleSubmit} className="cursor-pointer">
                 <Button
