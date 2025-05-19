@@ -8,20 +8,28 @@ import { UpdateBlogDto } from './dto/update-blog.dto';
 import { Blog, BlogDocument } from './schemas/blog.schema';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
+import { RequestWithUser } from './entities/request-with-user.interface';
+
+interface FindAllOptions {
+  category?: string;
+  search?: string;
+  limit?: number;
+  page?: number;
+  sortBy?: string;
+}
 
 @Injectable()
 export class BlogsService {
   constructor(@InjectModel(Blog.name) private blogModel: Model<BlogDocument>) {}
 
-  private getUserId(req: Request & { user: { userId: string } }) {
-    const user = req.user as { userId: string };
-    return user.userId;
+  private getUserId(req: RequestWithUser): string {
+    return req.user.userId;
   }
 
   async create(
     createBlogDto: CreateBlogDto,
-    req: Request & { user: { userId: string } },
-  ) {
+    req: RequestWithUser,
+  ): Promise<BlogDocument> {
     const userId = this.getUserId(req);
     const blog = new this.blogModel({
       ...createBlogDto,
@@ -30,8 +38,10 @@ export class BlogsService {
     return blog.save();
   }
 
-  async findAll(category?: string, search?: string, limit?: number) {
-    const query: any = { isDeleted: false };
+  async findAll(options: FindAllOptions): Promise<BlogDocument[]> {
+    const { category, search, limit = 10, page = 1, sortBy } = options;
+    // Explicitly type `query` as a record with string keys and unknown values
+    const query: Record<string, any> = { isDeleted: false };
 
     if (category) {
       query.category = category;
@@ -39,48 +49,78 @@ export class BlogsService {
 
     if (search) {
       const searchRegex = new RegExp(search, 'i');
-      query.$or = [{ title: searchRegex }];
+      query.$or = [{ title: searchRegex }, { content: searchRegex }];
     }
 
-    const blogs = await this.blogModel
+    const sortOptions: Record<string, 1 | -1> = sortBy
+      ? { [sortBy]: -1 }
+      : { createdAt: -1 };
+
+    const blogs: BlogDocument[] = await this.blogModel
       .find(query)
-      .limit(limit ? Number(limit) : 0)
+      .sort(sortOptions)
+      .skip((page - 1) * limit)
+      .limit(limit)
       .populate('user', 'name email');
 
     return blogs;
   }
 
-  async findOne(id: string) {
+  async findOne(id: string): Promise<BlogDocument> {
     const blog = await this.blogModel
       .findById(id)
       .populate('user', 'name email');
+
     if (!blog || blog.isDeleted) {
       throw new NotFoundException('Blog not found');
     }
+
     return blog;
   }
 
   async update(
     id: string,
     updateBlogDto: UpdateBlogDto,
-    req: Request & { user: { userId: string } },
-  ) {
+    req: RequestWithUser,
+  ): Promise<BlogDocument> {
     const userId = this.getUserId(req);
     const blog = await this.blogModel.findById(id);
+
     if (!blog || blog.isDeleted) {
       throw new NotFoundException('Blog not found');
     }
+
     if (blog.user.toString() !== userId) {
       throw new ForbiddenException('You are not allowed to update this blog');
     }
-    return this.blogModel.findByIdAndUpdate(id, updateBlogDto, { new: true });
+
+    const updatedBlog: BlogDocument | null = await this.blogModel
+      .findByIdAndUpdate(id, updateBlogDto, { new: true })
+      .populate('user', 'name email');
+
+    if (!updatedBlog) {
+      throw new NotFoundException('Blog not found');
+    }
+    return updatedBlog;
   }
 
-  async remove(id: string) {
+  async remove(id: string, req: RequestWithUser): Promise<BlogDocument | null> {
+    const userId = this.getUserId(req);
     const blog = await this.blogModel.findById(id);
+
     if (!blog || blog.isDeleted) {
       throw new NotFoundException('Blog not found');
     }
-    return this.blogModel.findByIdAndDelete(id);
+
+    if (blog.user.toString() !== userId) {
+      throw new ForbiddenException('You are not allowed to delete this blog');
+    }
+
+    // Return the updated document
+    return this.blogModel.findByIdAndUpdate(
+      id,
+      { isDeleted: true },
+      { new: true },
+    );
   }
 }

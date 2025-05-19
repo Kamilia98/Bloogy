@@ -9,32 +9,34 @@ import {
   UseGuards,
   Req,
   Query,
+  ParseIntPipe,
+  DefaultValuePipe,
 } from '@nestjs/common';
 import { BlogsService } from './blogs.service';
 import { CreateBlogDto } from './dto/create-blog.dto';
 import { UpdateBlogDto } from './dto/update-blog.dto';
-import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
+import { RequestWithUser } from './entities/request-with-user.interface';
+import { AuthGuard } from '@nestjs/passport';
 
 @Controller('blogs')
 export class BlogsController {
   constructor(private readonly blogsService: BlogsService) {}
 
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(AuthGuard('jwt'))
   @Post()
-  create(@Body() createBlogDto: CreateBlogDto, @Req() req: Request) {
-    return this.blogsService.create(
-      createBlogDto,
-      req as Request & { user: { userId: string } },
-    );
+  create(@Body() createBlogDto: CreateBlogDto, @Req() req: RequestWithUser) {
+    return this.blogsService.create(createBlogDto, req);
   }
 
   @Get()
   findAll(
     @Query('category') category?: string,
     @Query('search') search?: string,
-    @Query('limit') limit?: number,
+    @Query('limit', new DefaultValuePipe(10), ParseIntPipe) limit?: number,
+    @Query('page', new DefaultValuePipe(1), ParseIntPipe) page?: number,
+    @Query('sortBy') sortBy?: string,
   ) {
-    return this.blogsService.findAll(category, search, limit);
+    return this.blogsService.findAll({ category, search, limit, page, sortBy });
   }
 
   @Get(':id')
@@ -42,24 +44,19 @@ export class BlogsController {
     return this.blogsService.findOne(id);
   }
 
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(AuthGuard('jwt'))
   @Patch(':id')
   update(
     @Param('id') id: string,
     @Body() updateBlogDto: UpdateBlogDto,
-    @Req() req: Request,
+    @Req() req: RequestWithUser,
   ) {
-    return this.blogsService.update(
-      id,
-      updateBlogDto,
-      req as Request & { user: { userId: string } },
-    );
+    return this.blogsService.update(id, updateBlogDto, req);
   }
 
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(AuthGuard('jwt'))
   @Delete(':id')
-  remove(@Param('id') id: string) {
-    console.log(id);
-    return this.blogsService.remove(id);
+  remove(@Param('id') id: string, @Req() req: RequestWithUser) {
+    return this.blogsService.remove(id, req);
   }
 }
