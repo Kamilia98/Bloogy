@@ -27,7 +27,11 @@ export default function AppNavbar() {
   const handleLogout = () => {
     Auth.logout().then(() => {
       navigate('/auth/login');
-    });
+    }
+    ).catch((error) => {
+      console.error('Logout failed:', error);
+    }
+    );
   };
 
   const toggleMenu = () => {
