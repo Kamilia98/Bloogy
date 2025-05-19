@@ -37,7 +37,7 @@ export default function BlogComponent(blog: Omit<Blog, '_id'>) {
         return (
           <HeadingTag
             key={index}
-            className={`mt-6 mb-4 font-bold ${specialClasses}`}
+            className={`font-bold ${specialClasses}`}
             style={style}
           >
             {section.content}
@@ -46,7 +46,7 @@ export default function BlogComponent(blog: Omit<Blog, '_id'>) {
 
       case 'paragraph':
         return (
-          <p key={index} className={`mb-4 ${specialClasses}`} style={style}>
+          <p key={index} className={specialClasses} style={style}>
             {section.content}
           </p>
         );
@@ -54,7 +54,7 @@ export default function BlogComponent(blog: Omit<Blog, '_id'>) {
       case 'list':
         const lines = section.content.split('\n');
         return (
-          <ul key={index} className={`mb-4 ml-5 list-disc ${specialClasses}`}>
+          <ul key={index} className={`ml-5 list-disc ${specialClasses}`}>
             {lines.map((line, i) => (
               <li key={i} style={style}>
                 {line}
@@ -65,7 +65,7 @@ export default function BlogComponent(blog: Omit<Blog, '_id'>) {
 
       case 'image':
         return (
-          <figure key={index} className="mb-6">
+          <figure key={index}>
             <img
               src={section.content}
               alt="Blog content"
@@ -76,7 +76,7 @@ export default function BlogComponent(blog: Omit<Blog, '_id'>) {
 
       default:
         return (
-          <div key={index} className={`mb-4 ${specialClasses}`} style={style}>
+          <div key={index} className={specialClasses} style={style}>
             {section.content}
           </div>
         );
@@ -84,11 +84,11 @@ export default function BlogComponent(blog: Omit<Blog, '_id'>) {
   };
 
   return (
-    <>
+    <div className="flex flex-col gap-8">
       {/* Blog Header */}
-      <div className="mb-8">
+      <div className="flex flex-col gap-4">
         {blog.thumbnail && (
-          <div className="mb-6 overflow-hidden rounded-xl">
+          <div className="overflow-hidden rounded-xl">
             <img
               src={blog.thumbnail}
               alt={blog.title}
@@ -97,11 +97,11 @@ export default function BlogComponent(blog: Omit<Blog, '_id'>) {
           </div>
         )}
 
-        <h1 className="mb-4 text-3xl font-bold text-gray-900 sm:text-4xl">
+        <h1 className="text-3xl font-bold text-gray-900 sm:text-4xl">
           {blog.title}
         </h1>
 
-        <div className="mb-4 flex flex-wrap items-center gap-4 text-sm text-gray-600">
+        <div className="flex flex-wrap items-center gap-4 text-sm text-gray-600">
           {blog.createdAt && (
             <div className="flex items-center">
               <Calendar size={16} className="mr-1" />
@@ -123,11 +123,15 @@ export default function BlogComponent(blog: Omit<Blog, '_id'>) {
       {/* Blog Content */}
       <div className="prose prose-lg max-w-none">
         {blog.sections && blog.sections.length > 0 ? (
-          blog.sections.map((section, index) => renderSection(section, index))
+          <div className="flex flex-col gap-6">
+            {blog.sections.map((section, index) => renderSection(section, index))}
+          </div>
         ) : (
           <p className="text-gray-600">No content available for this blog.</p>
         )}
       </div>
-    </>
+
+
+    </div>
   );
 }
