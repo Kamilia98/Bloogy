@@ -1,0 +1,30 @@
+@import 'tailwindcss';
+
+@custom-variant dark (&:where(.dark, .dark *));
+
+@theme {
+  --color-primary: #4364f7;
+  --color-secondary: #42d9fc;
+  --color-tertiary: #3b58d9;
+  --color-quaternary: #3bc7e8;
+  --color-danger: #ef4444;
+  --color-outline: #9ca3af;
+}
+
+@layer components {
+  .btn {
+    @apply flex w-full items-center justify-center rounded-lg px-4 py-3 font-medium transition duration-300;
+  }
+
+  .btn-primary {
+    @apply from-primary to-secondary hover:from-tertiary hover:to-quaternary bg-gradient-to-r text-white;
+  }
+
+  .btn-outline {
+    @apply border-outline text-outline hover:bg-outline border hover:text-white;
+  }
+
+  .btn-danger {
+    @apply bg-danger text-white hover:bg-red-700;
+  }
+}
