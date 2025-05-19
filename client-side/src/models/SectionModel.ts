@@ -1,3 +1,11 @@
+export enum sectionType {
+  paragraph = 'paragraph',
+  heading = 'heading',
+  list = 'list',
+  image = 'image',
+  quote = 'quote',
+}
+
 export interface Section {
   content: string;
   fontSize: number;
@@ -13,10 +21,8 @@ export interface Section {
   textDecoration: string;
   textShadow: string;
   textOverflow: string;
-  sectionType: string;
-  listIndex?: number;
+  sectionType: sectionType;
   isQuote: boolean;
-  isCodeBlock: boolean;
   isHighlight: boolean;
   backgroundColor?: string;
 }

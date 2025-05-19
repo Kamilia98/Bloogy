@@ -1,8 +1,18 @@
 import type { Section } from './SectionModel';
+import type { User } from './UserModel';
 
+export enum CATEGORY {
+  technology = 'technology',
+  design = 'design',
+  business = 'business',
+  lifestyle = 'lifestyle',
+}
 export interface Blog {
+  _id: string;
   title: string;
-  content: string;
+  thumbnail: string;
+  category: CATEGORY;
   sections: Section[];
-  userId?: string;
+  user: User;
+  createdAt: string;
 }
