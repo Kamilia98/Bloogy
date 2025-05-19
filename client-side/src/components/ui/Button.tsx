@@ -12,7 +12,7 @@ interface Props extends ButtonHTMLAttributes<HTMLButtonElement> {
 
 const variantClasses: Record<ButtonVariant, string> = {
   primary: 'btn-primary',
-  secondary: 'bg-secondary text-white hover:bg-primary',
+  secondary: 'btn-secondary',
   outline: 'btn-outline',
   danger: 'btn-danger',
 };
