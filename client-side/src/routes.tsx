@@ -4,7 +4,7 @@ import NotFoundPage from './pages/NotFoundPage';
 import SignupPage from './pages/SignupPage';
 import LoginPage from './pages/LoginPage';
 import RequireLoggedOut from './guards/RequireLoggedOut';
-import AddBlogPage from './pages/AddBlogPage';
+import BlogFormPage from './pages/BlogFormPage';
 import AuthLayout from './layouts/AuthLayout';
 import AppLayout from './layouts/AppLayout';
 import RequireLoggedIn from './guards/RequireLoggedIn';
@@ -53,7 +53,7 @@ const ProjectRoutes = (): React.ReactNode => {
           path: '/blogs/add',
           element: (
             <RequireLoggedIn>
-              <AddBlogPage />
+              <BlogFormPage />
             </RequireLoggedIn>
           ),
         },
@@ -61,7 +61,7 @@ const ProjectRoutes = (): React.ReactNode => {
           path: '/blogs/edit/:id',
           element: (
             <RequireLoggedIn>
-              <AddBlogPage />
+              <BlogFormPage />
             </RequireLoggedIn>
           ),
         },

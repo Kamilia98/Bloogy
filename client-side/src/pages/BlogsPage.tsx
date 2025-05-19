@@ -124,11 +124,13 @@ export default function BlogsPage() {
             transition={{ delay: 0.2, duration: 0.5 }}
             className="mb-8 flex justify-end"
           >
-            <Button
-              onClick={handleCreateBlog}
-              label="Create New Blog"
-              icon={<PlusCircle size={18} />}
-            />
+            <div>
+              <Button
+                onClick={handleCreateBlog}
+                label="Create New Blog"
+                icon={<PlusCircle size={18} />}
+              />
+            </div>
           </motion.div>
         )}
 
