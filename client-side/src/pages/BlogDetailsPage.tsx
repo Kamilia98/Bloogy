@@ -91,8 +91,8 @@ export default function BlogDetailsPage() {
       if (axios.isAxiosError(error)) {
         toast.error(
           error.response?.data?.message ||
-            error.message ||
-            'Failed to delete blog',
+          error.message ||
+          'Failed to delete blog',
         );
 
         if (error.response?.status === 401) {
