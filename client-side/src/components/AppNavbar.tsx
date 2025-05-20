@@ -168,14 +168,14 @@ export default function AppNavbar() {
                 ) : (
                   <div className="flex flex-col space-y-3">
                     <Link
-                      to="/login"
+                      to="auth/login"
                       className="flex w-full items-center justify-center rounded-full border border-gray-300 px-4 py-2 text-sm font-medium text-gray-800 hover:bg-gray-100"
                       onClick={() => setIsMenuOpen(false)}
                     >
                       Login
                     </Link>
                     <Link
-                      to="/register"
+                      to="auth/register"
                       className="flex w-full items-center justify-center rounded-full bg-[#4364F7] px-4 py-2 text-sm font-medium text-white hover:bg-[#3854c7]"
                       onClick={() => setIsMenuOpen(false)}
                     >
