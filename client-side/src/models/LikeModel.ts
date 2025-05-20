@@ -1,6 +1,6 @@
-export interface User {
+export interface Like {
   _id: string;
   name: string;
-  avatar: string;
   email: string;
+  avatar: string;
 }
