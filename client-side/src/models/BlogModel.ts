@@ -1,3 +1,5 @@
+import type { Comment } from './CommentModel';
+import type { Like } from './LikeModel';
 import type { Section } from './SectionModel';
 import type { User } from './UserModel';
 
@@ -15,4 +17,6 @@ export interface Blog {
   sections: Section[];
   user: User;
   createdAt: string;
+  likes: Like[];
+  comments: Comment[];
 }
