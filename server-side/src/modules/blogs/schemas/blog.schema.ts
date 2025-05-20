@@ -27,11 +27,18 @@ export class Blog {
   @Prop({ default: false })
   isDeleted: boolean;
 
-  @Prop({ type: [Section], default: [] }) // <-- Embedded sections
+  @Prop({ type: [Section], default: [] })
   sections: Section[];
+
+  // New: Array of user IDs who liked this blog
+  @Prop({ type: [mongoose.Schema.Types.ObjectId], ref: User.name, default: [] })
+  likes: Types.ObjectId[];
+
+  // New: Embedded subdocuments for comments
+  @Prop({ type: [mongoose.Schema.Types.ObjectId], ref: 'Comment', default: [] })
+  comments: Types.ObjectId[];
 }
 
 export const BlogSchema = SchemaFactory.createForClass(Blog);
 
-// Add timestamps option
 BlogSchema.set('timestamps', true);
