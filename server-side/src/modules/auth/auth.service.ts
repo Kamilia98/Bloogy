@@ -46,14 +46,15 @@ export class AuthService {
     if (!req.user) {
       throw new UnauthorizedException('No user from google');
     }
-    const { email, name } = req.user;
+    const { email, firstName, lastName, picture } = req.user;
 
     let user = await this.userModel.findOne({ email });
 
     if (!user) {
       user = new this.userModel({
         email,
-        name,
+        name: firstName + ' ' + lastName,
+        avatar: picture,
         password: await bcrypt.hash(Math.random().toString(36).slice(-8), 10),
       });
       await user.save();
