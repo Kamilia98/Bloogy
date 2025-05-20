@@ -23,7 +23,6 @@ export default function BlogComponent(blog: Omit<Blog, '_id'>) {
       backgroundColor: section.backgroundColor || 'transparent',
     };
 
-    // Apply additional classes based on special formatting
     const specialClasses = [
       section.isQuote ? 'border-l-4 border-gray-300 pl-4 italic' : '',
       section.isHighlight ? 'bg-yellow-50 px-2 py-1 rounded' : '',
@@ -92,7 +91,7 @@ export default function BlogComponent(blog: Omit<Blog, '_id'>) {
             <img
               src={blog.thumbnail}
               alt={blog.title}
-              className="h-64 w-full object-cover object-center sm:h-96"
+              className="h-40 min-h-[150px] w-full object-cover object-center"
             />
           </div>
         )}
