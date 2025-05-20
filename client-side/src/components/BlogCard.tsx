@@ -3,8 +3,8 @@ import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
 import { Clock, User, Edit, Trash2, ChevronRight } from 'lucide-react';
 import { formatDate } from '../utlils/formateDate';
-import type { Blog } from '../models/BlogModel';
 import useAuth from '../contexts/AuthProvider';
+import { isUserBlog } from '../utlils/isUserBlog';
 
 interface BlogCardProps {
   blog: any;
@@ -19,11 +19,8 @@ const BlogCard = ({
   handleEditBlog,
   confirmDelete,
 }: BlogCardProps) => {
+
   const Auth = useAuth();
-  // Check if a blog belongs to the current user
-  const isUserBlog = (blog: Blog) => {
-    return Auth.user && blog.user._id === Auth.user._id;
-  };
 
   return (
     <motion.div
@@ -60,7 +57,7 @@ const BlogCard = ({
           </div>
           <div className="flex items-center">
             <User size={14} className="mr-1" />
-            {blog.user.name}
+            {blog.user?.name}
           </div>
         </div>
 
@@ -72,7 +69,7 @@ const BlogCard = ({
             Read More <ChevronRight size={16} className="ml-1" />
           </Link>
 
-          {isUserBlog(blog) && (
+          {Auth.user && isUserBlog(blog, Auth.user) && (
             <div className="flex space-x-1">
               <button
                 onClick={() => handleEditBlog(blog._id)}
