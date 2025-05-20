@@ -113,7 +113,7 @@ export default function BlogDetailsPage() {
   return (
     <div className="bg-gradient-to-b from-blue-50 to-white py-8">
       <div className="container mx-auto mt-16 px-4">
-        <div className="mx-auto max-w-4xl">
+        <div className="mx-auto max-w-4xl flex flex-col gap-8">
           <BackButton />
           <BlogComponent {...blog} />
 
