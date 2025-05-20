@@ -9,6 +9,7 @@ import { Blog, BlogDocument } from './schemas/blog.schema';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { RequestWithUser } from './entities/request-with-user.interface';
+import mongoose from 'mongoose';
 
 interface FindAllOptions {
   category?: string;
@@ -61,7 +62,19 @@ export class BlogsService {
       .sort(sortOptions)
       .skip((page - 1) * limit)
       .limit(limit)
-      .populate('user', 'name email');
+      .populate('user', 'name email')
+      .populate({
+        path: 'likes',
+        select: 'name email avatar', // Populate likers
+      })
+      .populate({
+        path: 'comments',
+        populate: {
+          path: 'user',
+          select: 'name email avatar',
+        },
+      });
+    // Populate the user field with name and email
 
     return blogs;
   }
@@ -69,7 +82,18 @@ export class BlogsService {
   async findOne(id: string): Promise<BlogDocument> {
     const blog = await this.blogModel
       .findById(id)
-      .populate('user', 'name email');
+      .populate('user', 'name email') // Populate blog creator
+      .populate({
+        path: 'likes',
+        select: 'name email avatar', // Populate likers
+      })
+      .populate({
+        path: 'comments',
+        populate: {
+          path: 'user',
+          select: 'name email avatar', // Populate commenter
+        },
+      });
 
     if (!blog || blog.isDeleted) {
       throw new NotFoundException('Blog not found');
@@ -122,5 +146,23 @@ export class BlogsService {
       { isDeleted: true },
       { new: true },
     );
+  }
+
+  async like(id: string, req: RequestWithUser): Promise<BlogDocument> {
+    const userId = this.getUserId(req);
+    const blog = await this.blogModel.findById(id);
+
+    if (!blog || blog.isDeleted) {
+      throw new NotFoundException('Blog not found');
+    }
+    const userObjectId = new mongoose.Types.ObjectId(userId);
+
+    if (blog.likes.includes(userObjectId)) {
+      blog.likes = blog.likes.filter((like) => like.toString() !== userId);
+    } else {
+      blog.likes.push(userObjectId);
+    }
+
+    return blog.save();
   }
 }

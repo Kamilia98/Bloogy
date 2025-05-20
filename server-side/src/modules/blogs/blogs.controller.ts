@@ -59,4 +59,10 @@ export class BlogsController {
   remove(@Param('id') id: string, @Req() req: RequestWithUser) {
     return this.blogsService.remove(id, req);
   }
+
+  @UseGuards(AuthGuard('jwt'))
+  @Post('like/:id')
+  like(@Param('id') id: string, @Req() req: RequestWithUser) {
+    return this.blogsService.like(id, req);
+  }
 }
