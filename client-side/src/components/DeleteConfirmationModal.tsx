@@ -6,6 +6,7 @@ import toast from 'react-hot-toast';
 import { deleteBlog } from '../store/features/blogs/blogsSlice';
 import type { AppDispatch } from '../store';
 import type { Blog } from '../models/BlogModel';
+import { Modal } from './common/Modal';
 
 interface DeleteConfirmationModalProps {
   setDeleteModalOpen: (open: boolean) => void;
@@ -27,7 +28,7 @@ export function DeleteConfirmationModal({
       toast.success('Blog deleted successfully!');
     } catch (err: any) {
       toast.error(
-        err.response?.data?.message || err.message || 'Failed to delete blog'
+        err.response?.data?.message || err.message || 'Failed to delete blog',
       );
     } finally {
       setDeleteModalOpen(false);
@@ -36,34 +37,25 @@ export function DeleteConfirmationModal({
 
   return (
     <>
-      <div
-        className="bg-opacity-50 fixed inset-0 z-40 bg-black/50"
-        onClick={() => setDeleteModalOpen(false)}
-      />
-      <div className="fixed inset-0 z-50 flex items-center justify-center px-4">
-        <div className="w-full max-w-md rounded-lg bg-white p-6 shadow-xl">
-          <h3 className="mb-4 text-xl font-bold text-gray-800">Delete Blog</h3>
-          <p className="mb-6 text-gray-600">
-            Are you sure you want to delete "{selectedBlog?.title}"? This action cannot be undone.
-          </p>
-          <div className="flex justify-end gap-3">
-            <div>
-              <Button
-                label="Cancel"
-                variant="outline"
-                onClick={() => setDeleteModalOpen(false)}
-              />
-            </div>
-            <div>
-              <Button
-                label="Delete"
-                variant="danger"
-                onClick={handleDelete}
-              />
-            </div>
+      <Modal setModalOpen={setDeleteModalOpen}>
+        <h3 className="mb-2 text-xl font-bold text-gray-800">Delete Blog</h3>
+        <p className="text-gray-600">
+          Are you sure you want to delete "{selectedBlog?.title}"? This action
+          cannot be undone.
+        </p>
+        <div className="flex justify-end gap-3">
+          <div>
+            <Button
+              label="Cancel"
+              variant="outline"
+              onClick={() => setDeleteModalOpen(false)}
+            />
+          </div>
+          <div>
+            <Button label="Delete" variant="danger" onClick={handleDelete} />
           </div>
         </div>
-      </div>
+      </Modal>
     </>
   );
 }

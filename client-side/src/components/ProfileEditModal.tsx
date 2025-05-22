@@ -1,0 +1,109 @@
+import { useState } from 'react';
+import type { User } from '../models/UserModel';
+import { Modal } from './common/Modal';
+import Input from './ui/Input';
+import ImageUploader from './common/ImageUploader';
+import Button from './ui/Button';
+import { Loader2, Save } from 'lucide-react';
+import toast from 'react-hot-toast';
+import useAuth from '../contexts/AuthProvider';
+import axios from 'axios';
+
+export default function ProfileEditModal({
+  setProfileModalOpen,
+  user,
+  onUpdate,
+}: {
+  setProfileModalOpen: (open: boolean) => void;
+  user: User;
+  onUpdate?: (updatedUser: User) => void;
+}) {
+  const Auth = useAuth();
+
+  const [name, setName] = useState(user.name);
+  const [email, setEmail] = useState(user.email);
+  const [avatar, setAvatar] = useState(user.avatar);
+  const [isLoading, setIsLoading] = useState(false);
+
+  const handleSave = async () => {
+    setIsLoading(true);
+    try {
+      // Assuming you have an API endpoint to update the user profile
+      const response = await axios.patch(
+        `/api/users/${user._id}`,
+        { name, email, avatar },
+        {
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${Auth.token}`,
+          },
+        },
+      );
+
+      const updatedUser = await response.data;
+      toast.success('Profile updated successfully!');
+      if (onUpdate) {
+        onUpdate(updatedUser);
+      }
+      setProfileModalOpen(false);
+    } catch (error) {
+      console.error('Error updating profile:', error);
+      toast.error('Failed to update profile');
+    }
+  };
+
+  return (
+    <Modal setModalOpen={setProfileModalOpen}>
+      <h3 className="text-xl font-bold text-gray-800">Edit Profile</h3>
+      <div className="flex flex-col gap-4">
+        <Input
+          label="Name"
+          type="text"
+          id="name"
+          value={name}
+          onChange={(e) => setName(e.target.value)}
+        />
+        <Input
+          label="Email"
+          type="email"
+          id="email"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+        />
+        <div>
+          <label className="mb-1 block text-sm font-medium text-gray-700">
+            Avatar
+          </label>
+          <ImageUploader
+            initial={avatar}
+            onUpload={(imageUrl) => setAvatar(imageUrl)}
+          />
+        </div>
+      </div>
+
+      <div className="flex justify-end gap-3">
+        <div>
+          <Button
+            label="Cancel"
+            variant="outline"
+            onClick={() => setProfileModalOpen(false)}
+          />
+        </div>
+        <div>
+          <Button
+            label="Save"
+            variant="secondary"
+            onClick={handleSave}
+            icon={
+              isLoading ? (
+                <Loader2 size={16} className="animate-spin" />
+              ) : (
+                <Save size={16} />
+              )
+            }
+          />
+        </div>
+      </div>
+    </Modal>
+  );
+}
