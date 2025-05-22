@@ -243,7 +243,6 @@ export default function BlogForm() {
         toast.success(`Blog updated successfully!`);
         navigate(`/blogs/${id}`);
       } else {
-        console.log(blogData);
         const createdBlog = await dispatch(
           addBlog({
             token: Auth.token ?? '',
