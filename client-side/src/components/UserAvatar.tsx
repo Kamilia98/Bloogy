@@ -8,11 +8,11 @@ export default function UserAvatar({ user }: { user: User }) {
     <img
       src={user.avatar}
       alt={user.name}
-      className="h-8 w-8 rounded-full object-cover"
+      className="rounded-full object-cover"
       onError={() => setImageError(true)}
     />
   ) : (
-    <div className="flex h-8 w-8 items-center justify-center rounded-full bg-blue-100 text-blue-600">
+    <div className="flex h-full w-full items-center justify-center rounded-full bg-blue-100 text-blue-600">
       {user.name.charAt(0).toUpperCase()}
     </div>
   );
