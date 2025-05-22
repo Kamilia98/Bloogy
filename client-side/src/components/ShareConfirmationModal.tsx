@@ -1,9 +1,10 @@
-import axios from 'axios';
 import { Modal } from './common/Modal';
 import toast from 'react-hot-toast';
 import useAuth from '../contexts/AuthProvider';
 import Button from './ui/Button';
 import type { Blog } from '../models/BlogModel';
+import { useAppDispatch } from '../store/hooks'; // adjust the import based on your setup
+import { shareBlog } from '../store/features/blogs/blogsSlice';
 
 export default function ShareConfirmationModal({
   setShareModalOpen,
@@ -13,25 +14,26 @@ export default function ShareConfirmationModal({
   selectedBlog: Blog;
 }) {
   const Auth = useAuth();
+  const dispatch = useAppDispatch();
+  const shareSound = new Audio('/sounds/share.mp3');
   const handleShare = async () => {
     if (!selectedBlog) return;
-    try {
-      await axios.post(
-        `/api/blogs/share/${selectedBlog._id}`,
-        {},
-        {
-          headers: {
-            Authorization: `Bearer ${Auth.token}`,
-          },
-        },
-      );
-      toast.success('Blog shared successfully');
-      setShareModalOpen(false);
-    } catch (error) {
-      console.error('Error sharing blog:', error);
-      toast.error('Failed to share blog');
-    }
+
+    await dispatch(shareBlog({ blogId: selectedBlog._id, token: Auth.token! }))
+      .unwrap()
+      .then(() => {
+        shareSound.currentTime = 0;
+        shareSound.play();
+        toast.success('Blog shared successfully');
+      })
+      .catch((error) => {
+        toast.error(error || 'Failed to share blog');
+      })
+      .finally(() => {
+        setShareModalOpen(false);
+      });
   };
+
   return (
     <Modal setModalOpen={setShareModalOpen}>
       <h3 className="mb-2 text-xl font-bold text-gray-800">Share Blog</h3>
