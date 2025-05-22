@@ -22,7 +22,6 @@ export default function BlogsPage() {
   // Select blogs and status from Redux store
   const blogs = useSelector((state: RootState) => state.blogs.items);
   const status = useSelector((state: RootState) => state.blogs.status);
-  const error = useSelector((state: RootState) => state.blogs.error);
 
   // Local states for search and filter
   const [searchTerm, setSearchTerm] = useState('');
@@ -130,8 +129,8 @@ export default function BlogsPage() {
           {status === 'loading' ? (
             <Loading />
           ) : status === 'failed' ? (
-            <div className="text-center text-red-500">
-              Error loading blogs: {error}
+            <div className="rounded-2xl border border-red-500 bg-red-100 p-12 text-center text-red-500">
+              Error Loading Blogs
             </div>
           ) : blogs.length === 0 ? (
             <div className="rounded-lg bg-gray-50 py-12 text-center">
