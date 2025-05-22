@@ -10,6 +10,7 @@ import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { RequestWithUser } from './entities/request-with-user.interface';
 import mongoose from 'mongoose';
+import { Share, ShareDocument } from './schemas/share.schema';
 
 interface FindAllOptions {
   category?: string;
@@ -21,7 +22,10 @@ interface FindAllOptions {
 
 @Injectable()
 export class BlogsService {
-  constructor(@InjectModel(Blog.name) private blogModel: Model<BlogDocument>) {}
+  constructor(
+    @InjectModel(Blog.name) private blogModel: Model<BlogDocument>,
+    @InjectModel(Share.name) private shareModel: Model<ShareDocument>,
+  ) {}
 
   private getUserId(req: RequestWithUser): string {
     return req.user.userId;
@@ -41,7 +45,6 @@ export class BlogsService {
 
   async findAll(options: FindAllOptions): Promise<BlogDocument[]> {
     const { category, search, limit = 10, page = 1, sortBy } = options;
-    // Explicitly type `query` as a record with string keys and unknown values
     const query: Record<string, any> = { isDeleted: false };
 
     if (category) {
@@ -65,7 +68,26 @@ export class BlogsService {
       .populate('user', 'name email')
       .populate({
         path: 'likes',
-        select: 'name email avatar', // Populate likers
+        select: 'name email avatar',
+      })
+      .populate({
+        path: 'comments',
+        populate: {
+          path: 'user',
+          select: 'name email avatar',
+        },
+      })
+
+    return blogs;
+  }
+
+  async findOne(id: string): Promise<BlogDocument> {
+    const blog = await this.blogModel
+      .findById(id)
+      .populate('user', 'name email')
+      .populate({
+        path: 'likes',
+        select: 'name email avatar',
       })
       .populate({
         path: 'comments',
@@ -74,32 +96,58 @@ export class BlogsService {
           select: 'name email avatar',
         },
       });
-    // Populate the user field with name and email
-
-    return blogs;
-  }
-
-  async findOne(id: string): Promise<BlogDocument> {
-    const blog = await this.blogModel
-      .findById(id)
-      .populate('user', 'name email') // Populate blog creator
-      .populate({
-        path: 'likes',
-        select: 'name email avatar', // Populate likers
-      })
-      .populate({
-        path: 'comments',
-        populate: {
-          path: 'user',
-          select: 'name email avatar', // Populate commenter
-        },
-      });
 
     if (!blog || blog.isDeleted) {
       throw new NotFoundException('Blog not found');
     }
 
     return blog;
+  }
+
+  async findByUser(userId: string): Promise<BlogDocument[]> {
+    // Fetch blogs directly authored by the user
+    const userBlogs = await this.blogModel
+      .find({ user: userId, isDeleted: false })
+      .populate('user', 'name email avatar')
+      .populate('likes', 'name email avatar')
+      .populate({
+        path: 'comments',
+        populate: {
+          path: 'user',
+          select: 'name email avatar',
+        },
+      });
+
+    // Fetch blogs shared by the user
+    const sharedBlogs = await this.shareModel
+      .find({ sharedBy: userId })
+      .populate({
+        path: 'blog',
+        populate: {
+          path: 'user',
+          select: 'name email avatar',
+        },
+      });
+
+    // Combine authored and shared blogs
+    const combinedBlogs = [...userBlogs, ...sharedBlogs];
+
+    // Helper to get the relevant date for sorting
+    const getBlogDate = (item: any): Date => {
+      return item.createdAt || item.blog?.createdAt || new Date(0);
+    };
+
+    // Sort blogs by date descending
+    const sortedBlogs = combinedBlogs.sort(
+      (a, b) => getBlogDate(b).getTime() - getBlogDate(a).getTime(),
+    );
+
+    // Normalize the array to return blog documents only
+    const resultBlogs = sortedBlogs.map((item: any) =>
+      item.blog ? item.blog : item,
+    );
+    console.log('resultBlogs', resultBlogs);
+    return resultBlogs;
   }
 
   async update(
@@ -164,5 +212,21 @@ export class BlogsService {
     }
 
     return blog.save();
+  }
+
+  async share(id: string, req: RequestWithUser): Promise<ShareDocument> {
+    const userId = this.getUserId(req);
+    const blog = await this.blogModel.findById(id);
+
+    if (!blog || blog.isDeleted) {
+      throw new NotFoundException('Blog not found');
+    }
+    const share = new this.shareModel({
+      blog: blog._id,
+      sharedBy: userId,
+    });
+    const createdShare = await share.save();
+
+    return createdShare;
   }
 }
