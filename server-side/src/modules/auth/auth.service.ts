@@ -189,12 +189,10 @@ export class AuthService {
   }
 
   async resetPassword(resetPasswordDto: ResetPasswordDto, req) {
-    console.log(req.headers);
     const token = req.headers.authorization.split(' ')[1];
     if (!token) {
       throw new UnauthorizedException('Token not provided');
     }
-    console.log('Token:', token);
     const decoded = this.jwtService.verify(token);
     const user = await this.userModel.findOne({ email: decoded.email });
     if (!user) {
