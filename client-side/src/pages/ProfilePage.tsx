@@ -1,23 +1,36 @@
 import { useState, useEffect } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
-import { Edit2 } from 'lucide-react';
+import {
+  Calendar,
+  ChevronRight,
+  Edit,
+  Edit2,
+  Heart,
+  MessageCircle,
+  Trash2,
+} from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import useAuth from '../contexts/AuthProvider';
 import Button from '../components/ui/Button';
 import UserAvatar from '../components/UserAvatar';
 import ProfileEditModal from '../components/ProfileEditModal';
 import axios from 'axios';
-import BlogCard from '../components/BlogCard';
 import type { Blog } from '../models/BlogModel';
 import { DeleteConfirmationModal } from '../components/DeleteConfirmationModal';
+import { isUserBlog } from '../utlils/isUserBlog';
+import { formatDate } from '../utlils/formateDate';
+import { useDispatch, useSelector } from 'react-redux';
+import type { RootState, AppDispatch } from '../store';
+import { fetchUserBlogs } from '../store/features/blogs/blogsSlice';
 
 export default function ProfilePage() {
   const { id } = useParams();
   const Auth = useAuth();
   const navigate = useNavigate();
   const [user, setUser] = useState<any>(null);
-  const [userBlogs, setUserBlogs] = useState<any>(null);
   const [profileEditOpen, setProfileEditOpen] = useState(false);
+  const dispatch = useDispatch<AppDispatch>();
+  const userBlogs = useSelector((state: RootState) => state.blogs.items);
 
   // Modal states
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
@@ -30,7 +43,6 @@ export default function ProfilePage() {
           headers: { Authorization: `Bearer ${Auth.token}` },
         });
         const userData = await response.data;
-        console.log('userData', userData);
         setUser(userData);
         isOwnProfile && Auth.setUser(userData);
       } catch (error) {
@@ -38,22 +50,9 @@ export default function ProfilePage() {
       }
     };
 
-    const fetchUserBlogs = async (userId: string) => {
-      try {
-        const response = await axios.get(`/api/blogs/user/${userId}`, {
-          headers: { Authorization: `Bearer ${Auth.token}` },
-        });
-        const userBlogs = await response.data;
-        console.log('userBlogs', userBlogs);
-        setUserBlogs(userBlogs);
-        console.log('userBlogs', userBlogs);
-      } catch (error) {
-        console.error('Error fetching user blogs:', error);
-      }
-    };
-    if (id) {
+    if (id && Auth.token) {
       fetchUser(id);
-      fetchUserBlogs(id);
+      dispatch(fetchUserBlogs({ userId: id, token: Auth.token }));
     }
   }, [id]);
 
@@ -61,7 +60,7 @@ export default function ProfilePage() {
     navigate(`/blogs/edit/${blogId}`);
   };
 
-  const confirmDelete = (blog: any) => {
+  const confirmDelete = (blog: Blog) => {
     setSelectedBlog(blog);
     setDeleteModalOpen(true);
   };
@@ -112,17 +111,81 @@ export default function ProfilePage() {
           </h2>
         </div>
 
-        {userBlogs && userBlogs.length > 0 ? (
-          <div className="flex max-w-3xl flex-col gap-6">
-            {userBlogs.map((blog: Blog, index: number) => (
-              <BlogCard
-                key={blog._id}
-                index={index}
-                blog={blog}
-                handleEditBlog={handleEditBlog}
-                confirmDelete={confirmDelete}
-              />
-            ))}
+        {userBlogs ? (
+          <div className="flex flex-col items-center gap-6">
+            <div className="flex w-1/2 flex-col gap-4">
+              {userBlogs.map((blog: Blog) => (
+                <div
+                  key={blog._id}
+                  className="flex flex-col gap-4 rounded-2xl border border-gray-200 p-4"
+                >
+                  <div className="flex justify-between">
+                    <Link
+                      to={`/profile/${blog.user._id}`}
+                      className="flex items-center gap-2"
+                    >
+                      <div className="flex h-6 w-6 items-center overflow-hidden rounded-full">
+                        <UserAvatar user={blog.user} />
+                      </div>
+                      {blog.user?.name}
+                    </Link>
+
+                    <div className="flex space-x-1">
+                      {isUserBlog(blog, Auth.user!) && (
+                        <button
+                          onClick={() => handleEditBlog(blog._id)}
+                          className="rounded-full p-2 text-gray-500 hover:bg-gray-100 hover:text-[#4364F7]"
+                          aria-label="Edit blog"
+                        >
+                          <Edit size={16} />
+                        </button>
+                      )}
+                      <button
+                        onClick={() => confirmDelete(blog)}
+                        className="rounded-full p-2 text-gray-500 hover:bg-gray-100 hover:text-red-500"
+                        aria-label="Delete blog"
+                      >
+                        <Trash2 size={16} />
+                      </button>
+                    </div>
+                  </div>
+                  <div className="flex-1 border-t border-gray-300" />
+                  <div className="flex flex-col gap-4">
+                    <img
+                      className="h-48 w-full object-cover"
+                      src={blog.thumbnail}
+                      alt=""
+                    />
+                    <h3 className="mb-2 text-xl font-bold text-gray-800 group-hover:text-[#4364F7]">
+                      {blog.title}
+                    </h3>
+                    <div className="flex items-center justify-between text-xs text-gray-500">
+                      <div className="flex items-center gap-3">
+                        <span className="flex items-center gap-1">
+                          <Heart size={12} className="text-red-500" />
+                          {blog.likes?.length || 0}
+                        </span>
+                        <span className="flex items-center gap-1">
+                          <MessageCircle size={12} className="text-blue-500" />
+                          {blog.comments?.length || 0}
+                        </span>
+                      </div>
+                      <span className="flex items-center gap-1">
+                        <Calendar size={12} />
+                        {formatDate(blog.createdAt)}
+                      </span>
+                    </div>
+
+                    <Link
+                      to={`/blogs/${blog._id}`}
+                      className="flex items-center font-medium text-[#4364F7] transition-colors hover:text-[#42d9fc]"
+                    >
+                      Read More <ChevronRight size={16} className="ml-1" />
+                    </Link>
+                  </div>
+                </div>
+              ))}
+            </div>
           </div>
         ) : (
           <motion.div
@@ -143,7 +206,7 @@ export default function ProfilePage() {
             </p>
             {isOwnProfile && (
               <Link
-                to="/create-blog"
+                to="/blogs/add"
                 className="mt-4 inline-flex items-center gap-2 rounded-lg bg-blue-600 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-blue-700"
               >
                 <Edit2 size={16} />
