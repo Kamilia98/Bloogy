@@ -78,7 +78,7 @@ export default function ProfilePage() {
         transition={{ duration: 0.5 }}
         className="flex flex-col items-center justify-center gap-4 rounded-xl bg-gray-200 p-8 text-gray-800"
       >
-        <div className="flex h-24 w-24 items-center justify-center rounded-full bg-white/20 text-gray-800">
+        <div className="flex h-24 w-24 items-center justify-center overflow-hidden rounded-full bg-white/20 text-gray-800">
           {user && <UserAvatar user={user} />}
         </div>
         <h1 className="text-3xl font-bold">
@@ -113,9 +113,10 @@ export default function ProfilePage() {
         </div>
 
         {userBlogs && userBlogs.length > 0 ? (
-          <div className="flex w-3xl flex-col gap-6">
+          <div className="flex max-w-3xl flex-col gap-6">
             {userBlogs.map((blog: Blog, index: number) => (
               <BlogCard
+                key={blog._id}
                 index={index}
                 blog={blog}
                 handleEditBlog={handleEditBlog}
