@@ -48,7 +48,9 @@ export class AuthService {
     }
     const { email, firstName, lastName, picture } = req.user;
 
-    let user = await this.userModel.findOne({ email });
+    let user: UserDocument | null = await this.userModel
+      .findOne({ email })
+      .select('name email avatar');
 
     if (!user) {
       user = new this.userModel({
@@ -57,7 +59,13 @@ export class AuthService {
         avatar: picture,
         password: await bcrypt.hash(Math.random().toString(36).slice(-8), 10),
       });
-      await user.save();
+      user = await this.userModel
+        .findOne({ email })
+        .select('name email avatar');
+    }
+
+    if (!user) {
+      throw new UnauthorizedException('User not found after creation');
     }
 
     const payload = { sub: user._id, email: user.email };
