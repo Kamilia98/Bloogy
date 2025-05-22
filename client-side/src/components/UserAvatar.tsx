@@ -3,12 +3,11 @@ import type { User } from '../models/UserModel';
 
 export default function UserAvatar({ user }: { user: User }) {
   const [imageError, setImageError] = useState(false);
-
   return user.avatar && !imageError ? (
     <img
       src={user.avatar}
       alt={user.name}
-      className="rounded-full object-cover"
+      className="object-cover"
       onError={() => setImageError(true)}
     />
   ) : (
