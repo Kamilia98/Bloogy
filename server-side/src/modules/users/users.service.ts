@@ -14,10 +14,11 @@ export class UsersService {
   }
 
   async findOne(id: string) {
-    const user = await this.userModel.findById(id);
+    const user = await this.userModel.findById(id).select('name email avatar');
     if (!user || user.isDeleted) {
       throw new NotFoundException('User not found');
     }
+
     return user;
   }
 
