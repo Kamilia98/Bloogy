@@ -1,10 +1,18 @@
 // BlogCard.tsx
 import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
-import { Clock, User, Edit, Trash2, ChevronRight } from 'lucide-react';
+import {
+  Edit,
+  Trash2,
+  ChevronRight,
+  Heart,
+  MessageCircle,
+  Calendar,
+} from 'lucide-react';
 import { formatDate } from '../utlils/formateDate';
 import useAuth from '../contexts/AuthProvider';
 import { isUserBlog } from '../utlils/isUserBlog';
+import UserAvatar from './UserAvatar';
 
 interface BlogCardProps {
   blog: any;
@@ -19,7 +27,6 @@ const BlogCard = ({
   handleEditBlog,
   confirmDelete,
 }: BlogCardProps) => {
-
   const Auth = useAuth();
 
   return (
@@ -45,22 +52,42 @@ const BlogCard = ({
         )}
       </div>
 
-      <div className="p-6">
+      <div className="flex flex-col justify-between gap-2 p-4">
         <h3 className="mb-2 text-xl font-bold text-gray-800 group-hover:text-[#4364F7]">
           {blog.title}
         </h3>
 
         <div className="mb-3 flex items-center space-x-4 text-sm text-gray-500">
-          <div className="flex items-center">
-            <Clock size={14} className="mr-1" />
-            {blog.createdAt ? formatDate(blog.createdAt) : 'No date'}
-          </div>
-          <div className="flex items-center">
-            <User size={14} className="mr-1" />
+          <Link
+            to={`/profile/${blog.user._id}`}
+            className="flex items-center gap-2"
+          >
+            <div className="h-6 w-6">
+              <UserAvatar user={blog.user} />
+            </div>
             {blog.user?.name}
-          </div>
+          </Link>
         </div>
+        {/* Divider */}
+        <div className="flex-1 border-t border-gray-300" />
+        {/* Blog Stats */}
 
+        <div className="flex items-center justify-between text-xs text-gray-500">
+          <div className="flex items-center gap-3">
+            <span className="flex items-center gap-1">
+              <Heart size={12} className="text-red-500" />
+              {blog.likes?.length || 0}
+            </span>
+            <span className="flex items-center gap-1">
+              <MessageCircle size={12} className="text-blue-500" />
+              {blog.comments?.length || 0}
+            </span>
+          </div>
+          <span className="flex items-center gap-1">
+            <Calendar size={12} />
+            {formatDate(blog.createdAt)}
+          </span>
+        </div>
         <div className="flex items-center justify-between pt-2">
           <Link
             to={`/blogs/${blog._id}`}
