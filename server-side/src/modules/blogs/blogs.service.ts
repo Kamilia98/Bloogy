@@ -107,7 +107,6 @@ export class BlogsService {
   }
 
   async findByUser(userId: string): Promise<BlogDocument[]> {
-    // Fetch blogs directly authored by the user
     const userBlogs = await this.blogModel
       .find({ user: userId, isDeleted: false })
       .populate('user', 'name email avatar')
@@ -120,7 +119,6 @@ export class BlogsService {
         },
       });
 
-    // Fetch blogs shared by the user
     const sharedBlogs = await this.shareModel
       .find({ sharedBy: userId })
       .populate({
@@ -131,24 +129,32 @@ export class BlogsService {
         },
       });
 
-    // Combine authored and shared blogs
-    const combinedBlogs = [...userBlogs, ...sharedBlogs];
+    const formattedSharedBlogs = sharedBlogs
+      .filter(
+        (shareDoc) =>
+          typeof shareDoc.blog === 'object' && shareDoc.blog !== null,
+      )
+      .map((shareDoc) => {
+        const blog = (shareDoc.blog as any).toObject();
+        blog._id = shareDoc._id;
+        shareDoc.blog = blog;
+        return shareDoc;
+      });
 
-    // Helper to get the relevant date for sorting
+    const combinedBlogs = [...userBlogs, ...formattedSharedBlogs];
+
     const getBlogDate = (item: any): Date => {
       return item.createdAt || item.blog?.createdAt || new Date(0);
     };
 
-    // Sort blogs by date descending
     const sortedBlogs = combinedBlogs.sort(
       (a, b) => getBlogDate(b).getTime() - getBlogDate(a).getTime(),
     );
 
-    // Normalize the array to return blog documents only
     const resultBlogs = sortedBlogs.map((item: any) =>
       item.blog ? item.blog : item,
     );
-    console.log('resultBlogs', resultBlogs);
+
     return resultBlogs;
   }
 
@@ -231,5 +237,26 @@ export class BlogsService {
     const createdShare = await share.save();
 
     return createdShare;
+  }
+
+  async deleteShare(
+    shareId: string,
+    req: RequestWithUser,
+  ): Promise<ShareDocument> {
+    const userId = this.getUserId(req);
+
+    const share = await this.shareModel.findById(shareId);
+
+    if (!share) {
+      throw new NotFoundException('Share not found');
+    }
+
+    if (share.sharedBy.toString() !== userId) {
+      throw new ForbiddenException('You are not allowed to delete this share');
+    }
+
+    await this.shareModel.deleteOne({ _id: shareId });
+
+    return share;
   }
 }
