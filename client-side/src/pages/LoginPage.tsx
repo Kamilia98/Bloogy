@@ -21,8 +21,6 @@ export default function LoginPage() {
     Auth.checkGoogleLogin();
   }, []);
 
-
-
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     let valid = true;
@@ -48,9 +46,8 @@ export default function LoginPage() {
       .then(() => {
         setIsLoading(false);
       })
-      .catch((error) => {
+      .catch(() => {
         setIsLoading(false);
-        console.log(error);
       });
   };
 
