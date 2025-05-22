@@ -75,7 +75,6 @@ export default function BlogDetailsPage() {
     )
       .unwrap()
       .then(({ isLiked }) => {
-        console.log(isLiked);
         if (isLiked) {
           likeSound.currentTime = 0;
           likeSound.play();
