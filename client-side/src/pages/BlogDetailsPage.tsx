@@ -6,7 +6,13 @@ import { useDispatch, useSelector } from 'react-redux';
 import { ArrowLeft, Edit, Trash2 } from 'lucide-react';
 
 import type { AppDispatch, RootState } from '../store';
-import { fetchBlogById } from '../store/features/blogs/blogsSlice';
+import {
+  addComment,
+  deleteComment,
+  editComment,
+  fetchBlogById,
+  toggleLikeBlog,
+} from '../store/features/blogs/blogsSlice';
 
 import useAuth from '../contexts/AuthProvider';
 
@@ -19,9 +25,10 @@ import Button from '../components/ui/Button';
 import { isUserBlog } from '../utlils/isUserBlog';
 import BlogActions from '../components/BlogActions';
 import { AnimatePresence } from 'framer-motion';
+import toast from 'react-hot-toast';
 
 export default function BlogDetailsPage() {
-  const { id: blogId } = useParams();
+  const { id: blogId } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const dispatch = useDispatch<AppDispatch>();
   const Auth = useAuth();
@@ -42,7 +49,7 @@ export default function BlogDetailsPage() {
   // Fetch blog data on load or when blogId changes
   useEffect(() => {
     if (blogId) {
-      dispatch(fetchBlogById(blogId));
+      dispatch(fetchBlogById(blogId as string));
     }
   }, [dispatch, blogId]);
 
@@ -54,6 +61,61 @@ export default function BlogDetailsPage() {
     setSelectedRelatedBlog(blog);
     setDeleteModalOpen(true);
   };
+
+  const likeSound = new Audio('/sounds/like.m4a');
+
+  const handleLike = () => {
+    if (!Auth.user?._id || !blog) return;
+    dispatch(
+      toggleLikeBlog({
+        blogId: blog._id,
+        token: Auth.token!,
+        userId: Auth.user._id,
+      }),
+    )
+      .unwrap()
+      .then(({ isLiked }) => {
+        console.log(isLiked);
+        if (isLiked) {
+          likeSound.currentTime = 0;
+          likeSound.play();
+        }
+        toast.success(
+          isLiked ? 'You liked this blog' : 'You unliked this blog',
+        );
+      })
+      .catch(() => toast.error('Failed to update like'));
+  };
+
+  const handleCommentSubmit = (commentText: string) => {
+    if (!commentText.trim() || !blog) return;
+    dispatch(
+      addComment({
+        blogId: blog._id,
+        content: commentText,
+        token: Auth.token!,
+      }),
+    )
+      .unwrap()
+      .then(() => toast.success('Comment added successfully'))
+      .catch(() => toast.error('Failed to add comment'));
+  };
+
+  const handleCommentDelete = (id: string) => {
+    dispatch(deleteComment({ commentId: id, token: Auth.token! }))
+      .unwrap()
+      .then(() => toast.success('Comment deleted successfully'))
+      .catch(() => toast.error('Failed to delete comment'));
+  };
+
+  const handleCommentEdit = (id: string, content: string) => {
+    if (!content.trim()) return;
+    dispatch(editComment({ commentId: id, content, token: Auth.token! }))
+      .unwrap()
+      .then(() => toast.success('Comment updated successfully'))
+      .catch(() => toast.error('Failed to update comment'));
+  };
+
   if (status === 'loading') return <Loading />;
 
   if (status === 'failed' || !blog) {
@@ -107,7 +169,13 @@ export default function BlogDetailsPage() {
           <BlogComponent {...blog} />
 
           {Auth.isLoggedIn && Auth.user && !isUserBlog(blog, Auth.user) && (
-            <BlogActions blog={blog} />
+            <BlogActions
+              blog={blog}
+              handleLike={handleLike}
+              handleCommentSubmit={handleCommentSubmit}
+              handleCommentEdit={handleCommentEdit}
+              handleCommentDelete={handleCommentDelete}
+            />
           )}
 
           {relatedBlogs.length > 0 && (
