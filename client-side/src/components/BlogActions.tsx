@@ -1,7 +1,5 @@
-import axios from 'axios';
 import useAuth from '../contexts/AuthProvider';
 import type { Blog } from '../models/BlogModel';
-import toast from 'react-hot-toast';
 import { Heart, MessageSquare, Send, Share2, Users } from 'lucide-react';
 import { AnimatePresence, motion } from 'framer-motion';
 import { useEffect, useState } from 'react';
@@ -10,17 +8,27 @@ import UserAvatar from './UserAvatar';
 import { Link } from 'react-router-dom';
 import type { Comment } from '../models/CommentModel';
 import ShareConfirmationModal from './ShareConfirmationModal';
-export default function BlogActions({ blog }: { blog: Blog }) {
+export default function BlogActions({
+  blog,
+  handleLike,
+  handleCommentSubmit,
+  handleCommentEdit,
+  handleCommentDelete,
+}: {
+  blog: Blog;
+  handleLike: () => void;
+  handleCommentSubmit: (commentText: string) => void;
+  handleCommentEdit: (commentId: string, newText: string) => void;
+  handleCommentDelete: (commentId: string) => void;
+}) {
   const Auth = useAuth();
 
-  // Initialize liked and likeCount based on blog data and current user
   const [liked, setLiked] = useState(false);
   const [likeCount, setLikeCount] = useState(0);
   const [commentOpen, setCommentOpen] = useState(false);
   const [shareOpen, setShareOpen] = useState(false);
   const [commentText, setCommentText] = useState('');
   const [comments, setComments] = useState<Comment[]>([]);
-  // Add state for liked users list and modal visibility
   const [likedUsersOpen, setLikedUsersOpen] = useState(false);
 
   useEffect(() => {
@@ -31,96 +39,6 @@ export default function BlogActions({ blog }: { blog: Blog }) {
       setComments(blog.comments || []);
     }
   }, [blog, Auth.user]);
-
-  const handleLike = async () => {
-    if (!Auth.user?._id || !blog) return;
-
-    try {
-      const res = await axios.post(
-        `/api/blogs/like/${blog._id}`,
-        {},
-        {
-          headers: { Authorization: `Bearer ${Auth.token}` },
-        },
-      );
-      const updatedLikes: string[] = res.data.likes;
-      setLikeCount(updatedLikes.length);
-      setLiked(updatedLikes.includes(Auth.user._id));
-      toast.success(liked ? 'You unliked this blog' : 'You liked this blog');
-    } catch (err) {
-      console.error(err);
-      toast.error('Failed to update like');
-    }
-  };
-
-  const handleCommentSubmit = async () => {
-    if (commentText.trim() === '' || !blog) return;
-
-    const newComment = {
-      content: commentText,
-    };
-
-    try {
-      const response = await axios.post(
-        `/api/comments/${blog._id}`,
-        newComment,
-        {
-          headers: {
-            Authorization: `Bearer ${Auth.token}`,
-          },
-        },
-      );
-      // Append the new comment to local comments
-      console.log('New comment:', response.data);
-      setComments((prev) => [...prev, response.data]);
-      setCommentText('');
-      toast.success('Comment added successfully');
-    } catch (error) {
-      console.error('Error adding comment:', error);
-      toast.error('Failed to add comment');
-    }
-  };
-
-  const handleCommentDelete = async (id: string) => {
-    try {
-      await axios.delete(`/api/comments/${id}`, {
-        headers: {
-          Authorization: `Bearer ${Auth.token}`,
-        },
-      });
-      setComments((prev) => prev.filter((comment) => comment._id !== id));
-      toast.success('Comment deleted successfully');
-    } catch (err) {
-      console.error('Error deleting comment:', err);
-      toast.error('Failed to delete comment');
-    }
-  };
-
-  const handleCommentEdit = async (id: string, content: string) => {
-    try {
-      if (content.trim() === '') return;
-
-      await axios.patch(
-        `/api/comments/${id}`,
-        { content },
-        {
-          headers: {
-            Authorization: `Bearer ${Auth.token}`,
-          },
-        },
-      );
-
-      setComments((prev) =>
-        prev.map((comment) =>
-          comment._id === id ? { ...comment, content } : comment,
-        ),
-      );
-      toast.success('Comment updated successfully');
-    } catch (error) {
-      console.error('Error updating comment:', error);
-      toast.error('Failed to update comment');
-    }
-  };
 
   return (
     <div className="flex flex-col gap-4 border-t border-gray-200 pt-4">
@@ -195,7 +113,7 @@ export default function BlogActions({ blog }: { blog: Blog }) {
                       key={user._id}
                       className="flex items-center gap-2 py-2"
                     >
-                      <div className="h-8 w-8">
+                      <div className="flex h-8 w-8 items-center overflow-hidden rounded-full">
                         <UserAvatar user={user} />
                       </div>
                       <span className="text-sm font-medium">{user.name}</span>
@@ -228,13 +146,13 @@ export default function BlogActions({ blog }: { blog: Blog }) {
                   className="flex-1 rounded-l-lg border border-gray-300 px-4 py-2 focus:border-blue-500 focus:outline-none"
                   onKeyDown={(e) => {
                     if (e.key === 'Enter') {
-                      handleCommentSubmit();
+                      handleCommentSubmit((e.target as HTMLInputElement).value);
                       e.preventDefault();
                     }
                   }}
                 />
                 <button
-                  onClick={handleCommentSubmit}
+                  onClick={() => handleCommentSubmit(commentText)}
                   className="rounded-r-lg bg-blue-500 px-4 py-2 text-white hover:bg-blue-600"
                 >
                   <Send size={16} />
