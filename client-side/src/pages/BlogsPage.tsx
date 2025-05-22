@@ -68,27 +68,12 @@ export default function BlogsPage() {
 
   return (
     <>
+      {/* Hero Section */}
       <Hero />
 
-      <div className="bg-gradient-to-b from-blue-50 to-white py-12">
-        <div className="container mx-auto px-4">
-          <motion.div
-            initial={{ opacity: 0, y: -20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6 }}
-            className="mx-auto max-w-3xl text-center"
-          >
-            <h1 className="mb-4 text-4xl font-bold text-gray-900">Our Blog</h1>
-            <p className="mx-auto mb-6 max-w-2xl text-lg text-gray-600">
-              Explore the latest insights, tutorials, and updates from our team
-            </p>
-          </motion.div>
-        </div>
-      </div>
-
-      <div className="container mx-auto px-4 py-12">
+      <div className="flex flex-col gap-8 px-4 py-12">
         {/* Search and Filter */}
-        <div className="mb-8 flex flex-col space-y-4 md:flex-row md:items-center md:justify-between md:space-y-0">
+        <div className="flex flex-col gap-4 md:flex-row md:items-start md:justify-between md:space-y-0">
           <div className="relative w-full md:max-w-xs">
             <input
               type="text"
@@ -105,10 +90,11 @@ export default function BlogsPage() {
               <button
                 key={category}
                 onClick={() => setActiveCategory(category as CATEGORY | 'all')}
-                className={`rounded-full px-4 py-1 text-sm font-medium ${activeCategory === category
-                  ? 'bg-[#4364F7] text-white'
-                  : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-                  }`}
+                className={`rounded-full px-4 py-1 text-sm font-medium ${
+                  activeCategory === category
+                    ? 'bg-[#4364F7] text-white'
+                    : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                }`}
               >
                 {category.charAt(0).toUpperCase() + category.slice(1)}
               </button>
