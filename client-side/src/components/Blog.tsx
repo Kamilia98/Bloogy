@@ -1,9 +1,11 @@
-import { Calendar, User } from 'lucide-react';
+import { Calendar } from 'lucide-react';
 import type { Blog } from '../models/BlogModel';
 import { formatDate } from '../utlils/formateDate';
 import type { Section } from '../models/SectionModel';
+import UserAvatar from './UserAvatar';
+import { Link } from 'react-router-dom';
 
-export default function BlogComponent(blog: Omit<Blog, '_id'>) {
+export default function BlogComponent(blog: Partial<Blog>) {
   const renderSection = (section: Section, index: number) => {
     const style = {
       fontSize: `${section.fontSize}px`,
@@ -108,8 +110,19 @@ export default function BlogComponent(blog: Omit<Blog, '_id'>) {
             </div>
           )}
           <div className="flex items-center">
-            <User size={16} className="mr-1" />
-            {blog.user ? blog.user.name : 'Unknown author'}
+            {blog.user ? (
+              <Link
+                to={`/profile/${blog.user._id}`}
+                className="flex items-center gap-2"
+              >
+                <div className="flex h-6 w-6 items-center overflow-hidden rounded-full">
+                  <UserAvatar user={blog.user} />
+                </div>
+                {blog.user.name}
+              </Link>
+            ) : (
+              <>Unknown author</>
+            )}
           </div>
           {blog.category && (
             <div className="inline-block rounded-full bg-[#4364F7]/10 px-3 py-1 text-xs font-medium text-[#4364F7]">
@@ -123,14 +136,14 @@ export default function BlogComponent(blog: Omit<Blog, '_id'>) {
       <div className="prose prose-lg max-w-none">
         {blog.sections && blog.sections.length > 0 ? (
           <div className="flex flex-col gap-6">
-            {blog.sections.map((section, index) => renderSection(section, index))}
+            {blog.sections.map((section, index) =>
+              renderSection(section, index),
+            )}
           </div>
         ) : (
           <p className="text-gray-600">No content available for this blog.</p>
         )}
       </div>
-
-
     </div>
   );
 }
