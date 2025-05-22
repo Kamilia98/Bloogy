@@ -28,6 +28,18 @@ export const fetchBlogs = createAsyncThunk(
   },
 );
 
+export const fetchUserBlogs = createAsyncThunk(
+  'blogs/fetchUserBlogs',
+  async ({ userId, token }: { userId: string; token: string }) => {
+    const response = await axios.get(`/api/blogs/user/${userId}`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+    return response.data;
+  },
+);
+
 export const fetchBlogById = createAsyncThunk(
   'blogs/fetchBlogById',
   async (id: string) => {
@@ -50,7 +62,6 @@ export const addBlog = createAsyncThunk(
         Authorization: `Bearer ${token}`,
       },
     });
-    console.log(response.data);
     return response.data;
   },
 );
@@ -70,7 +81,6 @@ export const updateBlog = createAsyncThunk(
 export const deleteBlog = createAsyncThunk(
   'blogs/deleteBlog',
   async ({ id, token }: { id: string; token: string }) => {
-    console.log(id);
     await axios.delete(`/api/blogs/${id}`, {
       headers: {
         Authorization: `Bearer ${token}`,
@@ -99,7 +109,6 @@ export const toggleLikeBlog = createAsyncThunk(
         headers: { Authorization: `Bearer ${token}` },
       },
     );
-    console.log(response.data);
     const updatedLikes = response.data.likes;
     const isLiked = updatedLikes.some((like: User) => like._id === userId);
     return { blogId, likes: updatedLikes, isLiked };
@@ -187,6 +196,18 @@ export const shareBlog = createAsyncThunk(
   },
 );
 
+export const deleteShare = createAsyncThunk(
+  'blogs/deleteShare',
+  async ({ id, token }: { id: string; token: string }) => {
+    await axios.delete(`/api/blogs/share/${id}`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+    return id;
+  },
+);
+
 const blogsSlice = createSlice({
   name: 'blogs',
   initialState,
@@ -206,6 +227,14 @@ const blogsSlice = createSlice({
         state.status = 'failed';
         state.error = action.error.message || 'Failed to fetch blogs';
       })
+
+      .addCase(
+        fetchUserBlogs.fulfilled,
+        (state, action: PayloadAction<Blog[]>) => {
+          state.status = 'succeeded';
+          state.items = action.payload;
+        },
+      )
 
       // Fetch blog by ID
       .addCase(fetchBlogById.pending, (state) => {
@@ -279,6 +308,10 @@ const blogsSlice = createSlice({
           const comment = blog.comments?.find((c) => c._id === commentId);
           if (comment) comment.content = content;
         });
+      })
+
+      .addCase(deleteShare.fulfilled, (state, action) => {
+        state.items = state.items.filter((blog) => blog._id !== action.payload);
       });
   },
 });
