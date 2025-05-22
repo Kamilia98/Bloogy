@@ -150,13 +150,12 @@ export default function BlogForm() {
 
   // Handle section content change
   const handleSectionChange = (index: number, newContent: string) => {
-    setSections(prevSections =>
+    setSections((prevSections) =>
       prevSections.map((section, i) =>
-        i === index ? { ...section, content: newContent } : section
-      )
+        i === index ? { ...section, content: newContent } : section,
+      ),
     );
   };
-
 
   // Handle section style change
   const handleSectionStyleChange = (
@@ -235,24 +234,25 @@ export default function BlogForm() {
 
     try {
       if (isEditMode && id) {
-        // Dispatch update
         await dispatch(
           updateBlog({
             token: Auth.token ?? '',
             blog: { _id: id, ...blogData } as Blog,
           }),
         ).unwrap();
+        toast.success(`Blog updated successfully!`);
+        navigate(`/blogs/${id}`);
       } else {
-        // Dispatch add
-        await dispatch(
+        console.log(blogData);
+        const createdBlog = await dispatch(
           addBlog({
             token: Auth.token ?? '',
             blog: blogData as Omit<Blog, 'id' | 'createdAt' | 'updatedAt'>,
           }),
         ).unwrap();
+        toast.success(`Blog created successfully!`);
+        navigate(`/blogs/${createdBlog._id}`);
       }
-      toast.success(`Blog ${isEditMode ? 'updated' : 'created'} successfully!`);
-      navigate('/blogs');
     } catch (err) {
       console.error('Error saving blog:', err);
       toast.error('Failed to save blog. Please try again.');
@@ -379,7 +379,7 @@ export default function BlogForm() {
           user={
             Auth.user
               ? Auth.user
-              : { _id: 'preview', name: '', email: '', username: 'preview' }
+              : { _id: 'preview', name: '', email: '', avatar: '' }
           }
           createdAt={new Date().toISOString()}
         />
@@ -512,7 +512,7 @@ export default function BlogForm() {
                           className={cn(
                             'rounded p-1.5 text-gray-500 transition-colors hover:bg-gray-200 hover:text-[#4364F7]',
                             index === sections.length - 1 &&
-                            'cursor-not-allowed opacity-50',
+                              'cursor-not-allowed opacity-50',
                           )}
                           aria-label="Move section down"
                         >
@@ -525,7 +525,7 @@ export default function BlogForm() {
                           className={cn(
                             'rounded p-1.5 text-gray-500 transition-colors hover:bg-gray-200 hover:text-red-500',
                             sections.length <= 1 &&
-                            'cursor-not-allowed opacity-50',
+                              'cursor-not-allowed opacity-50',
                           )}
                           aria-label="Remove section"
                           disabled={sections.length <= 1}
@@ -577,7 +577,7 @@ export default function BlogForm() {
                         className={cn(
                           'w-full resize-y rounded border-0 bg-transparent px-1 py-2 text-gray-800 focus:ring-1 focus:ring-[#4364F7]/20 focus:outline-none',
                           section.isQuote &&
-                          'border-l-4 border-gray-300 pl-4 italic',
+                            'border-l-4 border-gray-300 pl-4 italic',
                           section.isHighlight && 'bg-yellow-50',
                         )}
                         style={getSectionStyle(section)}
