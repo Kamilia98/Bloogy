@@ -65,7 +65,6 @@ export class AuthController {
 
   @Post('reset-password')
   resetPassword(@Body() resetPasswordDto: ResetPasswordDto, @Request() req) {
-    console.log('Reset Password Request:', resetPasswordDto);
     return this.authService.resetPassword(resetPasswordDto, req);
   }
 
