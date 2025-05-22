@@ -11,8 +11,8 @@ export default function CommentComponent({
   onUpdate,
 }: {
   comment: Comment;
-  onDelete: (id: string) => Promise<void>;
-  onUpdate: (id: string, content: string) => Promise<void>;
+  onDelete: (id: string) => void;
+  onUpdate: (id: string, content: string) => void;
 }) {
   const Auth = useAuth();
   const [isEditing, setIsEditing] = useState(false);
@@ -69,7 +69,7 @@ export default function CommentComponent({
             to={`/user/${comment.user._id}`}
             className="flex items-center gap-3 hover:underline"
           >
-            <div className="h-8 w-8">
+            <div className="flex h-8 w-8 items-center overflow-hidden rounded-full">
               <UserAvatar user={comment.user} />
             </div>
             <div>
