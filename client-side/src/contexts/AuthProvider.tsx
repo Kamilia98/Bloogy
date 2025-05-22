@@ -16,8 +16,13 @@ interface AuthContextType {
   isLoggedIn: boolean;
   token: string | null;
   user: User | null;
+  setUser: (user: User | null) => void;
   updateToken: (token: string) => void;
-  login: (email: string, password: string, rememberMe: boolean) => Promise<void>;
+  login: (
+    email: string,
+    password: string,
+    rememberMe: boolean,
+  ) => Promise<void>;
   googleSignUp: () => void;
   facebookSignUp: () => void;
   checkGoogleLogin: () => void;
@@ -38,8 +43,10 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 // ============================
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const getInitialStorage = () => {
-    const token = localStorage.getItem('token') || sessionStorage.getItem('token');
-    const userStr = localStorage.getItem('user') || sessionStorage.getItem('user');
+    const token =
+      localStorage.getItem('token') || sessionStorage.getItem('token');
+    const userStr =
+      localStorage.getItem('user') || sessionStorage.getItem('user');
     return {
       token,
       user: userStr ? JSON.parse(userStr) : null,
@@ -58,7 +65,11 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     );
   };
 
-  const login = async (email: string, password: string, rememberMe: boolean) => {
+  const login = async (
+    email: string,
+    password: string,
+    rememberMe: boolean,
+  ) => {
     try {
       const { data } = await axios.post('/api/auth/login', { email, password });
       const { token, user } = data;
@@ -101,8 +112,8 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
   const checkGoogleLogin = () => {
     const cookies = document.cookie.split(';');
-    const jwtCookie = cookies.find(c => c.trim().startsWith('jwt='));
-    const userCookie = cookies.find(c => c.trim().startsWith('user='));
+    const jwtCookie = cookies.find((c) => c.trim().startsWith('jwt='));
+    const userCookie = cookies.find((c) => c.trim().startsWith('user='));
 
     if (jwtCookie && userCookie) {
       try {
@@ -113,17 +124,23 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       } catch (e) {
         console.error('Failed to parse user cookie:', e);
       } finally {
-        document.cookie = 'jwt=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;';
-        document.cookie = 'user=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;';
+        document.cookie =
+          'jwt=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;';
+        document.cookie =
+          'user=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;';
       }
     }
   };
 
   const logout = async () => {
     try {
-      await axios.post('/api/auth/logout', {}, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
+      await axios.post(
+        '/api/auth/logout',
+        {},
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        },
+      );
 
       setIsLoggedIn(false);
       setToken(null);
@@ -160,12 +177,16 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
   const resetPassword = async (password: string) => {
     try {
-      await axios.post('/api/auth/reset-password', { password }, {
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${token}`,
+      await axios.post(
+        '/api/auth/reset-password',
+        { password },
+        {
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${token}`,
+          },
         },
-      });
+      );
       toast.success('Password reset successfully!');
       setToken(null);
     } catch (error) {
@@ -176,7 +197,9 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
   const validateResetToken = async (resetToken: string) => {
     try {
-      const { data } = await axios.get(`/api/auth/validate-reset-token/${resetToken}`);
+      const { data } = await axios.get(
+        `/api/auth/validate-reset-token/${resetToken}`,
+      );
       setToken(resetToken);
       return data;
     } catch (error) {
@@ -191,21 +214,25 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     sessionStorage.setItem('token', newToken);
   };
 
-  const authValues = useMemo(() => ({
-    isLoggedIn,
-    token,
-    user,
-    updateToken,
-    login,
-    googleSignUp,
-    facebookSignUp,
-    checkGoogleLogin,
-    logout,
-    register,
-    forgetPassword,
-    resetPassword,
-    validateResetToken,
-  }), [isLoggedIn, token, user]);
+  const authValues = useMemo(
+    () => ({
+      isLoggedIn,
+      token,
+      user,
+      setUser,
+      updateToken,
+      login,
+      googleSignUp,
+      facebookSignUp,
+      checkGoogleLogin,
+      logout,
+      register,
+      forgetPassword,
+      resetPassword,
+      validateResetToken,
+    }),
+    [isLoggedIn, token, user],
+  );
 
   return (
     <AuthContext.Provider value={authValues}>
