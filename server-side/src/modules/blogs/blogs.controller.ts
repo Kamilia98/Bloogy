@@ -44,6 +44,11 @@ export class BlogsController {
     return this.blogsService.findOne(id);
   }
 
+  @Get('user/:id')  
+  findByUser(@Param('id') id: string) {
+    return this.blogsService.findByUser(id);
+  }
+
   @UseGuards(AuthGuard('jwt'))
   @Patch(':id')
   update(
@@ -64,5 +69,11 @@ export class BlogsController {
   @Post('like/:id')
   like(@Param('id') id: string, @Req() req: RequestWithUser) {
     return this.blogsService.like(id, req);
+  }
+
+  @UseGuards(AuthGuard('jwt'))
+  @Post('share/:id')
+  share(@Param('id') id: string, @Req() req: RequestWithUser) {
+    return this.blogsService.share(id, req);
   }
 }
