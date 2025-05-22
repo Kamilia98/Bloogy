@@ -40,7 +40,9 @@ export class BlogsService {
       ...createBlogDto,
       user: userId,
     });
-    return blog.save();
+    const savedBlog = await blog.save();
+    const createdBlog = await savedBlog.populate('user', 'name email avatar');
+    return createdBlog;
   }
 
   async findAll(options: FindAllOptions): Promise<BlogDocument[]> {
@@ -65,7 +67,7 @@ export class BlogsService {
       .sort(sortOptions)
       .skip((page - 1) * limit)
       .limit(limit)
-      .populate('user', 'name email')
+      .populate('user', 'name email avatar')
       .populate({
         path: 'likes',
         select: 'name email avatar',
@@ -76,7 +78,7 @@ export class BlogsService {
           path: 'user',
           select: 'name email avatar',
         },
-      })
+      });
 
     return blogs;
   }
@@ -84,7 +86,7 @@ export class BlogsService {
   async findOne(id: string): Promise<BlogDocument> {
     const blog = await this.blogModel
       .findById(id)
-      .populate('user', 'name email')
+      .populate('user', 'name email avatar')
       .populate({
         path: 'likes',
         select: 'name email avatar',
@@ -210,8 +212,9 @@ export class BlogsService {
     } else {
       blog.likes.push(userObjectId);
     }
-
-    return blog.save();
+    const savedBlog = blog.save();
+    const resultBlog = blog.populate('likes', 'name email avatar');
+    return resultBlog;
   }
 
   async share(id: string, req: RequestWithUser): Promise<ShareDocument> {
