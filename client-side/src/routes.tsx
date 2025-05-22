@@ -11,6 +11,7 @@ import RequireLoggedIn from './guards/RequireLoggedIn';
 import ForgetPasswordPage from './pages/ForgetPasswordPage';
 import ResetPasswordPage from './pages/ResetPasswordPage';
 import BlogDetailsPage from './pages/BlogDetailsPage';
+import ProfilePage from './pages/ProfilePage';
 const ProjectRoutes = (): React.ReactNode => {
   const element = useRoutes([
     {
@@ -68,6 +69,10 @@ const ProjectRoutes = (): React.ReactNode => {
         {
           path: '/blogs/:id',
           element: <BlogDetailsPage />,
+        },
+        {
+          path: '/profile/:id',
+          element: <ProfilePage />,
         },
       ],
     },
