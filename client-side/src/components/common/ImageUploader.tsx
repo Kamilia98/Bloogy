@@ -86,7 +86,7 @@ export default function ImageUploader({
           <img
             src={imagePreview}
             alt="Image preview"
-            className="mx-auto h-64 max-w-full rounded-lg object-contain"
+            className="mx-auto h-48 max-w-full rounded-lg object-contain"
           />
           <button
             type="button"
