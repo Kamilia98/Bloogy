@@ -3,10 +3,11 @@ import { useDispatch } from 'react-redux';
 import Button from './ui/Button';
 import useAuth from '../contexts/AuthProvider';
 import toast from 'react-hot-toast';
-import { deleteBlog } from '../store/features/blogs/blogsSlice';
+import { deleteBlog, deleteShare } from '../store/features/blogs/blogsSlice';
 import type { AppDispatch } from '../store';
 import type { Blog } from '../models/BlogModel';
 import { Modal } from './common/Modal';
+import { isUserBlog } from '../utlils/isUserBlog';
 
 interface DeleteConfirmationModalProps {
   setDeleteModalOpen: (open: boolean) => void;
@@ -18,14 +19,23 @@ export function DeleteConfirmationModal({
   selectedBlog,
 }: DeleteConfirmationModalProps) {
   const dispatch = useDispatch<AppDispatch>();
-  const { token } = useAuth();
+  const Auth = useAuth();
 
   const handleDelete = async () => {
-    if (!selectedBlog || !token) return;
+    if (!selectedBlog || !Auth.token) return;
 
     try {
-      await dispatch(deleteBlog({ id: selectedBlog._id, token })).unwrap();
-      toast.success('Blog deleted successfully!');
+      if (isUserBlog(selectedBlog, Auth.user!)) {
+        await dispatch(
+          deleteBlog({ id: selectedBlog._id, token: Auth.token! }),
+        ).unwrap();
+        toast.success('Blog deleted successfully!');
+      } else {
+        await dispatch(
+          deleteShare({ id: selectedBlog._id, token: Auth.token! }),
+        ).unwrap();
+        toast.success('Share deleted successfully!');
+      }
     } catch (err: any) {
       toast.error(
         err.response?.data?.message || err.message || 'Failed to delete blog',
@@ -38,7 +48,9 @@ export function DeleteConfirmationModal({
   return (
     <>
       <Modal setModalOpen={setDeleteModalOpen}>
-        <h3 className="mb-2 text-xl font-bold text-gray-800">Delete Blog</h3>
+        <h3 className="mb-2 text-xl font-bold text-gray-800">
+          Delete {isUserBlog(selectedBlog!, Auth.user!) ? 'Blog' : 'share'}
+        </h3>
         <p className="text-gray-600">
           Are you sure you want to delete "{selectedBlog?.title}"? This action
           cannot be undone.
