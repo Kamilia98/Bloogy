@@ -62,7 +62,7 @@ const BlogCard = ({
             to={`/profile/${blog.user._id}`}
             className="flex items-center gap-2"
           >
-            <div className="h-6 w-6">
+            <div className="flex h-6 w-6 items-center overflow-hidden rounded-full">
               <UserAvatar user={blog.user} />
             </div>
             {blog.user?.name}
