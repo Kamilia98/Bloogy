@@ -44,7 +44,7 @@ export class BlogsController {
     return this.blogsService.findOne(id);
   }
 
-  @Get('user/:id')  
+  @Get('user/:id')
   findByUser(@Param('id') id: string) {
     return this.blogsService.findByUser(id);
   }
@@ -75,5 +75,11 @@ export class BlogsController {
   @Post('share/:id')
   share(@Param('id') id: string, @Req() req: RequestWithUser) {
     return this.blogsService.share(id, req);
+  }
+
+  @UseGuards(AuthGuard('jwt'))
+  @Delete('share/:id')
+  deleteShare(@Param('id') id: string, @Req() req: RequestWithUser) {
+    return this.blogsService.deleteShare(id, req);
   }
 }
