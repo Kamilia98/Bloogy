@@ -18,7 +18,7 @@ export class MailService {
   }
 
   async sendMail(to: string, subject: string, text: string, html?: string) {
-    const from = `Bloogy Platform`;
+    const from = 'Bloogy Platform';
     await this.transporter.sendMail({ from, to, subject, text, html });
   }
 }
