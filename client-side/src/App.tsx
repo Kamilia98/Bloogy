@@ -3,10 +3,12 @@ import { BrowserRouter as Router } from 'react-router-dom';
 import { AuthProvider } from './contexts/AuthProvider';
 import { ThemeProvider } from './contexts/ThemeProvider';
 import ProjectRoutes from './routes.tsx';
+import ScrollToTop from './ScrollToTop.tsx';
 function App() {
   return (
     <>
       <Router>
+        <ScrollToTop />
         <ThemeProvider>
           <AuthProvider>
             <ProjectRoutes />
