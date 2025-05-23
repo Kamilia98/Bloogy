@@ -158,6 +158,11 @@ export class BlogsService {
     return resultBlogs;
   }
 
+
+  // async findUserLikes(userId: string):Promise<BlogDocument[]>{
+
+  // }
+
   async update(
     id: string,
     updateBlogDto: UpdateBlogDto,
