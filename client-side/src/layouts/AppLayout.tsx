@@ -1,5 +1,6 @@
 import { Outlet } from 'react-router-dom';
 import AppNavbar from '../components/AppNavbar';
+import AppFooter from '../components/AppFooter';
 export default function AppLayout() {
   return (
     <div>
@@ -7,6 +8,7 @@ export default function AppLayout() {
       <main>
         <Outlet />
       </main>
+      <AppFooter />
     </div>
   );
 }
