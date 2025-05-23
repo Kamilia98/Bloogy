@@ -19,160 +19,221 @@ const initialState: BlogsState = {
   error: null,
 };
 
-// Async thunks
+// Utility to get auth headers
+const authHeaders = (token: string) => ({
+  headers: { Authorization: `Bearer ${token}` },
+});
+
+// === Async Thunks ===
+
+// Fetch all blogs
 export const fetchBlogs = createAsyncThunk(
   'blogs/fetchBlogs',
-  async (params: Record<string, any>) => {
-    const response = await axios.get('/api/blogs', { params });
-    return response.data;
+  async (params: Record<string, any>, { rejectWithValue }) => {
+    try {
+      const { data } = await axios.get('/api/blogs', { params });
+      return data;
+    } catch (err: any) {
+      return rejectWithValue(
+        err.response?.data?.message || 'Failed to fetch blogs',
+      );
+    }
   },
 );
 
+// Fetch blogs by user
 export const fetchUserBlogs = createAsyncThunk(
   'blogs/fetchUserBlogs',
-  async ({ userId, token }: { userId: string; token: string }) => {
-    const response = await axios.get(`/api/blogs/user/${userId}`, {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    });
-    return response.data;
+  async (
+    { userId, token }: { userId: string; token: string },
+    { rejectWithValue },
+  ) => {
+    try {
+      const { data } = await axios.get(
+        `/api/blogs/user/${userId}`,
+        authHeaders(token),
+      );
+      return data;
+    } catch (err: any) {
+      return rejectWithValue(
+        err.response?.data?.message || 'Failed to fetch user blogs',
+      );
+    }
   },
 );
 
+// Fetch blog by ID
 export const fetchBlogById = createAsyncThunk(
   'blogs/fetchBlogById',
-  async (id: string) => {
-    const response = await axios.get(`/api/blogs/${id}`);
-    return response.data;
+  async (id: string, { rejectWithValue }) => {
+    try {
+      const { data } = await axios.get(`/api/blogs/${id}`);
+      return data;
+    } catch (err: any) {
+      return rejectWithValue(
+        err.response?.data?.message || 'Failed to fetch blog',
+      );
+    }
   },
 );
 
+// Add blog
 export const addBlog = createAsyncThunk(
   'blogs/addBlog',
-  async ({
-    token,
-    blog,
-  }: {
-    token: string;
-    blog: Omit<Blog, 'id' | 'createdAt' | 'updatedAt'>;
-  }) => {
-    const response = await axios.post('/api/blogs', blog, {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    });
-    return response.data;
+  async (
+    {
+      token,
+      blog,
+    }: {
+      token: string;
+      blog: Omit<Blog, 'id' | 'createdAt' | 'updatedAt'>;
+    },
+    { rejectWithValue },
+  ) => {
+    try {
+      const { data } = await axios.post('/api/blogs', blog, authHeaders(token));
+      return data;
+    } catch (err: any) {
+      return rejectWithValue(
+        err.response?.data?.message || 'Failed to add blog',
+      );
+    }
   },
 );
 
+// Update blog
 export const updateBlog = createAsyncThunk(
   'blogs/updateBlog',
-  async ({ token, blog }: { token: string; blog: Blog }) => {
-    const response = await axios.patch(`/api/blogs/${blog._id}`, blog, {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    });
-    return response.data;
+  async (
+    { token, blog }: { token: string; blog: Blog },
+    { rejectWithValue },
+  ) => {
+    try {
+      const { data } = await axios.patch(
+        `/api/blogs/${blog._id}`,
+        blog,
+        authHeaders(token),
+      );
+      return data;
+    } catch (err: any) {
+      return rejectWithValue(
+        err.response?.data?.message || 'Failed to update blog',
+      );
+    }
   },
 );
 
+// Delete blog
 export const deleteBlog = createAsyncThunk(
   'blogs/deleteBlog',
-  async ({ id, token }: { id: string; token: string }) => {
-    await axios.delete(`/api/blogs/${id}`, {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    });
-    return id;
+  async ({ id, token }: { id: string; token: string }, { rejectWithValue }) => {
+    try {
+      await axios.delete(`/api/blogs/${id}`, authHeaders(token));
+      return id;
+    } catch (err: any) {
+      return rejectWithValue(
+        err.response?.data?.message || 'Failed to delete blog',
+      );
+    }
   },
 );
 
-// Like or unlike blog
+// Toggle like
 export const toggleLikeBlog = createAsyncThunk(
   'blogs/toggleLikeBlog',
-  async ({
-    blogId,
-    token,
-    userId,
-  }: {
-    blogId: string;
-    token: string;
-    userId: string;
-  }) => {
-    const response = await axios.post(
-      `/api/blogs/like/${blogId}`,
-      {},
-      {
-        headers: { Authorization: `Bearer ${token}` },
-      },
-    );
-    const updatedLikes = response.data.likes;
-    const isLiked = updatedLikes.some((like: User) => like._id === userId);
-    return { blogId, likes: updatedLikes, isLiked };
+  async (
+    {
+      blogId,
+      token,
+      userId,
+    }: { blogId: string; token: string; userId: string },
+    { rejectWithValue },
+  ) => {
+    try {
+      const { data } = await axios.post(
+        `/api/blogs/like/${blogId}`,
+        {},
+        authHeaders(token),
+      );
+      const isLiked = data.likes.some((like: User) => like._id === userId);
+      return { blogId, likes: data.likes, isLiked };
+    } catch (err: any) {
+      return rejectWithValue(
+        err.response?.data?.message || 'Failed to toggle like',
+      );
+    }
   },
 );
 
-// Add comment
+// Comments
 export const addComment = createAsyncThunk(
   'blogs/addComment',
-  async ({
-    blogId,
-    content,
-    token,
-  }: {
-    blogId: string;
-    content: string;
-    token: string;
-  }) => {
-    const response = await axios.post(
-      `/api/comments/${blogId}`,
-      { content },
-      {
-        headers: { Authorization: `Bearer ${token}` },
-      },
-    );
-    return { blogId, comment: response.data };
+  async (
+    {
+      blogId,
+      content,
+      token,
+    }: { blogId: string; content: string; token: string },
+    { rejectWithValue },
+  ) => {
+    try {
+      const { data } = await axios.post(
+        `/api/comments/${blogId}`,
+        { content },
+        authHeaders(token),
+      );
+      return { blogId, comment: data };
+    } catch (err: any) {
+      return rejectWithValue(
+        err.response?.data?.message || 'Failed to add comment',
+      );
+    }
   },
 );
 
-// Delete comment
 export const deleteComment = createAsyncThunk(
   'blogs/deleteComment',
-  async ({ commentId, token }: { commentId: string; token: string }) => {
-    await axios.delete(`/api/comments/${commentId}`, {
-      headers: { Authorization: `Bearer ${token}` },
-    });
-    return { commentId };
+  async (
+    { commentId, token }: { commentId: string; token: string },
+    { rejectWithValue },
+  ) => {
+    try {
+      await axios.delete(`/api/comments/${commentId}`, authHeaders(token));
+      return { commentId };
+    } catch (err: any) {
+      return rejectWithValue(
+        err.response?.data?.message || 'Failed to delete comment',
+      );
+    }
   },
 );
 
-// Edit comment
 export const editComment = createAsyncThunk(
   'blogs/editComment',
-  async ({
-    commentId,
-    content,
-    token,
-  }: {
-    commentId: string;
-    content: string;
-    token: string;
-  }) => {
-    const response = await axios.patch(
-      `/api/comments/${commentId}`,
-      { content },
-      {
-        headers: { Authorization: `Bearer ${token}` },
-      },
-    );
-    return { commentId, content: response.data.content };
+  async (
+    {
+      commentId,
+      content,
+      token,
+    }: { commentId: string; content: string; token: string },
+    { rejectWithValue },
+  ) => {
+    try {
+      const { data } = await axios.patch(
+        `/api/comments/${commentId}`,
+        { content },
+        authHeaders(token),
+      );
+      return { commentId, content: data.content };
+    } catch (err: any) {
+      return rejectWithValue(
+        err.response?.data?.message || 'Failed to edit comment',
+      );
+    }
   },
 );
 
-// Add at the top with other thunks
+// Sharing
 export const shareBlog = createAsyncThunk(
   'blogs/shareBlog',
   async (
@@ -180,17 +241,11 @@ export const shareBlog = createAsyncThunk(
     { rejectWithValue },
   ) => {
     try {
-      await axios.post(
-        `/api/blogs/share/${blogId}`,
-        {},
-        {
-          headers: { Authorization: `Bearer ${token}` },
-        },
-      );
+      await axios.post(`/api/blogs/share/${blogId}`, {}, authHeaders(token));
       return blogId;
-    } catch (error: any) {
+    } catch (err: any) {
       return rejectWithValue(
-        error.response?.data?.message || 'Failed to share blog',
+        err.response?.data?.message || 'Failed to share blog',
       );
     }
   },
@@ -198,15 +253,19 @@ export const shareBlog = createAsyncThunk(
 
 export const deleteShare = createAsyncThunk(
   'blogs/deleteShare',
-  async ({ id, token }: { id: string; token: string }) => {
-    await axios.delete(`/api/blogs/share/${id}`, {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    });
-    return id;
+  async ({ id, token }: { id: string; token: string }, { rejectWithValue }) => {
+    try {
+      await axios.delete(`/api/blogs/share/${id}`, authHeaders(token));
+      return id;
+    } catch (err: any) {
+      return rejectWithValue(
+        err.response?.data?.message || 'Failed to delete share',
+      );
+    }
   },
 );
+
+// === Slice ===
 
 const blogsSlice = createSlice({
   name: 'blogs',
@@ -214,105 +273,110 @@ const blogsSlice = createSlice({
   reducers: {},
   extraReducers: (builder) => {
     builder
-      // Fetch blogs
+
       .addCase(fetchBlogs.pending, (state) => {
         state.status = 'loading';
       })
-
-      .addCase(fetchBlogs.fulfilled, (state, action: PayloadAction<Blog[]>) => {
-        state.status = 'succeeded';
-        state.items = action.payload;
-      })
+      .addCase(
+        fetchBlogs.fulfilled,
+        (state, { payload }: PayloadAction<Blog[]>) => {
+          state.status = 'succeeded';
+          state.items = payload;
+        },
+      )
       .addCase(fetchBlogs.rejected, (state, action) => {
         state.status = 'failed';
-        state.error = action.error.message || 'Failed to fetch blogs';
+        state.error = action.payload as string;
       })
-
-      .addCase(
-        fetchUserBlogs.fulfilled,
-        (state, action: PayloadAction<Blog[]>) => {
-          state.status = 'succeeded';
-          state.items = action.payload;
-        },
-      )
-
-      // Fetch blog by ID
-      .addCase(fetchBlogById.pending, (state) => {
+      .addCase(fetchUserBlogs.pending, (state) => {
         state.status = 'loading';
       })
-
       .addCase(
-        fetchBlogById.fulfilled,
-        (state, action: PayloadAction<Blog>) => {
+        fetchUserBlogs.fulfilled,
+        (state, { payload }: PayloadAction<Blog[]>) => {
           state.status = 'succeeded';
-          const index = state.items.findIndex(
-            (blog) => blog._id === action.payload._id,
-          );
-          if (index !== -1) {
-            state.items[index] = action.payload;
-          } else {
-            state.items.push(action.payload);
-          }
+          state.items = payload;
         },
       )
-
-      // Add blog
-      .addCase(addBlog.fulfilled, (state, action: PayloadAction<Blog>) => {
-        state.items.push(action.payload);
-      })
-
-      // Update blog
-      .addCase(updateBlog.fulfilled, (state, action: PayloadAction<Blog>) => {
-        const index = state.items.findIndex(
-          (blog) => blog._id === action.payload._id,
-        );
-        if (index !== -1) {
-          state.items[index] = action.payload;
-        }
-      })
-
-      .addCase(deleteBlog.fulfilled, (state, action: PayloadAction<string>) => {
-        state.items = state.items.filter((blog) => blog._id !== action.payload);
-      })
-
-      // Toggle Like
-      .addCase(toggleLikeBlog.fulfilled, (state, action) => {
-        const { blogId, likes } = action.payload;
-        const blog = state.items.find((b) => b._id === blogId);
-        if (blog) {
-          blog.likes = likes;
-        }
-      })
-
-      // Add Comment
-      .addCase(addComment.fulfilled, (state, action) => {
-        const { blogId, comment } = action.payload;
-        const blog = state.items.find((b) => b._id === blogId);
-        if (blog && Array.isArray(blog.comments)) {
-          blog.comments.push(comment);
-        }
-      })
-
-      // Delete Comment
-      .addCase(deleteComment.fulfilled, (state, action) => {
-        const { commentId } = action.payload;
-        state.items.forEach((blog) => {
-          blog.comments = blog.comments?.filter((c) => c._id !== commentId);
-        });
-      })
-
-      // Edit Comment
-      .addCase(editComment.fulfilled, (state, action) => {
-        const { commentId, content } = action.payload;
-        state.items.forEach((blog) => {
-          const comment = blog.comments?.find((c) => c._id === commentId);
-          if (comment) comment.content = content;
-        });
-      })
-
-      .addCase(deleteShare.fulfilled, (state, action) => {
-        state.items = state.items.filter((blog) => blog._id !== action.payload);
+      .addCase(fetchUserBlogs.rejected, (state, action) => {
+        state.status = 'failed';
+        state.error = action.payload as string;
       });
+
+    const fulfilledHandlers: [any, (state: BlogsState, action: any) => void][] =
+      [
+        [
+          fetchBlogById.fulfilled,
+          (state, { payload }) => {
+            const index = state.items.findIndex((b) => b._id === payload._id);
+            index !== -1
+              ? (state.items[index] = payload)
+              : state.items.push(payload);
+          },
+        ],
+        [
+          addBlog.fulfilled,
+          (state, { payload }) => {
+            state.items.push(payload);
+          },
+        ],
+        [
+          updateBlog.fulfilled,
+          (state, { payload }) => {
+            const i = state.items.findIndex((b) => b._id === payload._id);
+            if (i !== -1) state.items[i] = payload;
+          },
+        ],
+        [
+          deleteBlog.fulfilled,
+          (state, { payload }) => {
+            state.items = state.items.filter((b) => b._id !== payload);
+          },
+        ],
+        [
+          toggleLikeBlog.fulfilled,
+          (state, { payload }) => {
+            const blog = state.items.find((b) => b._id === payload.blogId);
+            if (blog) blog.likes = payload.likes;
+          },
+        ],
+        [
+          addComment.fulfilled,
+          (state, { payload }) => {
+            const blog = state.items.find((b) => b._id === payload.blogId);
+            blog?.comments?.push(payload.comment);
+          },
+        ],
+        [
+          deleteComment.fulfilled,
+          (state, { payload }) => {
+            state.items.forEach((b) => {
+              b.comments = b.comments?.filter(
+                (c) => c._id !== payload.commentId,
+              );
+            });
+          },
+        ],
+        [
+          editComment.fulfilled,
+          (state, { payload }) => {
+            state.items.forEach((b) => {
+              const c = b.comments?.find((x) => x._id === payload.commentId);
+              if (c) c.content = payload.content;
+            });
+          },
+        ],
+        [
+          deleteShare.fulfilled,
+          (state, { payload }) => {
+            state.items = state.items.filter((b) => b._id !== payload);
+          },
+        ],
+      ];
+
+    for (const [caseFn, handler] of fulfilledHandlers) {
+      builder.addCase(caseFn, handler);
+    }
   },
 });
 
