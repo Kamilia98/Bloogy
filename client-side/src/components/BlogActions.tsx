@@ -10,12 +10,16 @@ import type { Comment } from '../models/CommentModel';
 import ShareConfirmationModal from './ShareConfirmationModal';
 export default function BlogActions({
   blog,
+  commentText,
+  setCommentText,
   handleLike,
   handleCommentSubmit,
   handleCommentEdit,
   handleCommentDelete,
 }: {
   blog: Blog;
+  commentText: string;
+  setCommentText: (value: string) => void;
   handleLike: () => void;
   handleCommentSubmit: (commentText: string) => void;
   handleCommentEdit: (commentId: string, newText: string) => void;
@@ -27,7 +31,6 @@ export default function BlogActions({
   const [likeCount, setLikeCount] = useState(0);
   const [commentOpen, setCommentOpen] = useState(false);
   const [shareOpen, setShareOpen] = useState(false);
-  const [commentText, setCommentText] = useState('');
   const [comments, setComments] = useState<Comment[]>([]);
   const [likedUsersOpen, setLikedUsersOpen] = useState(false);
 
@@ -141,7 +144,9 @@ export default function BlogActions({
                 <input
                   type="text"
                   value={commentText}
-                  onChange={(e) => setCommentText(e.target.value)}
+                  onChange={(e) =>
+                    setCommentText((e.target as HTMLInputElement).value)
+                  }
                   placeholder="Add a comment..."
                   className="flex-1 rounded-l-lg border border-gray-300 px-4 py-2 focus:border-blue-500 focus:outline-none"
                   onKeyDown={(e) => {
