@@ -301,19 +301,24 @@ const blogsSlice = createSlice({
       .addCase(fetchUserBlogs.rejected, (state, action) => {
         state.status = 'failed';
         state.error = action.payload as string;
+      })
+      .addCase(fetchBlogById.pending, (state) => {
+        state.status = 'loading';
+      })
+      .addCase(fetchBlogById.fulfilled, (state, { payload }) => {
+        state.status = 'succeeded';
+        const index = state.items.findIndex((b) => b._id === payload._id);
+        index !== -1
+          ? (state.items[index] = payload)
+          : state.items.push(payload);
+      })
+      .addCase(fetchBlogById.rejected, (state, action) => {
+        state.status = 'failed';
+        state.error = action.payload as string;
       });
 
     const fulfilledHandlers: [any, (state: BlogsState, action: any) => void][] =
       [
-        [
-          fetchBlogById.fulfilled,
-          (state, { payload }) => {
-            const index = state.items.findIndex((b) => b._id === payload._id);
-            index !== -1
-              ? (state.items[index] = payload)
-              : state.items.push(payload);
-          },
-        ],
         [
           addBlog.fulfilled,
           (state, { payload }) => {
