@@ -158,13 +158,13 @@ export default function AppFooter() {
         <div className="border-t border-gray-200 pt-8">
           <div className="flex flex-col items-center justify-between space-y-2 md:flex-row md:space-y-0">
             <p className="flex items-center text-sm text-gray-600">
-              © {currentYear} YourApp. Made with{' '}
+              © {currentYear} Bloogy Made with{' '}
               <Heart
                 size={14}
                 className="mx-1 text-red-500"
                 fill="currentColor"
               />{' '}
-              by our team.
+              by Kamilia.
             </p>
             <div className="flex space-x-6">
               <Link
