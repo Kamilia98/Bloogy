@@ -46,6 +46,8 @@ export default function BlogDetailsPage() {
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
   const [selectedRelatedBlog, setSelectedRelatedBlog] = useState(null);
 
+  const [commentText, setCommentText] = useState('');
+
   // Fetch blog data on load or when blogId changes
   useEffect(() => {
     if (blogId) {
@@ -96,7 +98,10 @@ export default function BlogDetailsPage() {
       }),
     )
       .unwrap()
-      .then(() => toast.success('Comment added successfully'))
+      .then(() => {
+        setCommentText('');
+        toast.success('Comment added successfully');
+      })
       .catch(() => toast.error('Failed to add comment'));
   };
 
@@ -170,6 +175,8 @@ export default function BlogDetailsPage() {
           {Auth.isLoggedIn && Auth.user && !isUserBlog(blog, Auth.user) && (
             <BlogActions
               blog={blog}
+              commentText={commentText}
+              setCommentText={setCommentText}
               handleLike={handleLike}
               handleCommentSubmit={handleCommentSubmit}
               handleCommentEdit={handleCommentEdit}
