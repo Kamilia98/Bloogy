@@ -217,6 +217,10 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const onUserUpdate = (updateedUser: User) => {
     if (user && user._id === updateedUser._id) {
       setUser(updateedUser);
+      const storage = localStorage.getItem('user')
+        ? localStorage
+        : sessionStorage;
+      storage.setItem('user', JSON.stringify(user));
     }
   };
 
