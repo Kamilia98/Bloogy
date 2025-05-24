@@ -1,5 +1,5 @@
 import { useRoutes } from 'react-router-dom';
-import BlogsPage from './pages/BlogsPage';
+import HomePage from './pages/HomePage';
 import NotFoundPage from './pages/NotFoundPage';
 import SignupPage from './pages/SignupPage';
 import LoginPage from './pages/LoginPage';
@@ -48,8 +48,8 @@ const ProjectRoutes = (): React.ReactNode => {
       path: '/',
       element: <AppLayout />,
       children: [
-        { path: '/', element: <BlogsPage /> },
-        { path: '/blogs', element: <BlogsPage /> },
+        { path: '/', element: <HomePage /> },
+        { path: '/blogs', element: <HomePage /> },
         {
           path: '/blogs/add',
           element: (
