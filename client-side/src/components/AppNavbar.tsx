@@ -72,7 +72,7 @@ export default function AppNavbar() {
                 </Link>
                 <Link
                   to="/auth/register"
-                  className="rounded-full bg-[#4364F7] px-4 py-2 text-sm font-medium text-white transition hover:bg-[#3854c7]"
+                  className="bg-primary hover:bg-tertiary rounded-full px-4 py-2 text-sm font-medium text-white transition"
                 >
                   Sign Up
                 </Link>
@@ -84,7 +84,7 @@ export default function AppNavbar() {
           <div className="md:hidden">
             <button
               onClick={toggleMenu}
-              className="text-gray-700 transition hover:text-[#4364F7]"
+              className="hover:text-primary text-gray-700 transition"
               aria-label={isMenuOpen ? 'Close menu' : 'Open menu'}
             >
               {isMenuOpen ? <X size={24} /> : <Menu size={24} />}
@@ -135,7 +135,7 @@ export default function AppNavbar() {
                     <Link
                       to="/auth/register"
                       onClick={() => setIsMenuOpen(false)}
-                      className="flex justify-center rounded-full bg-[#4364F7] px-4 py-2 text-sm font-medium text-white transition hover:bg-[#3854c7]"
+                      className="bg-primary hover:bg-tertiary flex justify-center rounded-full px-4 py-2 text-sm font-medium text-white transition"
                     >
                       Sign Up
                     </Link>
