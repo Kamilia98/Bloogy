@@ -125,7 +125,7 @@ export default function BlogComponent(blog: Partial<Blog>) {
             )}
           </div>
           {blog.category && (
-            <div className="inline-block rounded-full bg-[#4364F7]/10 px-3 py-1 text-xs font-medium text-[#4364F7]">
+            <div className="bg-primary/10 text-primary inline-block rounded-full px-3 py-1 text-xs font-medium">
               {blog.category}
             </div>
           )}
