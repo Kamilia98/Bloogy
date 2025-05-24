@@ -64,7 +64,6 @@ export default function ImageUploader({
     } catch (err) {
       console.error('Image upload failed:', err);
       setError('Image upload failed. Please try again.');
-      // Optionally, reset preview and file on failure
       setFile(null);
       setImagePreview(null);
     } finally {
