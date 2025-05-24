@@ -41,27 +41,6 @@ export const fetchBlogs = createAsyncThunk(
   },
 );
 
-// Fetch blogs by user
-export const fetchUserBlogs = createAsyncThunk(
-  'blogs/fetchUserBlogs',
-  async (
-    { userId, token }: { userId: string; token: string },
-    { rejectWithValue },
-  ) => {
-    try {
-      const { data } = await axios.get(
-        `/api/blogs/user/${userId}`,
-        authHeaders(token),
-      );
-      return data;
-    } catch (err: any) {
-      return rejectWithValue(
-        err.response?.data?.message || 'Failed to fetch user blogs',
-      );
-    }
-  },
-);
-
 // Fetch blog by ID
 export const fetchBlogById = createAsyncThunk(
   'blogs/fetchBlogById',
@@ -233,38 +212,6 @@ export const editComment = createAsyncThunk(
   },
 );
 
-// Sharing
-export const shareBlog = createAsyncThunk(
-  'blogs/shareBlog',
-  async (
-    { blogId, token }: { blogId: string; token: string },
-    { rejectWithValue },
-  ) => {
-    try {
-      await axios.post(`/api/blogs/share/${blogId}`, {}, authHeaders(token));
-      return blogId;
-    } catch (err: any) {
-      return rejectWithValue(
-        err.response?.data?.message || 'Failed to share blog',
-      );
-    }
-  },
-);
-
-export const deleteShare = createAsyncThunk(
-  'blogs/deleteShare',
-  async ({ id, token }: { id: string; token: string }, { rejectWithValue }) => {
-    try {
-      await axios.delete(`/api/blogs/share/${id}`, authHeaders(token));
-      return id;
-    } catch (err: any) {
-      return rejectWithValue(
-        err.response?.data?.message || 'Failed to delete share',
-      );
-    }
-  },
-);
-
 // === Slice ===
 
 const blogsSlice = createSlice({
@@ -288,20 +235,7 @@ const blogsSlice = createSlice({
         state.status = 'failed';
         state.error = action.payload as string;
       })
-      .addCase(fetchUserBlogs.pending, (state) => {
-        state.status = 'loading';
-      })
-      .addCase(
-        fetchUserBlogs.fulfilled,
-        (state, { payload }: PayloadAction<Blog[]>) => {
-          state.status = 'succeeded';
-          state.items = payload;
-        },
-      )
-      .addCase(fetchUserBlogs.rejected, (state, action) => {
-        state.status = 'failed';
-        state.error = action.payload as string;
-      })
+
       .addCase(fetchBlogById.pending, (state) => {
         state.status = 'loading';
       })
@@ -369,12 +303,6 @@ const blogsSlice = createSlice({
               const c = b.comments?.find((x) => x._id === payload.commentId);
               if (c) c.content = payload.content;
             });
-          },
-        ],
-        [
-          deleteShare.fulfilled,
-          (state, { payload }) => {
-            state.items = state.items.filter((b) => b._id !== payload);
           },
         ],
       ];
