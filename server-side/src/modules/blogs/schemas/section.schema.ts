@@ -5,7 +5,6 @@ export class Section {
   @Prop({ required: true })
   content: string;
 
-  // --- Font Styling ---
   @Prop({ default: 16 })
   fontSize: number;
 
@@ -30,7 +29,6 @@ export class Section {
   @Prop({ default: 0 })
   letterSpacing: number;
 
-  // --- Text Layout ---
   @Prop({ default: 'left' })
   textAlign: string;
 
@@ -46,7 +44,6 @@ export class Section {
   @Prop({ default: 'clip' })
   textOverflow: string;
 
-  // --- Section-specific Props ---
   @Prop({ default: 'paragraph' })
   sectionType: string;
 
