@@ -21,11 +21,15 @@ import Loading from '../components/common/Loading';
 
 import { isUserBlog } from '../utlils/isUserBlog';
 import { formatDate } from '../utlils/formateDate';
-import { fetchUserBlogs } from '../store/features/blogs/blogsSlice';
 import { fetchUserById } from '../store/features/user/userSlice';
-
-import type { Blog } from '../models/BlogModel';
 import type { RootState, AppDispatch } from '../store';
+import {
+  deleteShare,
+  fetchUserPosts,
+} from '../store/features/blogs/postsSlice';
+import { deleteBlog } from '../store/features/blogs/blogsSlice';
+import type { Post } from '../models/PostModel';
+import toast from 'react-hot-toast';
 
 export default function ProfilePage() {
   const { id } = useParams();
@@ -35,13 +39,13 @@ export default function ProfilePage() {
 
   // Selectors
   const user = useSelector((state: RootState) => state.user.data);
-  const blogsStatus = useSelector((state: RootState) => state.blogs.status);
-  const userBlogs = useSelector((state: RootState) => state.blogs.items);
+  const status = useSelector((state: RootState) => state.posts.status);
+  const posts = useSelector((state: RootState) => state.posts.items);
 
   // Local State
   const [profileEditOpen, setProfileEditOpen] = useState(false);
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
-  const [selectedBlog, setSelectedBlog] = useState<Blog | null>(null);
+  const [selectedPost, setSelectedPost] = useState<Post | null>(null);
 
   // Derived
   const isOwnProfile = useMemo(
@@ -53,20 +57,54 @@ export default function ProfilePage() {
   useEffect(() => {
     if (id && Auth.token) {
       dispatch(fetchUserById({ userId: id, token: Auth.token }));
-      dispatch(fetchUserBlogs({ userId: id, token: Auth.token }));
+      dispatch(fetchUserPosts({ userId: id, token: Auth.token }));
     }
   }, [id, Auth.token, dispatch]);
 
   const handleEditBlog = (blogId: string) => navigate(`/blogs/edit/${blogId}`);
-  const confirmDelete = (blog: Blog) => {
-    setSelectedBlog(blog);
+  const confirmDelete = (post: Post) => {
+    setSelectedPost(post);
     setDeleteModalOpen(true);
   };
 
-  const renderBlogs = () => {
-    if (blogsStatus === 'loading') return <Loading />;
+  const handleDelete = () => {
+    if (!selectedPost) {
+      toast.error('No post selected');
+      return;
+    }
 
-    if (!userBlogs?.length) {
+    if (selectedPost.blog && isUserBlog(selectedPost.blog, user)) {
+      dispatch(deleteBlog({ id: selectedPost.blog._id, token: Auth.token! }))
+        .unwrap()
+        .then(() => {
+          toast.success('Blog deleted successfully');
+          setDeleteModalOpen(false);
+        })
+        .catch((err) => {
+          toast.error('Failed to delete blog');
+          console.error(err);
+        });
+    } else if (selectedPost._id) {
+      dispatch(deleteShare({ id: selectedPost._id, token: Auth.token! }))
+        .unwrap()
+        .then(() => {
+          toast.success('Post deleted successfully');
+          setDeleteModalOpen(false);
+        })
+        .catch((err) => {
+          toast.error('Failed to delete post');
+          console.error(err);
+        });
+    } else {
+      toast.error('Invalid post data');
+    }
+  };
+  console.log(posts);
+
+  const renderPosts = () => {
+    if (status === 'loading') return <Loading />;
+
+    if (!posts?.length) {
       return (
         <motion.div
           initial={{ opacity: 0 }}
@@ -100,72 +138,74 @@ export default function ProfilePage() {
     return (
       <div className="flex w-full flex-col items-center gap-6">
         <div className="grid w-full max-w-3xl gap-6">
-          {userBlogs.map((blog) => (
+          {posts.map((post) => (
             <motion.div
-              key={blog._id}
+              key={post._id}
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
               className="flex flex-col gap-4 rounded-2xl border border-gray-200 bg-white p-4 shadow-sm transition hover:shadow-md"
             >
               <div className="flex items-start justify-between">
                 <Link
-                  to={`/profile/${blog.user._id}`}
+                  to={`/profile/${post.blog?.user._id}`}
                   className="flex items-center gap-2 text-sm text-gray-700 hover:text-blue-600"
                 >
                   <div className="flex h-6 w-6 items-center overflow-hidden rounded-full">
-                    <UserAvatar user={blog.user} />
+                    <UserAvatar user={post.blog.user} />
                   </div>
-                  {blog.user.name}
+                  {post.blog.user.name}
                 </Link>
 
-                {isUserBlog(blog, Auth.user!) && (
-                  <div className="flex gap-1">
+                <div className="flex gap-1">
+                  {isUserBlog(post.blog, Auth.user!) && (
                     <button
-                      onClick={() => handleEditBlog(blog._id)}
+                      onClick={() => handleEditBlog(post.blog._id)}
                       className="rounded-full p-2 text-gray-500 hover:bg-gray-100 hover:text-blue-600"
                       aria-label="Edit blog"
                     >
                       <Edit size={16} />
                     </button>
-                    <button
-                      onClick={() => confirmDelete(blog)}
-                      className="rounded-full p-2 text-gray-500 hover:bg-gray-100 hover:text-red-500"
-                      aria-label="Delete blog"
-                    >
-                      <Trash2 size={16} />
-                    </button>
-                  </div>
-                )}
+                  )}
+                  <button
+                    onClick={() => confirmDelete(post)}
+                    className="rounded-full p-2 text-gray-500 hover:bg-gray-100 hover:text-red-500"
+                    aria-label="Delete blog"
+                  >
+                    <Trash2 size={16} />
+                  </button>
+                </div>
               </div>
 
               <div className="flex-1 border-t border-gray-300" />
               <img
                 className="h-48 w-full rounded-lg border border-gray-200 object-cover"
-                src={blog.thumbnail}
-                alt={blog.title}
+                src={post.blog.thumbnail}
+                alt={post.blog.title}
               />
 
-              <h3 className="text-xl font-bold text-gray-800">{blog.title}</h3>
+              <h3 className="text-xl font-bold text-gray-800">
+                {post.blog.title}
+              </h3>
 
               <div className="flex justify-between text-xs text-gray-500">
                 <div className="flex items-center gap-3">
                   <span className="flex items-center gap-1">
                     <Heart size={12} className="text-red-500" />
-                    {blog.likes?.length ?? 0}
+                    {post.blog.likes?.length ?? 0}
                   </span>
                   <span className="flex items-center gap-1">
                     <MessageCircle size={12} className="text-blue-500" />
-                    {blog.comments?.length ?? 0}
+                    {post.blog.comments?.length ?? 0}
                   </span>
                 </div>
                 <span className="flex items-center gap-1">
                   <Calendar size={12} />
-                  {formatDate(blog.createdAt)}
+                  {formatDate(post.blog.createdAt)}
                 </span>
               </div>
 
               <Link
-                to={`/blogs/${blog._id}`}
+                to={`/blogs/${post.blog._id}`}
                 className="mt-2 inline-flex items-center font-medium text-blue-600 hover:text-sky-400"
               >
                 Read More <ChevronRight size={16} className="ml-1" />
@@ -216,10 +256,10 @@ export default function ProfilePage() {
       >
         <div className="mb-4 flex items-center justify-between">
           <h2 className="text-2xl font-bold">
-            {isOwnProfile ? 'My Blogs' : `${user?.name || 'User'}'s Blogs`}
+            {isOwnProfile ? 'My Posts' : `${user?.name || 'User'}'s Posts`}
           </h2>
         </div>
-        {renderBlogs()}
+        {renderPosts()}
       </motion.div>
 
       {/* Modals */}
@@ -232,8 +272,14 @@ export default function ProfilePage() {
         )}
         {deleteModalOpen && (
           <DeleteConfirmationModal
+            title={selectedPost?.blog.title ?? ''}
             setDeleteModalOpen={setDeleteModalOpen}
-            selectedBlog={selectedBlog}
+            handleDelete={handleDelete}
+            isUserBlog={
+              selectedPost?.blog
+                ? isUserBlog(selectedPost.blog, Auth.user!)
+                : false
+            }
           />
         )}
       </AnimatePresence>
