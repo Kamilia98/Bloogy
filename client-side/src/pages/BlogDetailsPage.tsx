@@ -8,6 +8,7 @@ import { ArrowLeft, Edit, Trash2 } from 'lucide-react';
 import type { AppDispatch, RootState } from '../store';
 import {
   addComment,
+  deleteBlog,
   deleteComment,
   editComment,
   fetchBlogById,
@@ -26,6 +27,7 @@ import { isUserBlog } from '../utlils/isUserBlog';
 import BlogActions from '../components/BlogActions';
 import { AnimatePresence } from 'framer-motion';
 import toast from 'react-hot-toast';
+import type { Blog } from '../models/BlogModel';
 
 export default function BlogDetailsPage() {
   const { id: blogId } = useParams<{ id: string }>();
@@ -44,7 +46,9 @@ export default function BlogDetailsPage() {
     .slice(0, 3);
 
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
-  const [selectedRelatedBlog, setSelectedRelatedBlog] = useState(null);
+  const [selectedRelatedBlog, setSelectedRelatedBlog] = useState<Blog | null>(
+    null,
+  );
 
   const [commentText, setCommentText] = useState('');
 
@@ -62,6 +66,21 @@ export default function BlogDetailsPage() {
   const confirmDelete = (blog: any) => {
     setSelectedRelatedBlog(blog);
     setDeleteModalOpen(true);
+  };
+
+  const handleDelete = () => {
+    if (!blog) return;
+    dispatch(deleteBlog({ id: blog._id, token: Auth.token! }))
+      .unwrap()
+      .then(() => {
+        toast.success('Blog deleted successfully');
+        setDeleteModalOpen(false);
+        navigate('/blogs');
+      })
+      .catch((err) => {
+        toast.error('Failed to delete blog');
+        console.error(err);
+      });
   };
 
   const likeSound = new Audio('/sounds/like.m4a');
@@ -205,8 +224,9 @@ export default function BlogDetailsPage() {
           <AnimatePresence>
             {deleteModalOpen && (
               <DeleteConfirmationModal
+                title={selectedRelatedBlog?.title || ''}
                 setDeleteModalOpen={setDeleteModalOpen}
-                selectedBlog={selectedRelatedBlog}
+                handleDelete={handleDelete}
               />
             )}
           </AnimatePresence>
