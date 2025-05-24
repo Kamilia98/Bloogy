@@ -8,11 +8,12 @@ import Hero from '../components/Hero';
 // Blog type definitions
 import { CATEGORY, type Blog } from '../models/BlogModel';
 import { useDispatch, useSelector } from 'react-redux';
-import { fetchBlogs } from '../store/features/blogs/blogsSlice'; // Adjust path as needed
+import { deleteBlog, fetchBlogs } from '../store/features/blogs/blogsSlice';
 import BlogCard from '../components/BlogCard';
 import { DeleteConfirmationModal } from '../components/DeleteConfirmationModal';
 import type { AppDispatch, RootState } from '../store';
 import Loading from '../components/common/Loading';
+import toast from 'react-hot-toast';
 
 export default function BlogsPage() {
   const dispatch = useDispatch<AppDispatch>();
@@ -31,11 +32,9 @@ export default function BlogsPage() {
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
   const [selectedBlog, setSelectedBlog] = useState<Blog | null>(null);
 
-  // Generate categories list
   const blogsCategories: string[] = Object.keys(CATEGORY);
   const categories = ['all', ...blogsCategories];
 
-  // Fetch blogs whenever searchTerm or activeCategory change
   useEffect(() => {
     const params: Record<string, any> = {};
 
@@ -49,22 +48,32 @@ export default function BlogsPage() {
     dispatch(fetchBlogs(params));
   }, [searchTerm, activeCategory, dispatch]);
 
-  // Handle create new blog
   const handleCreateBlog = () => {
     navigate('/blogs/add');
   };
 
-  // Handle edit blog
   const handleEditBlog = (blogId: string) => {
     navigate(`/blogs/edit/${blogId}`);
   };
 
-  // Confirm delete modal
   const confirmDelete = (blog: Blog) => {
     setSelectedBlog(blog);
     setDeleteModalOpen(true);
   };
 
+  const handleDelete = () => {
+    if (!selectedBlog) return;
+    dispatch(deleteBlog({ id: selectedBlog._id, token: Auth.token! }))
+      .unwrap()
+      .then(() => {
+        toast.success('Blog deleted successfully');
+        setDeleteModalOpen(false);
+      })
+      .catch((err) => {
+        toast.error('Failed to delete blog');
+        console.error(err);
+      });
+  };
   return (
     <>
       {/* Hero Section */}
@@ -161,8 +170,9 @@ export default function BlogsPage() {
         <AnimatePresence>
           {deleteModalOpen && (
             <DeleteConfirmationModal
+              title={selectedBlog?.title || ''}
               setDeleteModalOpen={setDeleteModalOpen}
-              selectedBlog={selectedBlog}
+              handleDelete={handleDelete}
             />
           )}
         </AnimatePresence>
