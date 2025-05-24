@@ -96,7 +96,7 @@ export default function ResetPasswordPage() {
   if (isTokenChecking) {
     return (
       <div className="flex h-full w-full flex-col items-center justify-center text-center">
-        <Loader2 className="mb-4 h-10 w-10 animate-spin text-[#4364F7]" />
+        <Loader2 className="text-primary mb-4 h-10 w-10 animate-spin" />
         <p className="text-gray-600">Verifying your reset link...</p>
       </div>
     );
@@ -221,7 +221,7 @@ export default function ResetPasswordPage() {
               <div className="text-center text-sm text-gray-600">
                 <Link
                   to="/auth/login"
-                  className="font-medium text-[#4364F7] hover:text-[#42d9fc] hover:underline"
+                  className="text-primary hover:text-tertiary font-medium hover:underline"
                 >
                   Back to login
                 </Link>

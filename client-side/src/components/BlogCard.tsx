@@ -46,14 +46,14 @@ const BlogCard = ({
           />
         )}
         {blog.category && (
-          <span className="absolute top-4 left-4 rounded-full bg-[#4364F7]/90 px-3 py-1 text-xs font-medium text-white">
+          <span className="bg-primary/90 absolute top-4 left-4 rounded-full px-3 py-1 text-xs font-medium text-white">
             {blog.category}
           </span>
         )}
       </div>
 
       <div className="flex flex-col justify-between gap-2 p-4">
-        <h3 className="mb-2 text-xl font-bold text-gray-800 group-hover:text-[#4364F7]">
+        <h3 className="group-hover:text-primary mb-2 text-xl font-bold text-gray-800">
           {blog.title}
         </h3>
 
@@ -91,7 +91,7 @@ const BlogCard = ({
         <div className="flex items-center justify-between pt-2">
           <Link
             to={`/blogs/${blog._id}`}
-            className="flex items-center font-medium text-[#4364F7] transition-colors hover:text-[#42d9fc]"
+            className="text-primary hover:text-tertiary flex items-center font-medium transition-colors"
           >
             Read More <ChevronRight size={16} className="ml-1" />
           </Link>
@@ -100,7 +100,7 @@ const BlogCard = ({
             <div className="flex space-x-1">
               <button
                 onClick={() => handleEditBlog(blog._id)}
-                className="rounded-full p-2 text-gray-500 hover:bg-gray-100 hover:text-[#4364F7]"
+                className="hover:text-primary rounded-full p-2 text-gray-500 hover:bg-gray-100"
                 aria-label="Edit blog"
               >
                 <Edit size={16} />

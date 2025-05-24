@@ -100,7 +100,7 @@ export default function ImageUploader({
         <div className="flex flex-col items-center justify-center">
           <label
             htmlFor="image-upload"
-            className="flex w-full cursor-pointer flex-col items-center justify-center rounded-lg border-2 border-dashed border-gray-300 bg-gray-50 p-6 text-center transition-colors hover:border-[#4364F7] hover:bg-blue-50/30"
+            className="hover:border-primary flex w-full cursor-pointer flex-col items-center justify-center rounded-lg border-2 border-dashed border-gray-300 bg-gray-50 p-6 text-center transition-colors hover:bg-blue-50/30"
           >
             <Upload size={32} className="mb-2 text-gray-400" />
             <p className="mb-1 text-sm text-gray-600">

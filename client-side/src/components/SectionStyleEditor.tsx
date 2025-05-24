@@ -62,8 +62,7 @@ const SectionStyleEditor: React.FC<SectionStyleEditorProps> = ({
             onClick={() => onStyleChange({ fontWeight: option.value })}
             className={cn(
               'rounded p-2 hover:bg-gray-100',
-              section.fontWeight === option.value &&
-                'bg-gray-100 text-[#4364F7]',
+              section.fontWeight === option.value && 'text-primary bg-gray-100',
             )}
             title={`${option.label} (${option.value})`}
           >
@@ -80,7 +79,7 @@ const SectionStyleEditor: React.FC<SectionStyleEditorProps> = ({
           }
           className={cn(
             'rounded p-2 hover:bg-gray-100',
-            section.fontStyle === 'italic' && 'bg-gray-100 text-[#4364F7]',
+            section.fontStyle === 'italic' && 'text-primary bg-gray-100',
           )}
           title="Italic"
         >
@@ -98,7 +97,7 @@ const SectionStyleEditor: React.FC<SectionStyleEditorProps> = ({
           className={cn(
             'rounded p-2 hover:bg-gray-100',
             section.textDecoration === 'underline' &&
-              'bg-gray-100 text-[#4364F7]',
+              'text-primary bg-gray-100',
           )}
           title="Underline"
         >
@@ -117,7 +116,7 @@ const SectionStyleEditor: React.FC<SectionStyleEditorProps> = ({
               className={cn(
                 'rounded p-2 hover:bg-gray-100',
                 section.textAlign === option.value &&
-                  'bg-gray-100 text-[#4364F7]',
+                  'text-primary bg-gray-100',
               )}
               title={option.label}
             >
@@ -133,7 +132,7 @@ const SectionStyleEditor: React.FC<SectionStyleEditorProps> = ({
           onClick={() => onStyleChange({ isQuote: !section.isQuote })}
           className={cn(
             'rounded p-2 hover:bg-gray-100',
-            section.isQuote && 'bg-gray-100 text-[#4364F7]',
+            section.isQuote && 'text-primary bg-gray-100',
           )}
           title="Quote Style"
         >
@@ -145,7 +144,7 @@ const SectionStyleEditor: React.FC<SectionStyleEditorProps> = ({
           onClick={() => onStyleChange({ isHighlight: !section.isHighlight })}
           className={cn(
             'rounded p-2 hover:bg-gray-100',
-            section.isHighlight && 'bg-gray-100 text-[#4364F7]',
+            section.isHighlight && 'text-primary bg-gray-100',
           )}
           title="Highlight"
         >
@@ -168,7 +167,7 @@ const SectionStyleEditor: React.FC<SectionStyleEditorProps> = ({
               onChange={(e) =>
                 onStyleChange({ fontSize: parseInt(e.target.value) || 16 })
               }
-              className="mr-2 w-full accent-[#4364F7]"
+              className="accent-primary mr-2 w-full"
             />
             <div className="flex w-14 items-center">
               <input
@@ -196,7 +195,7 @@ const SectionStyleEditor: React.FC<SectionStyleEditorProps> = ({
             onChange={(e) =>
               onStyleChange({ fontWeight: parseInt(e.target.value) })
             }
-            className="w-full rounded border-gray-300 p-2 text-sm shadow-sm focus:border-[#4364F7] focus:ring-1 focus:ring-[#4364F7]"
+            className="focus:border-primary focus:ring-primary w-full rounded border-gray-300 p-2 text-sm shadow-sm focus:ring-1"
           >
             {fontWeightOptions.map((option) => (
               <option key={option.value} value={option.value}>
@@ -224,7 +223,7 @@ const SectionStyleEditor: React.FC<SectionStyleEditorProps> = ({
               type="text"
               value={section.fontColor}
               onChange={(e) => onStyleChange({ fontColor: e.target.value })}
-              className="w-full rounded-r border-gray-300 p-2 text-sm shadow-sm focus:border-[#4364F7] focus:ring-1 focus:ring-[#4364F7]"
+              className="focus:border-primary focus:ring-primary w-full rounded-r border-gray-300 p-2 text-sm shadow-sm focus:ring-1"
             />
           </div>
         </div>
@@ -252,7 +251,7 @@ const SectionStyleEditor: React.FC<SectionStyleEditorProps> = ({
                 onStyleChange({ backgroundColor: e.target.value })
               }
               placeholder="transparent"
-              className="w-full rounded-r border-gray-300 p-2 text-sm shadow-sm focus:border-[#4364F7] focus:ring-1 focus:ring-[#4364F7]"
+              className="focus:border-primary focus:ring-primary w-full rounded-r border-gray-300 p-2 text-sm shadow-sm focus:ring-1"
             />
           </div>
         </div>
@@ -265,7 +264,7 @@ const SectionStyleEditor: React.FC<SectionStyleEditorProps> = ({
           <select
             value={section.fontFamily}
             onChange={(e) => onStyleChange({ fontFamily: e.target.value })}
-            className="w-full rounded border-gray-300 p-2 text-sm shadow-sm focus:border-[#4364F7] focus:ring-1 focus:ring-[#4364F7]"
+            className="focus:border-primary focus:ring-primary w-full rounded border-gray-300 p-2 text-sm shadow-sm focus:ring-1"
           >
             {fontFamilyOptions.map((font) => (
               <option key={font} value={font} style={{ fontFamily: font }}>
@@ -290,7 +289,7 @@ const SectionStyleEditor: React.FC<SectionStyleEditorProps> = ({
               onChange={(e) =>
                 onStyleChange({ lineHeight: parseFloat(e.target.value) || 1.5 })
               }
-              className="mr-2 w-full accent-[#4364F7]"
+              className="accent-primary mr-2 w-full"
             />
             <span className="w-10 text-center text-sm">
               {section.lineHeight.toFixed(1)}
@@ -314,7 +313,7 @@ const SectionStyleEditor: React.FC<SectionStyleEditorProps> = ({
                   letterSpacing: parseFloat(e.target.value) || 0,
                 })
               }
-              className="mr-2 w-full accent-[#4364F7]"
+              className="accent-primary mr-2 w-full"
             />
             <div className="flex w-14 items-center">
               <span className="text-sm">{section.letterSpacing}</span>
@@ -329,14 +328,12 @@ const SectionStyleEditor: React.FC<SectionStyleEditorProps> = ({
             Text Transform
           </label>
           <select
-  
             value={section.textTransform}
             onChange={(e) => onStyleChange({ textTransform: e.target.value })}
-            className="w-full rounded border-gray-300 p-2 text-sm shadow-sm focus:border-[#4364F7] focus:ring-1 focus:ring-[#4364F7]"
+            className="focus:border-primary focus:ring-primary w-full rounded border-gray-300 p-2 text-sm shadow-sm focus:ring-1"
           >
-
             <option value="none">None</option>
-            
+
             <option value="uppercase">UPPERCASE</option>
             <option value="lowercase">lowercase</option>
             <option value="capitalize">Capitalize</option>

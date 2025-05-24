@@ -100,7 +100,7 @@ export default function BlogsPage() {
                 onClick={() => setActiveCategory(category as CATEGORY | 'all')}
                 className={`rounded-full px-4 py-1 text-sm font-medium ${
                   activeCategory === category
-                    ? 'bg-[#4364F7] text-white'
+                    ? 'bg-primary text-white'
                     : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
                 }`}
               >

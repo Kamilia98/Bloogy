@@ -152,7 +152,7 @@ export default function BlogDetailsPage() {
           </p>
           <Link
             to="/blogs"
-            className="inline-flex items-center rounded-lg bg-[#4364F7] px-4 py-2 text-white hover:bg-[#3050d8]"
+            className="btn btn-primary"
           >
             <ArrowLeft size={16} className="mr-2" /> Back to Blogs
           </Link>

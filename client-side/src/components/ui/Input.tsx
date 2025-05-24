@@ -39,10 +39,9 @@ export default function Input({ label, leftIcon, rightIcon, error, ...props }: I
         {leftIconWithProps}
         <input
           {...props}
-          className={`w-full ${leftIcon ? 'pl-10' : 'pl-4'} rounded-lg border border-gray-300 py-3 pr-4 focus:ring-2 focus:ring-[#42d9fc] focus:outline-none`}
+          className={`w-full ${leftIcon ? 'pl-10' : 'pl-4'} focus:ring-tertiary rounded-lg border border-gray-300 py-3 pr-4 focus:ring-2 focus:outline-none`}
         />
         {rightIconWithProps}
-
       </div>
       <AnimatePresence>
         {error && (

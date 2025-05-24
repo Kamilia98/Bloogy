@@ -93,7 +93,7 @@ export default function LoginPage() {
           <div className="relative">
             <Link
               to="/auth/forget-password"
-              className="absolute right-0 text-sm text-[#4364F7] hover:text-[#42d9fc]"
+              className="text-primary hover:text-tertiary absolute right-0 text-sm"
             >
               Forgot password?
             </Link>
@@ -131,7 +131,7 @@ export default function LoginPage() {
             type="checkbox"
             checked={rememberMe}
             onChange={() => setRememberMe(!rememberMe)}
-            className="h-4 w-4 rounded border-gray-300 text-[#4364F7] focus:ring-[#42d9fc]"
+            className="text-primary focus:ring-tertiary h-4 w-4 rounded border-gray-300"
           />
           <label htmlFor="remember-me" className="text-sm text-gray-700">
             Remember me
@@ -176,7 +176,7 @@ export default function LoginPage() {
         Don&apos;t have an account?{' '}
         <Link
           to="/auth/register"
-          className="font-medium text-[#4364F7] hover:text-[#42d9fc] hover:underline"
+          className="text-primary hover:text-tertiary font-medium hover:underline"
         >
           Sign Up
         </Link>

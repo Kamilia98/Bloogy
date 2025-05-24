@@ -60,7 +60,9 @@ export default function SignupPage() {
       setPasswordError('Password is required.');
       valid = false;
     } else if (!validatePassword(password)) {
-      setPasswordError('Password must contain at least 8 characters, one uppercase letter, one lowercase letter, and one number.');
+      setPasswordError(
+        'Password must contain at least 8 characters, one uppercase letter, one lowercase letter, and one number.',
+      );
       valid = false;
     } else {
       setPasswordError('');
@@ -112,7 +114,9 @@ export default function SignupPage() {
         className="flex flex-col gap-1"
       >
         <h1 className="text-3xl font-bold text-gray-800">Create Account</h1>
-        <p className="text-gray-600">Join Bloogy today to share your ideas with the world</p>
+        <p className="text-gray-600">
+          Join Bloogy today to share your ideas with the world
+        </p>
       </motion.header>
 
       {/* Form */}
@@ -157,9 +161,15 @@ export default function SignupPage() {
             leftIcon={<Lock size={20} />}
             rightIcon={
               showPassword ? (
-                <Eye onClick={() => setShowPassword(false)} className="cursor-pointer text-gray-500" />
+                <Eye
+                  onClick={() => setShowPassword(false)}
+                  className="cursor-pointer text-gray-500"
+                />
               ) : (
-                <EyeOff onClick={() => setShowPassword(true)} className="cursor-pointer text-gray-500" />
+                <EyeOff
+                  onClick={() => setShowPassword(true)}
+                  className="cursor-pointer text-gray-500"
+                />
               )
             }
           />
@@ -180,9 +190,15 @@ export default function SignupPage() {
           leftIcon={<Lock size={20} />}
           rightIcon={
             showConfirmPassword ? (
-              <Eye onClick={() => setShowConfirmPassword(false)} className="cursor-pointer text-gray-500" />
+              <Eye
+                onClick={() => setShowConfirmPassword(false)}
+                className="cursor-pointer text-gray-500"
+              />
             ) : (
-              <EyeOff onClick={() => setShowConfirmPassword(true)} className="cursor-pointer text-gray-500" />
+              <EyeOff
+                onClick={() => setShowConfirmPassword(true)}
+                className="cursor-pointer text-gray-500"
+              />
             )
           }
         />
@@ -195,22 +211,34 @@ export default function SignupPage() {
               type="checkbox"
               checked={agreeToTerms}
               onChange={(e) => setAgreeToTerms(e.target.checked)}
-              className="h-4 w-4 text-[#42d9fc]"
+              className="text-primary h-4 w-4"
             />
             <label htmlFor="terms" className="text-sm text-gray-700">
-              I agree to the <Link to="/terms" className="text-blue-600 underline">terms and conditions</Link>.
+              I agree to the{' '}
+              <Link to="/terms" className="text-blue-600 underline">
+                terms and conditions
+              </Link>
+              .
             </label>
           </div>
-          {agreeToTermsError && <p className="text-sm text-red-600">{agreeToTermsError}</p>}
+          {agreeToTermsError && (
+            <p className="text-sm text-red-600">{agreeToTermsError}</p>
+          )}
         </div>
 
         {/* Submit */}
 
         <Button
-          variant='primary'
+          variant="primary"
           type="submit"
           label={isLoading ? 'Creating Account...' : 'Create Account'}
-          icon={isLoading ? <Loader2 className="animate-spin" size={18} /> : <UserPlus size={18} />}
+          icon={
+            isLoading ? (
+              <Loader2 className="animate-spin" size={18} />
+            ) : (
+              <UserPlus size={18} />
+            )
+          }
         />
       </motion.form>
 
@@ -238,7 +266,7 @@ export default function SignupPage() {
         Already have an account?{' '}
         <Link
           to="/auth/login"
-          className="font-medium text-[#4364F7] hover:text-[#42d9fc] hover:underline"
+          className="text-primary hover:text-tertiary font-medium hover:underline"
         >
           Sign In
         </Link>
@@ -246,4 +274,3 @@ export default function SignupPage() {
     </div>
   );
 }
-

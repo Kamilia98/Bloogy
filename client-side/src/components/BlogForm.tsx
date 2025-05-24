@@ -337,7 +337,7 @@ export default function BlogForm() {
               }
               addSection(item.type);
             }}
-            className="flex w-full items-center rounded-md px-4 py-2 text-left text-sm text-gray-700 transition-colors hover:bg-gray-50 hover:text-[#4364F7]"
+            className="hover:text-primary flex w-full items-center rounded-md px-4 py-2 text-left text-sm text-gray-700 transition-colors hover:bg-gray-50"
           >
             <Icon size={16} className="mr-2" /> {item.label}
           </button>
@@ -400,7 +400,7 @@ export default function BlogForm() {
               value={title}
               onChange={(e) => setTitle(e.target.value)}
               placeholder="Enter a compelling title..."
-              className="w-full rounded-lg border border-gray-300 p-3 text-lg text-gray-800 shadow-sm transition-shadow focus:border-[#4364F7] focus:ring-2 focus:ring-[#4364F7]/20 focus:outline-none"
+              className="focus:border-primary focus:ring-primary/20 w-full rounded-lg border border-gray-300 p-3 text-lg text-gray-800 shadow-sm transition-shadow focus:ring-2 focus:outline-none"
               required
             />
           </div>
@@ -454,7 +454,7 @@ export default function BlogForm() {
                   className={cn(
                     'relative rounded-lg border transition-all duration-200 ease-in-out',
                     index === editingSectionIndex
-                      ? 'border-[#4364F7] bg-blue-50/30 shadow-sm'
+                      ? 'border-primary bg-blue-50/30 shadow-sm'
                       : 'border-transparent hover:border-gray-200 hover:bg-gray-50',
                   )}
                 >
@@ -478,9 +478,9 @@ export default function BlogForm() {
                               )
                             }
                             className={cn(
-                              'rounded p-1.5 text-gray-500 transition-colors hover:bg-gray-200 hover:text-[#4364F7]',
+                              'hover:text-primary rounded p-1.5 text-gray-500 transition-colors hover:bg-gray-200',
                               editingSectionIndex === index
-                                ? 'bg-gray-200 text-[#4364F7]'
+                                ? 'text-primary bg-gray-200'
                                 : '',
                             )}
                             aria-label="Edit section style"
@@ -496,7 +496,7 @@ export default function BlogForm() {
                           onClick={() => moveSectionUp(index)}
                           disabled={index === 0}
                           className={cn(
-                            'rounded p-1.5 text-gray-500 transition-colors hover:bg-gray-200 hover:text-[#4364F7]',
+                            'hover:text-primary rounded p-1.5 text-gray-500 transition-colors hover:bg-gray-200',
                             index === 0 && 'cursor-not-allowed opacity-50',
                           )}
                           aria-label="Move section up"
@@ -509,7 +509,7 @@ export default function BlogForm() {
                           onClick={() => moveSectionDown(index)}
                           disabled={index === sections.length - 1}
                           className={cn(
-                            'rounded p-1.5 text-gray-500 transition-colors hover:bg-gray-200 hover:text-[#4364F7]',
+                            'hover:text-primary rounded p-1.5 text-gray-500 transition-colors hover:bg-gray-200',
                             index === sections.length - 1 &&
                               'cursor-not-allowed opacity-50',
                           )}
@@ -574,7 +574,7 @@ export default function BlogForm() {
                         }
                         rows={section.sectionType === 'paragraph' ? 4 : 3}
                         className={cn(
-                          'w-full resize-y rounded border-0 bg-transparent px-1 py-2 text-gray-800 focus:ring-1 focus:ring-[#4364F7]/20 focus:outline-none',
+                          'focus:ring-primary/20 w-full resize-y rounded border-0 bg-transparent px-1 py-2 text-gray-800 focus:ring-1 focus:outline-none',
                           section.isQuote &&
                             'border-l-4 border-gray-300 pl-4 italic',
                           section.isHighlight && 'bg-yellow-50',
@@ -593,7 +593,7 @@ export default function BlogForm() {
                     setSelectedSectionIndex(null);
                     setShowSectionMenu(!showSectionMenu);
                   }}
-                  className="flex w-full items-center justify-center rounded-lg border border-dashed border-gray-300 p-4 text-gray-500 transition-colors duration-200 hover:border-[#4364F7] hover:bg-blue-50/30 hover:text-[#4364F7]"
+                  className="hover:border-primary hover:text-primary flex w-full items-center justify-center rounded-lg border border-dashed border-gray-300 p-4 text-gray-500 transition-colors duration-200 hover:bg-blue-50/30"
                 >
                   <PlusCircle size={20} className="mr-2" />
                   Add New Section
