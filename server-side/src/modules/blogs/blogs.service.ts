@@ -106,7 +106,7 @@ export class BlogsService {
     return blog;
   }
 
-  async findByUser(userId: string): Promise<BlogDocument[]> {
+  async findByUser(userId: string){
     const userBlogs = await this.blogModel
       .find({ user: userId, isDeleted: false })
       .populate('user', 'name email avatar')
@@ -127,37 +127,25 @@ export class BlogsService {
           path: 'user',
           select: 'name email avatar',
         },
-      });
-
-    const formattedSharedBlogs = sharedBlogs
-      .filter(
-        (shareDoc) =>
-          typeof shareDoc.blog === 'object' && shareDoc.blog !== null,
-      )
-      .map((shareDoc) => {
-        const blog = (shareDoc.blog as any).toObject();
-        blog._id = shareDoc._id;
-        shareDoc.blog = blog;
-        return shareDoc;
-      });
-
-    const combinedBlogs = [...userBlogs, ...formattedSharedBlogs];
+      })
+      .select('blog createdAt');
+    const formatedUserBlogs = userBlogs.map((b) => ({
+      _id: b._id,
+      blog: b,
+      createdAt: b.get('createdAt'),
+    }));
+    const combinedBlogs = [...formatedUserBlogs, ...sharedBlogs];
 
     const getBlogDate = (item: any): Date => {
-      return item.createdAt || item.blog?.createdAt || new Date(0);
+      return item.createdAt || new Date(0);
     };
 
     const sortedBlogs = combinedBlogs.sort(
       (a, b) => getBlogDate(b).getTime() - getBlogDate(a).getTime(),
     );
 
-    const resultBlogs = sortedBlogs.map((item: any) =>
-      item.blog ? item.blog : item,
-    );
-
-    return resultBlogs;
+    return sortedBlogs;
   }
-
 
   // async findUserLikes(userId: string):Promise<BlogDocument[]>{
 
