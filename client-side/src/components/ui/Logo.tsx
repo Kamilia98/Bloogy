@@ -13,7 +13,7 @@ export default function Logo() {
         initial={{ scale: 0 }}
         animate={{ scale: 1 }}
         transition={{ delay: 0.2, type: 'spring', stiffness: 300 }}
-        className="mr-3 flex h-10 w-10 items-center justify-center rounded-lg bg-gradient-to-br from-[#42d9fc] to-[#4364F7] text-xl font-bold text-white shadow-md"
+        className="from-tertiary to-primary mr-3 flex h-10 w-10 items-center justify-center rounded-lg bg-gradient-to-br text-xl font-bold text-white shadow-md"
       >
         B
       </motion.div>
