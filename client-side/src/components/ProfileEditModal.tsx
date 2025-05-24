@@ -38,6 +38,7 @@ export default function ProfileEditModal({
 
       if (updateUser.fulfilled.match(resultAction)) {
         toast.success('Profile updated successfully!');
+        Auth.onUserUpdate(resultAction.payload);
         setProfileModalOpen(false);
       } else {
         throw new Error(resultAction.payload as string);
@@ -52,8 +53,8 @@ export default function ProfileEditModal({
 
   return (
     <Modal setModalOpen={setProfileModalOpen}>
-      <h3 className="text-xl font-bold text-gray-800">Edit Profile</h3>
-      <div className="flex flex-col gap-4">
+      <Modal.Header>Edit Profile</Modal.Header>
+      <Modal.Content className="flex flex-col gap-4">
         <Input
           label="Name"
           type="text"
@@ -77,9 +78,9 @@ export default function ProfileEditModal({
             onUpload={(imageUrl) => setAvatar(imageUrl)}
           />
         </div>
-      </div>
+      </Modal.Content>
 
-      <div className="flex justify-end gap-3">
+      <Modal.Footer>
         <div>
           <Button
             label="Cancel"
@@ -101,7 +102,7 @@ export default function ProfileEditModal({
             }
           />
         </div>
-      </div>
+      </Modal.Footer>
     </Modal>
   );
 }

@@ -1,61 +1,32 @@
-import { useDispatch } from 'react-redux';
-
 import Button from './ui/Button';
-import useAuth from '../contexts/AuthProvider';
-import toast from 'react-hot-toast';
-import { deleteBlog, deleteShare } from '../store/features/blogs/blogsSlice';
-import type { AppDispatch } from '../store';
-import type { Blog } from '../models/BlogModel';
 import { Modal } from './common/Modal';
-import { isUserBlog } from '../utlils/isUserBlog';
 
 interface DeleteConfirmationModalProps {
+  title: string;
   setDeleteModalOpen: (open: boolean) => void;
-  selectedBlog: Blog | null;
+  handleDelete: () => void;
+  isUserBlog?: boolean;
 }
 
 export function DeleteConfirmationModal({
+  title,
   setDeleteModalOpen,
-  selectedBlog,
+  handleDelete,
+  isUserBlog,
 }: DeleteConfirmationModalProps) {
-  const dispatch = useDispatch<AppDispatch>();
-  const Auth = useAuth();
-
-  const handleDelete = async () => {
-    if (!selectedBlog || !Auth.token) return;
-
-    try {
-      if (isUserBlog(selectedBlog, Auth.user!)) {
-        await dispatch(
-          deleteBlog({ id: selectedBlog._id, token: Auth.token! }),
-        ).unwrap();
-        toast.success('Blog deleted successfully!');
-      } else {
-        await dispatch(
-          deleteShare({ id: selectedBlog._id, token: Auth.token! }),
-        ).unwrap();
-        toast.success('Share deleted successfully!');
-      }
-    } catch (err: any) {
-      toast.error(
-        err.response?.data?.message || err.message || 'Failed to delete blog',
-      );
-    } finally {
-      setDeleteModalOpen(false);
-    }
-  };
-
   return (
     <>
       <Modal setModalOpen={setDeleteModalOpen}>
-        <h3 className="mb-2 text-xl font-bold text-gray-800">
-          Delete {isUserBlog(selectedBlog!, Auth.user!) ? 'Blog' : 'share'}
-        </h3>
-        <p className="text-gray-600">
-          Are you sure you want to delete "{selectedBlog?.title}"? This action
-          cannot be undone.
-        </p>
-        <div className="flex justify-end gap-3">
+        <Modal.Header>
+          Delete {isUserBlog === false ? 'Share' : 'Blog'}
+        </Modal.Header>
+        <Modal.Content>
+          <p className="text-gray-600">
+            Are you sure you want to delete "{title}"? This action cannot be
+            undone.
+          </p>
+        </Modal.Content>
+        <Modal.Footer>
           <div>
             <Button
               label="Cancel"
@@ -66,7 +37,7 @@ export function DeleteConfirmationModal({
           <div>
             <Button label="Delete" variant="danger" onClick={handleDelete} />
           </div>
-        </div>
+        </Modal.Footer>
       </Modal>
     </>
   );

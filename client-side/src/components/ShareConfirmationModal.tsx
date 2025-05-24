@@ -3,8 +3,8 @@ import toast from 'react-hot-toast';
 import useAuth from '../contexts/AuthProvider';
 import Button from './ui/Button';
 import type { Blog } from '../models/BlogModel';
-import { useAppDispatch } from '../store/hooks'; // adjust the import based on your setup
-import { shareBlog } from '../store/features/blogs/blogsSlice';
+import { useAppDispatch } from '../store/hooks';
+import { shareBlog } from '../store/features/blogs/postsSlice';
 
 export default function ShareConfirmationModal({
   setShareModalOpen,
@@ -36,11 +36,13 @@ export default function ShareConfirmationModal({
 
   return (
     <Modal setModalOpen={setShareModalOpen}>
-      <h3 className="mb-2 text-xl font-bold text-gray-800">Share Blog</h3>
-      <p className="text-gray-600">
-        Are you sure you want to share "{selectedBlog?.title}"?
-      </p>
-      <div className="flex justify-end gap-3">
+      <Modal.Header>Share Blog</Modal.Header>
+      <Modal.Content>
+        <p className="text-gray-600">
+          Are you sure you want to share "{selectedBlog?.title}"?
+        </p>
+      </Modal.Content>
+      <Modal.Footer>
         <div>
           <Button
             label="Cancel"
@@ -51,7 +53,7 @@ export default function ShareConfirmationModal({
         <div>
           <Button label="Share" variant="secondary" onClick={handleShare} />
         </div>
-      </div>
+      </Modal.Footer>
     </Modal>
   );
 }
