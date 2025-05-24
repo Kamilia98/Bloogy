@@ -52,12 +52,11 @@ export default function BlogDetailsPage() {
 
   const [commentText, setCommentText] = useState('');
 
-  // Fetch blog data on load or when blogId changes
   useEffect(() => {
     if (blogId) {
       dispatch(fetchBlogById(blogId as string));
     }
-  }, [dispatch, blogId]);
+  }, [blogId]);
 
   const handleEditBlog = (blogId: string) => {
     navigate(`/blogs/edit/${blogId}`);
