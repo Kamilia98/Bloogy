@@ -1,4 +1,3 @@
-// blogs/schemas/share.schema.ts
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import mongoose, { Document, Types } from 'mongoose';
 import { User } from 'src/modules/users/schemas/user.schema';
