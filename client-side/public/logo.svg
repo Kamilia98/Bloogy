@@ -2,8 +2,8 @@
   font-family="Arial, sans-serif">
   <defs>
     <linearGradient id="bgGradient" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" stop-color="#42d9fc" />
-      <stop offset="100%" stop-color="#4364F7" />
+      <stop offset="0%" stop-color="#3b58d9" />
+      <stop offset="100%" stop-color="#4364f7" />
     </linearGradient>
   </defs>
   <rect x="10" y="10" width="230" height="230" rx="40" ry="40" fill="url(#bgGradient)" />

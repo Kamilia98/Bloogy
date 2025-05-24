@@ -157,7 +157,8 @@ export class AuthService {
   <div style="font-family: Arial, sans-serif; max-width: 600px; margin: auto; background-color: #f9f9f9; padding: 30px; border-radius: 10px; border: 1px solid #ddd;">
     
     <div style="text-align: center; margin-bottom: 30px;">
-      <img src="https://iili.io/3rVbVdF.png" alt="Bloogy Logo" style="height: 50px;" />
+      <img src="https://i.ibb.co/XfxtCdVz/logo.png"  alt="Bloogy Logo" style="height: 50px;" />
+      
     </div>
 
     <h2 style="color: #333; text-align: center;">Password Reset Request</h2>

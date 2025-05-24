@@ -4,9 +4,7 @@
 
 @theme {
   --color-primary: #4364f7;
-  --color-secondary: #42d9fc;
   --color-tertiary: #3b58d9;
-  --color-quaternary: #3bc7e8;
   --color-danger: #ef4444;
   --color-outline: #9ca3af;
 }
@@ -17,7 +15,7 @@
   }
 
   .btn-primary {
-    @apply from-primary to-secondary hover:from-tertiary hover:to-quaternary bg-gradient-to-r text-white;
+    @apply from-primary to-tertiary hover:from-tertiary hover:to-primary bg-gradient-to-r text-white;
   }
 
   .btn-secondary {
