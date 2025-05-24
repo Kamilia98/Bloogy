@@ -49,7 +49,7 @@ export default function BlogActions({
         <div className="flex items-center gap-6">
           <button
             onClick={handleLike}
-            className="flex items-center focus:outline-none"
+            className="flex cursor-pointer items-center focus:outline-none"
           >
             <Heart
               size={20}
@@ -60,7 +60,7 @@ export default function BlogActions({
           {likeCount > 0 && (
             <button
               onClick={() => setLikedUsersOpen(true)}
-              className="flex items-center focus:outline-none"
+              className="flex cursor-pointer items-center focus:outline-none"
             >
               <Users size={20} className="mr-1 text-gray-500" />
               <span className="text-sm text-gray-600">Who liked</span>
@@ -68,7 +68,7 @@ export default function BlogActions({
           )}
           <button
             onClick={() => setCommentOpen(!commentOpen)}
-            className="flex items-center focus:outline-none"
+            className="flex cursor-pointer items-center focus:outline-none"
           >
             <MessageSquare size={20} className="mr-1 text-gray-500" />
             <span className="text-sm text-gray-600">{comments.length}</span>
@@ -76,7 +76,7 @@ export default function BlogActions({
 
           <button
             onClick={() => setShareOpen(!shareOpen)}
-            className="flex items-center focus:outline-none"
+            className="flex cursor-pointer items-center focus:outline-none"
           >
             <Share2 size={20} className="mr-1 text-gray-500" />
             <span className="text-sm text-gray-600">Share</span>
