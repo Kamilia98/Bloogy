@@ -12,6 +12,13 @@ import ForgetPasswordPage from './pages/ForgetPasswordPage';
 import ResetPasswordPage from './pages/ResetPasswordPage';
 import BlogDetailsPage from './pages/BlogDetailsPage';
 import ProfilePage from './pages/ProfilePage';
+import AboutPage from './pages/AboutPage';
+import FeaturesPage from './pages/FeaturesPage';
+import HelpCenterPage from './pages/HelpCenterPage';
+import ContactPage from './pages/ContactPage';
+import PrivacyPage from './pages/PrivacyPage';
+import TermsPage from './pages/TermsPage';
+import CookiesPage from './pages/CookiesPage';
 const ProjectRoutes = (): React.ReactNode => {
   const element = useRoutes([
     {
@@ -74,6 +81,13 @@ const ProjectRoutes = (): React.ReactNode => {
           path: '/profile/:id',
           element: <ProfilePage />,
         },
+        { path: '/about', element: <AboutPage /> },
+        { path: '/features', element: <FeaturesPage /> },
+        { path: '/help', element: <HelpCenterPage /> },
+        { path: '/contact', element: <ContactPage /> },
+        { path: '/privacy', element: <PrivacyPage /> },
+        { path: '/terms', element: <TermsPage /> },
+        { path: '/cookies', element: <CookiesPage /> },
       ],
     },
 

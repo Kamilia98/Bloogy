@@ -28,21 +28,21 @@ export default function AppFooter() {
             <div className="flex space-x-3">
               <a
                 href="#"
-                className="rounded-full border border-gray-200 bg-white p-2 text-gray-600 transition-all duration-200 hover:border-[#4364F7] hover:text-[#4364F7]"
+                className="hover:border-primary hover:text-primary rounded-full border border-gray-200 bg-white p-2 text-gray-600 transition-all duration-200"
                 aria-label="Follow us on Twitter"
               >
                 <Twitter size={16} />
               </a>
               <a
                 href="#"
-                className="rounded-full border border-gray-200 bg-white p-2 text-gray-600 transition-all duration-200 hover:border-[#4364F7] hover:text-[#4364F7]"
+                className="hover:border-primary hover:text-primary rounded-full border border-gray-200 bg-white p-2 text-gray-600 transition-all duration-200"
                 aria-label="Follow us on LinkedIn"
               >
                 <Linkedin size={16} />
               </a>
               <a
                 href="#"
-                className="rounded-full border border-gray-200 bg-white p-2 text-gray-600 transition-all duration-200 hover:border-[#4364F7] hover:text-[#4364F7]"
+                className="hover:border-primary hover:text-primary rounded-full border border-gray-200 bg-white p-2 text-gray-600 transition-all duration-200"
                 aria-label="View our GitHub"
               >
                 <Github size={16} />
@@ -57,7 +57,7 @@ export default function AppFooter() {
               <li>
                 <Link
                   to="/about"
-                  className="text-sm text-gray-600 transition-colors duration-200 hover:text-[#4364F7]"
+                  className="hover:text-primary text-sm text-gray-600 transition-colors duration-200"
                 >
                   About Us
                 </Link>
@@ -65,25 +65,9 @@ export default function AppFooter() {
               <li>
                 <Link
                   to="/features"
-                  className="text-sm text-gray-600 transition-colors duration-200 hover:text-[#4364F7]"
+                  className="hover:text-primary text-sm text-gray-600 transition-colors duration-200"
                 >
                   Features
-                </Link>
-              </li>
-              <li>
-                <Link
-                  to="/pricing"
-                  className="text-sm text-gray-600 transition-colors duration-200 hover:text-[#4364F7]"
-                >
-                  Pricing
-                </Link>
-              </li>
-              <li>
-                <Link
-                  to="/blog"
-                  className="text-sm text-gray-600 transition-colors duration-200 hover:text-[#4364F7]"
-                >
-                  Blog
                 </Link>
               </li>
             </ul>
@@ -96,7 +80,7 @@ export default function AppFooter() {
               <li>
                 <Link
                   to="/help"
-                  className="text-sm text-gray-600 transition-colors duration-200 hover:text-[#4364F7]"
+                  className="hover:text-primary text-sm text-gray-600 transition-colors duration-200"
                 >
                   Help Center
                 </Link>
@@ -104,7 +88,7 @@ export default function AppFooter() {
               <li>
                 <Link
                   to="/contact"
-                  className="text-sm text-gray-600 transition-colors duration-200 hover:text-[#4364F7]"
+                  className="hover:text-primary text-sm text-gray-600 transition-colors duration-200"
                 >
                   Contact Us
                 </Link>
@@ -112,7 +96,7 @@ export default function AppFooter() {
               <li>
                 <Link
                   to="/privacy"
-                  className="text-sm text-gray-600 transition-colors duration-200 hover:text-[#4364F7]"
+                  className="hover:text-primary text-sm text-gray-600 transition-colors duration-200"
                 >
                   Privacy Policy
                 </Link>
@@ -120,7 +104,7 @@ export default function AppFooter() {
               <li>
                 <Link
                   to="/terms"
-                  className="text-sm text-gray-600 transition-colors duration-200 hover:text-[#4364F7]"
+                  className="hover:text-primary text-sm text-gray-600 transition-colors duration-200"
                 >
                   Terms of Service
                 </Link>
@@ -136,7 +120,9 @@ export default function AppFooter() {
                 <div className="rounded-full border border-gray-200 bg-white p-2">
                   <Mail size={14} className="text-gray-600" />
                 </div>
-                <span className="text-sm text-gray-600">kamiliaahmed01@gmail.com</span>
+                <span className="text-sm text-gray-600">
+                  kamiliaahmed01@gmail.com
+                </span>
               </div>
               <div className="flex items-center space-x-3">
                 <div className="rounded-full border border-gray-200 bg-white p-2">
@@ -169,19 +155,19 @@ export default function AppFooter() {
             <div className="flex space-x-6">
               <Link
                 to="/privacy"
-                className="text-sm text-gray-600 transition-colors duration-200 hover:text-[#4364F7]"
+                className="hover:text-primary text-sm text-gray-600 transition-colors duration-200"
               >
                 Privacy
               </Link>
               <Link
                 to="/terms"
-                className="text-sm text-gray-600 transition-colors duration-200 hover:text-[#4364F7]"
+                className="hover:text-primary text-sm text-gray-600 transition-colors duration-200"
               >
                 Terms
               </Link>
               <Link
                 to="/cookies"
-                className="text-sm text-gray-600 transition-colors duration-200 hover:text-[#4364F7]"
+                className="hover:text-primary text-sm text-gray-600 transition-colors duration-200"
               >
                 Cookies
               </Link>
