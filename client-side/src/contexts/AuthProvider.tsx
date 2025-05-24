@@ -16,7 +16,7 @@ interface AuthContextType {
   isLoggedIn: boolean;
   token: string | null;
   user: User | null;
-  setUser: (user: User | null) => void;
+  onUserUpdate: (user: User) => void;
   updateToken: (token: string) => void;
   login: (
     email: string,
@@ -214,12 +214,18 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     sessionStorage.setItem('token', newToken);
   };
 
+  const onUserUpdate = (updateedUser: User) => {
+    if (user && user._id === updateedUser._id) {
+      setUser(updateedUser);
+    }
+  };
+
   const authValues = useMemo(
     () => ({
       isLoggedIn,
       token,
       user,
-      setUser,
+      onUserUpdate,
       updateToken,
       login,
       googleSignUp,
