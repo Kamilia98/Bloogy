@@ -14,35 +14,20 @@ export class Section {
   @Prop({ default: '#000000' })
   fontColor: string;
 
-  @Prop({ default: 'Arial' })
-  fontFamily: string;
-
   @Prop({ default: 'normal' })
   fontStyle: string;
 
   @Prop({ default: 'normal' })
   fontVariant: string;
 
-  @Prop({ default: 1.5 })
-  lineHeight: number;
-
-  @Prop({ default: 0 })
-  letterSpacing: number;
-
   @Prop({ default: 'left' })
   textAlign: string;
-
-  @Prop({ default: 'none' })
-  textTransform: string;
 
   @Prop({ default: 'none' })
   textDecoration: string;
 
   @Prop({ default: 'none' })
   textShadow: string;
-
-  @Prop({ default: 'clip' })
-  textOverflow: string;
 
   @Prop({ default: 'paragraph' })
   sectionType: string;
