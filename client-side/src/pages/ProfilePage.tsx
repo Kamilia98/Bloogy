@@ -99,7 +99,6 @@ export default function ProfilePage() {
       toast.error('Invalid post data');
     }
   };
-  console.log(posts);
 
   const renderPosts = () => {
     if (status === 'loading') return <Loading />;
@@ -137,80 +136,69 @@ export default function ProfilePage() {
 
     return (
       <div className="flex w-full flex-col items-center gap-6">
-        <div className="grid w-full max-w-3xl gap-6">
+        <div className="grid w-full gap-6">
           {posts.map((post) => (
-            <motion.div
+            <div
               key={post._id}
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              className="flex flex-col gap-4 rounded-2xl border border-gray-200 bg-white p-4 shadow-sm transition hover:shadow-md"
+              className="overflow-hidden rounded-xl border border-gray-200 bg-white transition-shadow hover:shadow-md"
             >
-              <div className="flex items-start justify-between">
-                <Link
-                  to={`/profile/${post.blog?.user._id}`}
-                  className="flex items-center gap-2 text-sm text-gray-700 hover:text-blue-600"
-                >
-                  <div className="flex h-6 w-6 items-center overflow-hidden rounded-full">
-                    <UserAvatar user={post.blog.user} />
+              <div className="flex">
+                <img
+                  src={post.blog.thumbnail}
+                  alt={post.blog.title}
+                  className="h-32 w-48 object-cover"
+                />
+                <div className="flex-1 p-6">
+                  <div className="mb-2 flex items-start justify-between">
+                    <h4 className="line-clamp-2 font-semibold text-gray-900">
+                      {post.blog.title}
+                    </h4>
+                    {isOwnProfile && (
+                      <div className="ml-4 flex space-x-1">
+                        {isUserBlog(post.blog, Auth.user!) && (
+                          <button
+                            onClick={() => handleEditBlog(post.blog._id)}
+                            className="rounded-full p-2 text-gray-500 hover:bg-gray-100 hover:text-blue-600"
+                            aria-label="Edit blog"
+                          >
+                            <Edit size={16} />
+                          </button>
+                        )}
+                        <button
+                          onClick={() => confirmDelete(post)}
+                          className="rounded-full p-2 text-gray-500 hover:bg-gray-100 hover:text-red-500"
+                          aria-label="Delete blog"
+                        >
+                          <Trash2 size={16} />
+                        </button>
+                      </div>
+                    )}
                   </div>
-                  {post.blog.user.name}
-                </Link>
 
-                <div className="flex gap-1">
-                  {isUserBlog(post.blog, Auth.user!) && (
-                    <button
-                      onClick={() => handleEditBlog(post.blog._id)}
-                      className="rounded-full p-2 text-gray-500 hover:bg-gray-100 hover:text-blue-600"
-                      aria-label="Edit blog"
-                    >
-                      <Edit size={16} />
-                    </button>
-                  )}
-                  <button
-                    onClick={() => confirmDelete(post)}
-                    className="rounded-full p-2 text-gray-500 hover:bg-gray-100 hover:text-red-500"
-                    aria-label="Delete blog"
+                  <div className="mb-3 flex items-center space-x-4 text-sm text-gray-500">
+                    <span className="flex items-center">
+                      <Heart size={14} className="mr-1 text-red-500" />
+                      {post.blog.likes?.length || 0}
+                    </span>
+                    <span className="flex items-center">
+                      <MessageCircle size={14} className="mr-1 text-blue-500" />
+                      {post.blog.comments?.length || 0}
+                    </span>
+                    <span className="flex items-center">
+                      <Calendar size={14} className="mr-1" />
+                      {formatDate(post.createdAt)}
+                    </span>
+                  </div>
+
+                  <Link
+                    to={`/blogs/${post.blog._id}`}
+                    className="flex items-center text-sm font-medium text-[#4364F7] hover:text-[#3451E6]"
                   >
-                    <Trash2 size={16} />
-                  </button>
+                    Read More <ChevronRight size={16} className="ml-1" />
+                  </Link>
                 </div>
               </div>
-
-              <div className="flex-1 border-t border-gray-300" />
-              <img
-                className="h-48 w-full rounded-lg border border-gray-200 object-cover"
-                src={post.blog.thumbnail}
-                alt={post.blog.title}
-              />
-
-              <h3 className="text-xl font-bold text-gray-800">
-                {post.blog.title}
-              </h3>
-
-              <div className="flex justify-between text-xs text-gray-500">
-                <div className="flex items-center gap-3">
-                  <span className="flex items-center gap-1">
-                    <Heart size={12} className="text-red-500" />
-                    {post.blog.likes?.length ?? 0}
-                  </span>
-                  <span className="flex items-center gap-1">
-                    <MessageCircle size={12} className="text-blue-500" />
-                    {post.blog.comments?.length ?? 0}
-                  </span>
-                </div>
-                <span className="flex items-center gap-1">
-                  <Calendar size={12} />
-                  {formatDate(post.blog.createdAt)}
-                </span>
-              </div>
-
-              <Link
-                to={`/blogs/${post.blog._id}`}
-                className="mt-2 inline-flex items-center font-medium text-blue-600 hover:text-sky-400"
-              >
-                Read More <ChevronRight size={16} className="ml-1" />
-              </Link>
-            </motion.div>
+            </div>
           ))}
         </div>
       </div>
