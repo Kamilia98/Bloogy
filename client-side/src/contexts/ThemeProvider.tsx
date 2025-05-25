@@ -1,26 +1,24 @@
+// ThemeContext.tsx
 import { createContext, useContext, useEffect, useState } from 'react';
+import { ThemeProvider as MuiThemeProvider } from '@mui/material/styles';
+import CssBaseline from '@mui/material/CssBaseline';
+import { lightTheme, darkTheme } from './theme'; 
 
-// ============================
-// Context Interface
-// ============================
 interface ThemeContextType {
-  theme: string;
-  setTheme: (theme: string) => void;
+  theme: 'light' | 'dark';
+  setTheme: (theme: 'light' | 'dark') => void;
 }
 
-// ============================
-// Context Setup
-// ============================
 const ThemeContext = createContext<ThemeContextType | undefined>(undefined);
 
-// ============================
-// Provider Component
-// ============================
 export const ThemeProvider = ({ children }: { children: React.ReactNode }) => {
-  const [theme, setTheme] = useState('light');
+  const [theme, setTheme] = useState<'light' | 'dark'>('light');
 
   useEffect(() => {
-    const storedTheme = localStorage.getItem('theme');
+    const storedTheme = localStorage.getItem('theme') as
+      | 'light'
+      | 'dark'
+      | null;
     if (storedTheme) {
       setTheme(storedTheme);
     }
@@ -34,16 +32,18 @@ export const ThemeProvider = ({ children }: { children: React.ReactNode }) => {
     };
   }, [theme]);
 
+  const muiTheme = theme === 'light' ? lightTheme : darkTheme;
+
   return (
     <ThemeContext.Provider value={{ theme, setTheme }}>
-      {children}
+      <MuiThemeProvider theme={muiTheme}>
+        <CssBaseline />
+        {children}
+      </MuiThemeProvider>
     </ThemeContext.Provider>
   );
 };
 
-// ============================
-// Custom Hook
-// ============================
 export const useTheme = (): ThemeContextType => {
   const context = useContext(ThemeContext);
   if (!context) {
