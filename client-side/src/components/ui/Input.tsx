@@ -2,15 +2,19 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { cloneElement, isValidElement, type InputHTMLAttributes } from 'react';
 
 interface InputProps extends InputHTMLAttributes<HTMLInputElement> {
-  label: string;
+  label?: string;
   leftIcon?: React.ReactNode;
   rightIcon?: React.ReactNode;
   error?: string;
 }
 
-export default function Input({ label, leftIcon, rightIcon, error, ...props }: InputProps) {
-
-
+export default function Input({
+  label,
+  leftIcon,
+  rightIcon,
+  error,
+  ...props
+}: InputProps) {
   const leftIconWithProps =
     isValidElement(leftIcon) &&
     cloneElement(leftIcon as React.ReactElement<{ className?: string }>, {
@@ -29,12 +33,14 @@ export default function Input({ label, leftIcon, rightIcon, error, ...props }: I
 
   return (
     <div>
-      <label
-        htmlFor={props.id}
-        className="mb-1 block text-sm font-medium text-gray-700"
-      >
-        {label}
-      </label>
+      {label && (
+        <label
+          htmlFor={props.id}
+          className="mb-1 block text-sm font-medium text-gray-700"
+        >
+          {label}
+        </label>
+      )}
       <div className="relative">
         {leftIconWithProps}
         <input
