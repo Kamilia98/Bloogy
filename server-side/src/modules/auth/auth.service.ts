@@ -64,9 +64,6 @@ export class AuthService {
         avatar: picture,
         password: await bcrypt.hash(Math.random().toString(36).slice(-8), 10),
       });
-      user = await this.userModel
-        .findOne({ email })
-        .select('name email avatar');
     }
 
     if (!user) {
