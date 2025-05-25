@@ -37,6 +37,7 @@ import {
   updateBlog,
 } from '../store/features/blogs/blogsSlice';
 
+
 export default function BlogForm() {
   const { id } = useParams<{ id: string }>();
   const isEditMode = Boolean(id);
@@ -72,16 +73,10 @@ export default function BlogForm() {
       fontSize: type === 'heading' ? 24 : 16,
       fontWeight: type === 'heading' ? 700 : 400,
       fontColor: '#000000',
-      fontFamily: 'inherit',
       fontStyle: 'normal',
       fontVariant: 'normal',
-      lineHeight: 1.5,
-      letterSpacing: 0,
       textAlign: 'left',
-      textTransform: 'none',
       textDecoration: 'none',
-      textShadow: 'none',
-      textOverflow: 'clip',
       isQuote: type === 'quote',
       isHighlight: false,
       backgroundColor: undefined,
@@ -289,15 +284,10 @@ export default function BlogForm() {
       fontSize: `${section.fontSize}px`,
       fontWeight: section.fontWeight,
       color: section.fontColor,
-      fontFamily: section.fontFamily,
       fontStyle: section.fontStyle,
       fontVariant: section.fontVariant,
-      lineHeight: section.lineHeight,
-      letterSpacing: `${section.letterSpacing}px`,
       textAlign: section.textAlign as any,
-      textTransform: section.textTransform as any,
       textDecoration: section.textDecoration,
-      textShadow: section.textShadow,
       backgroundColor: section.backgroundColor,
     };
   };
