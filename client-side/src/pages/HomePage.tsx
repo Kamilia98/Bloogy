@@ -3,9 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { PlusCircle, Search } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import useAuth from '../contexts/AuthProvider';
-import Button from '../components/ui/Button';
 import Hero from '../components/Hero';
-// Blog type definitions
 import { CATEGORY, type Blog } from '../models/BlogModel';
 import { useDispatch, useSelector } from 'react-redux';
 import { deleteBlog, fetchBlogs } from '../store/features/blogs/blogsSlice';
@@ -15,20 +13,22 @@ import type { AppDispatch, RootState } from '../store';
 import Loading from '../components/common/Loading';
 import toast from 'react-hot-toast';
 
+import { Box, Chip, Typography, Stack } from '@mui/material';
+import { Grid } from '@mui/material';
+import Input from '../components/ui/Input';
+import Button from '../components/ui/Button';
+
 export default function BlogsPage() {
   const dispatch = useDispatch<AppDispatch>();
   const navigate = useNavigate();
   const Auth = useAuth();
 
-  // Select blogs and status from Redux store
   const blogs = useSelector((state: RootState) => state.blogs.items);
   const status = useSelector((state: RootState) => state.blogs.status);
 
-  // Local states for search and filter
   const [searchTerm, setSearchTerm] = useState('');
   const [activeCategory, setActiveCategory] = useState<CATEGORY | 'all'>('all');
 
-  // Modal states
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
   const [selectedBlog, setSelectedBlog] = useState<Blog | null>(null);
 
@@ -37,25 +37,13 @@ export default function BlogsPage() {
 
   useEffect(() => {
     const params: Record<string, any> = {};
-
-    if (searchTerm) {
-      params.search = searchTerm;
-    }
-    if (activeCategory !== 'all') {
-      params.category = activeCategory;
-    }
-
+    if (searchTerm) params.search = searchTerm;
+    if (activeCategory !== 'all') params.category = activeCategory;
     dispatch(fetchBlogs(params));
   }, [searchTerm, activeCategory, dispatch]);
 
-  const handleCreateBlog = () => {
-    navigate('/blogs/add');
-  };
-
-  const handleEditBlog = (blogId: string) => {
-    navigate(`/blogs/edit/${blogId}`);
-  };
-
+  const handleCreateBlog = () => navigate('/blogs/add');
+  const handleEditBlog = (blogId: string) => navigate(`/blogs/edit/${blogId}`);
   const confirmDelete = (blog: Blog) => {
     setSelectedBlog(blog);
     setDeleteModalOpen(true);
@@ -74,95 +62,143 @@ export default function BlogsPage() {
         console.error(err);
       });
   };
+
   return (
     <>
       {/* Hero Section */}
       <Hero />
 
-      <div className="flex flex-col gap-8 px-4 py-12">
-        {/* Search and Filter */}
-        <div className="flex flex-col gap-4 md:flex-row md:items-start md:justify-between md:space-y-0">
-          <div className="relative w-full md:max-w-xs">
-            <input
-              type="text"
-              placeholder="Search blogs..."
+      {/* Intro Text */}
+      <Box
+        sx={{
+          py: 8,
+          px: 2,
+          background: 'linear-gradient(to bottom, #EFF6FF, #FFFFFF)',
+          textAlign: 'center',
+        }}
+      >
+        <motion.div
+          initial={{ opacity: 0, y: -20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6 }}
+        >
+          <Typography
+            variant="h4"
+            fontWeight="bold"
+            color="text.primary"
+            gutterBottom
+          >
+            Our Blogs
+          </Typography>
+          <Typography
+            variant="body1"
+            color="text.secondary"
+            maxWidth="600px"
+            mx="auto"
+          >
+            Explore the latest insights, tutorials, and updates from our
+            creators
+          </Typography>
+        </motion.div>
+      </Box>
+
+      <Stack gap={5} px={4} pb={10}>
+        {/* Search & Filter */}
+        <Stack
+          direction={{ xs: 'column', md: 'row' }}
+          spacing={2}
+          justifyContent="space-between"
+          alignItems={{ md: 'center' }}
+        >
+          {/* Search Input */}
+          <Box sx={{ position: 'relative', width: '100%', maxWidth: 300 }}>
+            <Input
+              placeholder="Search Blogs..."
               value={searchTerm}
+              leftIcon={<Search size={16} />}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full rounded-lg border border-gray-300 bg-white px-4 py-2 pl-10 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 focus:outline-none"
             />
-            <Search className="absolute top-2.5 left-3 h-4 w-4 text-gray-400" />
-          </div>
+          </Box>
 
-          <div className="flex flex-wrap gap-2">
+          {/* Category Filter */}
+          <Stack direction={'row'} flexWrap={'wrap'} gap={2}>
             {categories.map((category) => (
-              <button
+              <Chip
                 key={category}
+                label={category.charAt(0).toUpperCase() + category.slice(1)}
                 onClick={() => setActiveCategory(category as CATEGORY | 'all')}
-                className={`rounded-full px-4 py-1 text-sm font-medium ${
-                  activeCategory === category
-                    ? 'bg-primary text-white'
-                    : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-                }`}
-              >
-                {category.charAt(0).toUpperCase() + category.slice(1)}
-              </button>
+                color={activeCategory === category ? 'primary' : 'default'}
+                clickable
+              />
             ))}
-          </div>
-        </div>
+          </Stack>
+        </Stack>
 
-        {/* Create Blog Button (for logged-in users) */}
+        {/* Create Blog Button */}
         {Auth.user && (
           <motion.div
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.2, duration: 0.5 }}
-            className="mb-8 flex justify-end"
+            style={{ display: 'flex', justifyContent: 'flex-end' }}
           >
-            <div>
+            <Box>
               <Button
+                label="Create new Blog"
                 onClick={handleCreateBlog}
-                label="Create New Blog"
+                variant="primary"
                 icon={<PlusCircle size={18} />}
               />
-            </div>
+            </Box>
           </motion.div>
         )}
 
-        {/* Blogs List */}
+        {/* Blog List */}
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 0.3, duration: 0.5 }}
-          className="space-y-6"
         >
           {status === 'loading' ? (
-            <Loading />
+            <Box sx={{ display: 'flex', justifyContent: 'center', mt: 4 }}>
+              <Loading />
+            </Box>
           ) : status === 'failed' ? (
-            <div className="rounded-2xl border border-red-500 bg-red-100 p-12 text-center text-red-500">
+            <Box
+              sx={{
+                border: '1px solid red',
+                bgcolor: '#fee2e2',
+                color: 'red',
+                textAlign: 'center',
+                borderRadius: 2,
+                py: 4,
+              }}
+            >
               Error Loading Blogs
-            </div>
+            </Box>
           ) : blogs.length === 0 ? (
-            <div className="rounded-lg bg-gray-50 py-12 text-center">
-              <p className="text-gray-600">
+            <Box textAlign="center" py={6} bgcolor="#F9FAFB" borderRadius={2}>
+              <Typography variant="body1" color="text.secondary">
                 {searchTerm || activeCategory !== 'all'
                   ? 'No blogs found matching your criteria.'
                   : 'No blogs found. Be the first to create one!'}
-              </p>
-            </div>
+              </Typography>
+            </Box>
           ) : (
-            <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+            <Grid container spacing={4} columns={{ xs: 1, md: 2, lg: 3 }}>
               <AnimatePresence>
                 {blogs.map((blog, index) => (
-                  <BlogCard
-                    key={blog._id || index}
-                    index={index}
-                    blog={blog}
-                    handleEditBlog={handleEditBlog}
-                    confirmDelete={confirmDelete}
-                  />
+                  <Grid size={1} key={blog._id || index}>
+                    <BlogCard
+                      index={index}
+                      blog={blog}
+                      handleEditBlog={handleEditBlog}
+                      confirmDelete={confirmDelete}
+                    />
+                  </Grid>
                 ))}
               </AnimatePresence>
-            </div>
+            </Grid>
           )}
         </motion.div>
 
@@ -176,7 +212,7 @@ export default function BlogsPage() {
             />
           )}
         </AnimatePresence>
-      </div>
+      </Stack>
     </>
   );
 }
