@@ -11,16 +11,10 @@ export interface Section {
   fontSize: number;
   fontWeight: number;
   fontColor: string;
-  fontFamily: string;
   fontStyle: string;
   fontVariant: string;
-  lineHeight: number;
-  letterSpacing: number;
   textAlign: string;
-  textTransform: string;
   textDecoration: string;
-  textShadow: string;
-  textOverflow: string;
   sectionType: sectionType;
   isQuote: boolean;
   isHighlight: boolean;
