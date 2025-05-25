@@ -37,7 +37,6 @@ export const fetchUserPosts = createAsyncThunk(
         `/api/blogs/user/${userId}`,
         authHeaders(token),
       );
-      console.log(data);
       return data;
     } catch (err: any) {
       return rejectWithValue(
