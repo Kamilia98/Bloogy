@@ -13,6 +13,10 @@ import {
 } from 'lucide-react';
 import { cn } from '../utlils/cn';
 
+import Select from './ui/Select';
+import Slider from '@mui/joy/Slider';
+import { MuiColorInput } from 'mui-color-input';
+
 interface SectionStyleEditorProps {
   section: Section;
   onStyleChange: (updatedSection: Partial<Section>) => void;
@@ -22,17 +26,6 @@ const SectionStyleEditor: React.FC<SectionStyleEditorProps> = ({
   section,
   onStyleChange,
 }) => {
-  const fontFamilyOptions = [
-    'inherit',
-    'Arial, sans-serif',
-    'Helvetica, sans-serif',
-    'Georgia, serif',
-    'Times New Roman, serif',
-    'Courier New, monospace',
-    'Verdana, sans-serif',
-    'Roboto, sans-serif',
-  ];
-
   const fontWeightOptions = [
     { value: 300, label: 'Light' },
     { value: 400, label: 'Regular' },
@@ -159,50 +152,35 @@ const SectionStyleEditor: React.FC<SectionStyleEditorProps> = ({
             Font Size
           </label>
           <div className="flex items-center">
-            <input
-              type="range"
-              min="10"
-              max="72"
+            <Slider
+              min={10}
+              max={72}
               value={section.fontSize}
-              onChange={(e) =>
-                onStyleChange({ fontSize: parseInt(e.target.value) || 16 })
+              onChange={(_, value) =>
+                onStyleChange({
+                  fontSize: Array.isArray(value) ? value[0] : value,
+                })
               }
-              className="accent-primary mr-2 w-full"
             />
             <div className="flex w-14 items-center">
-              <input
-                type="number"
-                min="10"
-                max="72"
-                value={section.fontSize}
-                onChange={(e) =>
-                  onStyleChange({ fontSize: parseInt(e.target.value) || 16 })
-                }
-                className="w-10 rounded border-gray-300 p-1 text-center text-sm"
-              />
-              <span className="ml-1 text-xs text-gray-500">px</span>
+              <span className="ml-1 text-xs text-gray-500">
+                {section.fontSize}px
+              </span>
             </div>
           </div>
         </div>
 
         {/* Font Weight */}
         <div>
-          <label className="mb-1 block text-xs font-medium text-gray-600">
-            Font Weight
-          </label>
-          <select
+          <Select
+            label="Font Weight"
             value={section.fontWeight}
-            onChange={(e) =>
-              onStyleChange({ fontWeight: parseInt(e.target.value) })
-            }
-            className="focus:border-primary focus:ring-primary w-full rounded border-gray-300 p-2 text-sm shadow-sm focus:ring-1"
-          >
-            {fontWeightOptions.map((option) => (
-              <option key={option.value} value={option.value}>
-                {option.label} ({option.value})
-              </option>
-            ))}
-          </select>
+            options={fontWeightOptions.map((fontWeight) => ({
+              value: fontWeight.value,
+              label: fontWeight.label,
+            }))}
+            onChange={(value) => onStyleChange({ fontWeight: value })}
+          />
         </div>
 
         {/* Font Color */}
@@ -211,19 +189,11 @@ const SectionStyleEditor: React.FC<SectionStyleEditorProps> = ({
             Font Color
           </label>
           <div className="flex">
-            <div className="relative">
-              <input
-                type="color"
-                value={section.fontColor}
-                onChange={(e) => onStyleChange({ fontColor: e.target.value })}
-                className="h-9 w-9 cursor-pointer rounded-l border-gray-300 bg-white p-0"
-              />
-            </div>
-            <input
-              type="text"
+            <MuiColorInput
+              className="w-full"
+              format="hex"
               value={section.fontColor}
-              onChange={(e) => onStyleChange({ fontColor: e.target.value })}
-              className="focus:border-primary focus:ring-primary w-full rounded-r border-gray-300 p-2 text-sm shadow-sm focus:ring-1"
+              onChange={(value) => onStyleChange({ fontColor: value })}
             />
           </div>
         </div>
@@ -234,110 +204,13 @@ const SectionStyleEditor: React.FC<SectionStyleEditorProps> = ({
             Background Color
           </label>
           <div className="flex">
-            <div className="relative">
-              <input
-                type="color"
-                value={section.backgroundColor || '#ffffff'}
-                onChange={(e) =>
-                  onStyleChange({ backgroundColor: e.target.value })
-                }
-                className="h-9 w-9 cursor-pointer rounded-l border-gray-300 bg-white p-0"
-              />
-            </div>
-            <input
-              type="text"
-              value={section.backgroundColor || ''}
-              onChange={(e) =>
-                onStyleChange({ backgroundColor: e.target.value })
-              }
-              placeholder="transparent"
-              className="focus:border-primary focus:ring-primary w-full rounded-r border-gray-300 p-2 text-sm shadow-sm focus:ring-1"
+            <MuiColorInput
+              className="w-full"
+              format="hex"
+              value={section.backgroundColor || '#fff'}
+              onChange={(value) => onStyleChange({ backgroundColor: value })}
             />
           </div>
-        </div>
-
-        {/* Font Family */}
-        <div>
-          <label className="mb-1 block text-xs font-medium text-gray-600">
-            Font Family
-          </label>
-          <select
-            value={section.fontFamily}
-            onChange={(e) => onStyleChange({ fontFamily: e.target.value })}
-            className="focus:border-primary focus:ring-primary w-full rounded border-gray-300 p-2 text-sm shadow-sm focus:ring-1"
-          >
-            {fontFamilyOptions.map((font) => (
-              <option key={font} value={font} style={{ fontFamily: font }}>
-                {font.split(',')[0]}
-              </option>
-            ))}
-          </select>
-        </div>
-
-        {/* Line Height */}
-        <div>
-          <label className="mb-1 block text-xs font-medium text-gray-600">
-            Line Height
-          </label>
-          <div className="flex items-center">
-            <input
-              type="range"
-              min="0.5"
-              max="3"
-              step="0.1"
-              value={section.lineHeight}
-              onChange={(e) =>
-                onStyleChange({ lineHeight: parseFloat(e.target.value) || 1.5 })
-              }
-              className="accent-primary mr-2 w-full"
-            />
-            <span className="w-10 text-center text-sm">
-              {section.lineHeight.toFixed(1)}
-            </span>
-          </div>
-        </div>
-
-        {/* Letter Spacing */}
-        <div>
-          <label className="mb-1 block text-xs font-medium text-gray-600">
-            Letter Spacing
-          </label>
-          <div className="flex items-center">
-            <input
-              type="range"
-              min="-5"
-              max="10"
-              value={section.letterSpacing}
-              onChange={(e) =>
-                onStyleChange({
-                  letterSpacing: parseFloat(e.target.value) || 0,
-                })
-              }
-              className="accent-primary mr-2 w-full"
-            />
-            <div className="flex w-14 items-center">
-              <span className="text-sm">{section.letterSpacing}</span>
-              <span className="ml-1 text-xs text-gray-500">px</span>
-            </div>
-          </div>
-        </div>
-
-        {/* Text Transform */}
-        <div>
-          <label className="mb-1 block text-xs font-medium text-gray-600">
-            Text Transform
-          </label>
-          <select
-            value={section.textTransform}
-            onChange={(e) => onStyleChange({ textTransform: e.target.value })}
-            className="focus:border-primary focus:ring-primary w-full rounded border-gray-300 p-2 text-sm shadow-sm focus:ring-1"
-          >
-            <option value="none">None</option>
-
-            <option value="uppercase">UPPERCASE</option>
-            <option value="lowercase">lowercase</option>
-            <option value="capitalize">Capitalize</option>
-          </select>
         </div>
       </div>
     </div>
