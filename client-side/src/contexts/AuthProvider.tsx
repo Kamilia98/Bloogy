@@ -65,13 +65,14 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     );
   };
 
+  const BASE_URL = import.meta.env.VITE_API_BASE_URL || '/api';
   const login = async (
     email: string,
     password: string,
     rememberMe: boolean,
   ) => {
     try {
-      const { data } = await axios.post('/api/auth/login', { email, password });
+      const { data } = await axios.post(`${BASE_URL}/auth/login`, { email, password });
       const { token, user } = data;
 
       setIsLoggedIn(true);
@@ -94,8 +95,8 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     }
   };
 
-  const googleSignUp = () => window.open('/api/auth/google', '_self');
-  const facebookSignUp = () => window.open('/api/auth/facebook', '_self');
+  const googleSignUp = () => window.open(`${BASE_URL}/auth/google`, '_self');
+  const facebookSignUp = () => window.open(`${BASE_URL}/auth/facebook`, '_self');
 
   const handleGoogleLogin = (token: string, user: User) => {
     setIsLoggedIn(true);
@@ -135,7 +136,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const logout = async () => {
     try {
       await axios.post(
-        '/api/auth/logout',
+        `${BASE_URL}/auth/logout`,
         {},
         {
           headers: { Authorization: `Bearer ${token}` },
@@ -157,7 +158,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
   const register = async (name: string, email: string, password: string) => {
     try {
-      await axios.post('/api/auth/register', { name, email, password });
+      await axios.post(`${BASE_URL}/auth/register`, { name, email, password });
       toast.success('Registered successfully!');
     } catch (error) {
       handleError(error, 'Registration failed');
@@ -167,7 +168,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
   const forgetPassword = async (email: string) => {
     try {
-      await axios.post('/api/auth/forget-password', { email });
+      await axios.post(`${BASE_URL}/auth/forget-password`, { email });
       toast.success('Password reset email sent!');
     } catch (error) {
       handleError(error, 'Password reset failed');
@@ -178,7 +179,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const resetPassword = async (password: string) => {
     try {
       await axios.post(
-        '/api/auth/reset-password',
+        `${BASE_URL}/auth/reset-password`,
         { password },
         {
           headers: {
@@ -198,7 +199,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const validateResetToken = async (resetToken: string) => {
     try {
       const { data } = await axios.get(
-        `/api/auth/validate-reset-token/${resetToken}`,
+        `${BASE_URL}/auth/validate-reset-token/${resetToken}`,
       );
       setToken(resetToken);
       return data;
