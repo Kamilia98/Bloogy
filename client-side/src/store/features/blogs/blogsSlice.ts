@@ -95,7 +95,7 @@ export const updateBlog = createAsyncThunk(
   ) => {
     try {
       const { data } = await axios.patch(
-        `/api/blogs/${blog._id}`,
+        `${BASE_URL}/blogs/${blog._id}`,
         blog,
         authHeaders(token),
       );
@@ -113,7 +113,7 @@ export const deleteBlog = createAsyncThunk(
   'blogs/deleteBlog',
   async ({ id, token }: { id: string; token: string }, { rejectWithValue }) => {
     try {
-      await axios.delete(`/api/blogs/${id}`, authHeaders(token));
+      await axios.delete(`${BASE_URL}/blogs/${id}`, authHeaders(token));
       return id;
     } catch (err: any) {
       return rejectWithValue(
@@ -136,7 +136,7 @@ export const toggleLikeBlog = createAsyncThunk(
   ) => {
     try {
       const { data } = await axios.post(
-        `/api/blogs/like/${blogId}`,
+        `${BASE_URL}/blogs/like/${blogId}`,
         {},
         authHeaders(token),
       );
@@ -163,7 +163,7 @@ export const addComment = createAsyncThunk(
   ) => {
     try {
       const { data } = await axios.post(
-        `/api/comments/${blogId}`,
+        `${BASE_URL}/comments/${blogId}`,
         { content },
         authHeaders(token),
       );
@@ -183,7 +183,7 @@ export const deleteComment = createAsyncThunk(
     { rejectWithValue },
   ) => {
     try {
-      await axios.delete(`/api/comments/${commentId}`, authHeaders(token));
+      await axios.delete(`${BASE_URL}/comments/${commentId}`, authHeaders(token));
       return { commentId };
     } catch (err: any) {
       return rejectWithValue(
@@ -205,7 +205,7 @@ export const editComment = createAsyncThunk(
   ) => {
     try {
       const { data } = await axios.patch(
-        `/api/comments/${commentId}`,
+        `${BASE_URL}/comments/${commentId}`,
         { content },
         authHeaders(token),
       );
