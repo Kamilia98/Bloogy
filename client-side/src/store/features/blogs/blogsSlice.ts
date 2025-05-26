@@ -24,6 +24,8 @@ const authHeaders = (token: string) => ({
   headers: { Authorization: `Bearer ${token}` },
 });
 
+const BASE_URL = import.meta.env.VITE_API_BASE_URL || '/api';
+
 // === Async Thunks ===
 
 // Fetch all blogs
@@ -31,7 +33,7 @@ export const fetchBlogs = createAsyncThunk(
   'blogs/fetchBlogs',
   async (params: Record<string, any>, { rejectWithValue }) => {
     try {
-      const { data } = await axios.get('/api/blogs', { params });
+      const { data } = await axios.get(`${BASE_URL}/blogs`, { params });
       return data;
     } catch (err: any) {
       return rejectWithValue(
@@ -46,7 +48,7 @@ export const fetchBlogById = createAsyncThunk(
   'blogs/fetchBlogById',
   async (id: string, { rejectWithValue }) => {
     try {
-      const { data } = await axios.get(`/api/blogs/${id}`);
+      const { data } = await axios.get(`${BASE_URL}/blogs/${id}`);
       return data;
     } catch (err: any) {
       return rejectWithValue(
@@ -70,7 +72,11 @@ export const addBlog = createAsyncThunk(
     { rejectWithValue },
   ) => {
     try {
-      const { data } = await axios.post('/api/blogs', blog, authHeaders(token));
+      const { data } = await axios.post(
+        `${BASE_URL}/blogs`,
+        blog,
+        authHeaders(token),
+      );
       return data;
     } catch (err: any) {
       return rejectWithValue(
