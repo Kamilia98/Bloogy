@@ -1,8 +1,6 @@
-import React from 'react';
 import Select, { selectClasses } from '@mui/joy/Select';
 import Option from '@mui/joy/Option';
 import KeyboardArrowDown from '@mui/icons-material/KeyboardArrowDown';
-import { red } from '@mui/material/colors';
 import type { SxProps } from '@mui/material';
 
 interface OptionType<T> {
