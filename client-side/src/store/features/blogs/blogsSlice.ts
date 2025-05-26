@@ -33,7 +33,10 @@ export const fetchBlogs = createAsyncThunk(
   'blogs/fetchBlogs',
   async (params: Record<string, any>, { rejectWithValue }) => {
     try {
-      const { data } = await axios.get(`${BASE_URL}/blogs`, { params });
+      const { data } = await axios.get(`${BASE_URL}/blogs`, {
+        params,
+        withCredentials: true,
+      });
       return data;
     } catch (err: any) {
       return rejectWithValue(
@@ -183,7 +186,10 @@ export const deleteComment = createAsyncThunk(
     { rejectWithValue },
   ) => {
     try {
-      await axios.delete(`${BASE_URL}/comments/${commentId}`, authHeaders(token));
+      await axios.delete(
+        `${BASE_URL}/comments/${commentId}`,
+        authHeaders(token),
+      );
       return { commentId };
     } catch (err: any) {
       return rejectWithValue(
