@@ -3,8 +3,8 @@ import { AppModule } from './app.module';
 import { ValidationPipe } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { ExpressAdapter } from '@nestjs/platform-express';
-import express from 'express';
 
+const express = require('express');
 const server = express();
 
 // This is the entry point for Vercel serverless functions
