@@ -76,8 +76,15 @@ export class AuthService {
     const payload = { sub: user._id, email: user.email };
     const token = this.jwtService.sign(payload);
 
-    res.cookie('jwt', token);
-    res.cookie('user', JSON.stringify(user));
+    res.cookie('jwt', token, {
+      secure: true, 
+      sameSite: 'None', 
+    });
+    res.cookie('user', JSON.stringify(user), {
+      secure: true,
+      sameSite: 'None',
+    });
+    ;
     console.log('User after creation:', user);
 
     res.redirect(
