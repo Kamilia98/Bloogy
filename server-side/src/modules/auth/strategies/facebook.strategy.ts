@@ -1,23 +1,25 @@
 import { Injectable } from '@nestjs/common';
 import { PassportStrategy } from '@nestjs/passport';
 import { Profile, Strategy } from 'passport-facebook';
+import { ConfigService } from '@nestjs/config';
 
 @Injectable()
 export class FacebookStrategy extends PassportStrategy(Strategy, 'facebook') {
-  constructor() {
-    const clientID = process.env.FACEBOOK_APP_ID;
-    const clientSecret = process.env.FACEBOOK_APP_SECRET;
-    const redirectUri = process.env.FACEBOOK_REDIRECT_URI;
+  constructor(private readonly configService: ConfigService) {
+    const clientID = configService.get<string>('FACEBOOK_APP_ID');
+    const clientSecret = configService.get<string>('FACEBOOK_APP_SECRET');
+    const callbackURL = configService.get<string>('FACEBOOK_REDIRECT_URI');
 
-    if (!clientID || !clientSecret || !redirectUri) {
+    if (!clientID || !clientSecret || !callbackURL) {
       throw new Error(
-        'Missing Facebook App ID or Secret in environment variables',
+        'Missing Facebook App ID, Secret, or Redirect URI in config',
       );
     }
+
     super({
       clientID,
       clientSecret,
-      callbackURL: redirectUri,
+      callbackURL,
       scope: 'email',
       profileFields: ['emails', 'name'],
     });
@@ -31,10 +33,11 @@ export class FacebookStrategy extends PassportStrategy(Strategy, 'facebook') {
   ): Promise<any> {
     const { name, emails } = profile;
     const user = {
-      email: emails && emails.length > 0 ? emails[0].value : null,
-      firstName: name && name.givenName ? name.givenName : null,
-      lastName: name && name.familyName ? name.familyName : null,
+      email: emails?.[0]?.value ?? null,
+      firstName: name?.givenName ?? null,
+      lastName: name?.familyName ?? null,
     };
+
     const payload = {
       user,
       accessToken,

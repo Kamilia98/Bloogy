@@ -13,6 +13,7 @@ import { User, UserDocument } from '../users/schemas/user.schema';
 import { ForgetPasswordDto } from './dto/forgetPassword.dto';
 import { ResetPasswordDto } from './dto/resetPassword.dto';
 import { MailService } from '../../services/mail.service';
+import { ConfigService } from '@nestjs/config';
 
 @Injectable()
 export class AuthService {
@@ -20,6 +21,7 @@ export class AuthService {
     @InjectModel(User.name) private userModel: Model<UserDocument>,
     private jwtService: JwtService,
     private mailService: MailService,
+    private configService: ConfigService,
   ) {}
 
   async login(loginDto: LoginDto) {
@@ -64,6 +66,7 @@ export class AuthService {
         avatar: picture,
         password: await bcrypt.hash(Math.random().toString(36).slice(-8), 10),
       });
+      user = await user.save();
     }
 
     if (!user) {
@@ -76,7 +79,9 @@ export class AuthService {
     res.cookie('jwt', token);
     res.cookie('user', JSON.stringify(user));
 
-    res.redirect(`${process.env.FRONTEND_URL}/auth/login`);
+    res.redirect(
+      `${this.configService.get<string>('FRONTEND_URL')}/auth/login`,
+    );
   }
 
   async facebookSignUp(req, res) {
@@ -99,7 +104,9 @@ export class AuthService {
     const token = this.jwtService.sign(payload);
     res.cookie('jwt', token);
     res.cookie('user', JSON.stringify(user));
-    res.redirect(`${process.env.FRONTEND_URL}/auth/login`);
+    res.redirect(
+      `${this.configService.get<string>('FRONTEND_URL')}/auth/login`,
+    );
   }
 
   private blacklistedTokens: string[] = [];
@@ -166,7 +173,7 @@ export class AuthService {
     </p>
 
     <div style="text-align: center; margin: 30px 0;">
-      <a href="${process.env.FRONTEND_URL}/auth/reset-password?token=${token}"
+      <a href="${this.configService.get<string>('FRONTEND_URL')}/auth/reset-password?token=${token}"
         style="display: inline-block; padding: 12px 24px; font-size: 16px; font-weight: bold; color: #fff; background-color: #4364F7; text-decoration: none; border-radius: 6px;">
         Reset Password
       </a>
