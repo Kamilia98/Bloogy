@@ -4,6 +4,7 @@ import { ValidationPipe } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 
 export default async function bootstrap() {
+  console.log('[main] Starting NestJS application...');
   const app = await NestFactory.create(AppModule);
 
   const configService = app.get(ConfigService);
