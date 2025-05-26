@@ -78,6 +78,7 @@ export class AuthService {
 
     res.cookie('jwt', token);
     res.cookie('user', JSON.stringify(user));
+    console.log('User after creation:', user);
 
     res.redirect(
       `${this.configService.get<string>('FRONTEND_URL')}/auth/login`,
