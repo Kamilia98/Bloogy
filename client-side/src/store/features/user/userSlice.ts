@@ -14,6 +14,7 @@ const initialState: UserState = {
   status: 'idle',
   error: null,
 };
+const BASE_URL = import.meta.env.VITE_API_BASE_URL || '/api';
 
 // Async thunk to fetch user by ID
 export const fetchUserById = createAsyncThunk(
@@ -23,7 +24,7 @@ export const fetchUserById = createAsyncThunk(
     { rejectWithValue },
   ) => {
     try {
-      const response = await axios.get(`/api/users/${userId}`, {
+      const response = await axios.get(`${BASE_URL}/users/${userId}`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       return response.data;
@@ -46,7 +47,7 @@ export const updateUser = createAsyncThunk(
     { rejectWithValue },
   ) => {
     try {
-      const response = await axios.patch(`/api/users/${userId}`, updatedData, {
+      const response = await axios.patch(`${BASE_URL}/users/${userId}`, updatedData, {
         headers: {
           'Content-Type': 'application/json',
           Authorization: `Bearer ${token}`,
