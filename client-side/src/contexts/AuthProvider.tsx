@@ -99,6 +99,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const facebookSignUp = () => window.open(`${BASE_URL}/auth/facebook`, '_self');
 
   const handleGoogleLogin = (token: string, user: User) => {
+    console.log('Handling Google login...');
     setIsLoggedIn(true);
     setToken(token);
     setUser(user);
@@ -112,6 +113,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   };
 
   const checkGoogleLogin = () => {
+    console.log('Checking Google login...');
     const cookies = document.cookie.split(';');
     const jwtCookie = cookies.find((c) => c.trim().startsWith('jwt='));
     const userCookie = cookies.find((c) => c.trim().startsWith('user='));
