@@ -16,7 +16,6 @@ import { ThrottlerModule } from '@nestjs/throttler';
       envFilePath: `.env.${process.env.NODE_ENV || 'development'}`,
     }),
 
-    
     ThrottlerModule.forRoot({
       throttlers: [
         {
