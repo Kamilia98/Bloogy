@@ -7,6 +7,7 @@ import express from 'express';
 
 const server = express();
 
+// This is the entry point for Vercel serverless functions
 async function bootstrap() {
   const app = await NestFactory.create(AppModule, new ExpressAdapter(server));
 
