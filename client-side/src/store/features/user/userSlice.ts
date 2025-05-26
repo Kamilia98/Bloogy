@@ -26,6 +26,7 @@ export const fetchUserById = createAsyncThunk(
     try {
       const response = await axios.get(`${BASE_URL}/users/${userId}`, {
         headers: { Authorization: `Bearer ${token}` },
+        withCredentials: true,
       });
       return response.data;
     } catch (err: any) {
@@ -48,6 +49,7 @@ export const updateUser = createAsyncThunk(
   ) => {
     try {
       const response = await axios.patch(`${BASE_URL}/users/${userId}`, updatedData, {
+        withCredentials: true,
         headers: {
           'Content-Type': 'application/json',
           Authorization: `Bearer ${token}`,
