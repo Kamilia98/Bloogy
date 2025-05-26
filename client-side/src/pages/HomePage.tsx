@@ -111,7 +111,7 @@ export default function BlogsPage() {
           alignItems={{ md: 'center' }}
         >
           {/* Search Input */}
-          <Box sx={{ position: 'relative', width: '100%', maxWidth: 300 }}>
+          <Box sx={{ width: { xs: '100%', md: 400 } }}>
             <Input
               placeholder="Search Blogs..."
               value={searchTerm}
