@@ -72,7 +72,10 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     rememberMe: boolean,
   ) => {
     try {
-      const { data } = await axios.post(`${BASE_URL}/auth/login`, { email, password });
+      const { data } = await axios.post(`${BASE_URL}/auth/login`, {
+        email,
+        password,
+      });
       const { token, user } = data;
 
       setIsLoggedIn(true);
@@ -96,7 +99,8 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   };
 
   const googleSignUp = () => window.open(`${BASE_URL}/auth/google`, '_self');
-  const facebookSignUp = () => window.open(`${BASE_URL}/auth/facebook`, '_self');
+  const facebookSignUp = () =>
+    window.open(`${BASE_URL}/auth/facebook`, '_self');
 
   const handleGoogleLogin = (token: string, user: User) => {
     console.log('Handling Google login...');
@@ -117,7 +121,8 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     const cookies = document.cookie.split(';');
     const jwtCookie = cookies.find((c) => c.trim().startsWith('jwt='));
     const userCookie = cookies.find((c) => c.trim().startsWith('user='));
-
+    console.log('JWT Cookie:', jwtCookie);
+    console.log('User Cookie:', userCookie);
     if (jwtCookie && userCookie) {
       try {
         const userStr = decodeURIComponent(userCookie.split('=')[1]);
