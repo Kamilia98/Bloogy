@@ -118,26 +118,35 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
   const checkGoogleLogin = () => {
     console.log('Checking Google login...');
-    const cookies = document.cookie.split(';');
-    const jwtCookie = cookies.find((c) => c.trim().startsWith('jwt='));
-    const userCookie = cookies.find((c) => c.trim().startsWith('user='));
-    console.log('JWT Cookie:', jwtCookie);
-    console.log('User Cookie:', userCookie);
-    if (jwtCookie && userCookie) {
-      try {
-        const userStr = decodeURIComponent(userCookie.split('=')[1]);
-        const userObj = JSON.parse(userStr);
-        const jwt = jwtCookie.split('=')[1];
-        handleGoogleLogin(jwt, userObj);
-      } catch (e) {
-        console.error('Failed to parse user cookie:', e);
-      } finally {
-        document.cookie =
-          'jwt=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;';
-        document.cookie =
-          'user=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;';
-      }
+    // const cookies = document.cookie.split(';');
+    // const jwtCookie = cookies.find((c) => c.trim().startsWith('jwt='));
+    // const userCookie = cookies.find((c) => c.trim().startsWith('user='));
+    // console.log('JWT Cookie:', jwtCookie);
+    // console.log('User Cookie:', userCookie);
+    // if (jwtCookie && userCookie) {
+    //   try {
+    //     const userStr = decodeURIComponent(userCookie.split('=')[1]);
+    //     const userObj = JSON.parse(userStr);
+    //     const jwt = jwtCookie.split('=')[1];
+    //     handleGoogleLogin(jwt, userObj);
+    //   } catch (e) {
+    //     console.error('Failed to parse user cookie:', e);
+    //   } finally {
+    //     document.cookie =
+    //       'jwt=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;';
+    //     document.cookie =
+    //       'user=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;';
+    //   }
+    // }
+
+    const params = new URLSearchParams(window.location.search);
+    const jwt = params.get('jwt');
+    const userStr = params.get('user');
+    if (jwt && userStr) {
+      const userObj = JSON.parse(decodeURIComponent(userStr));
+      handleGoogleLogin(jwt, userObj);
     }
+
   };
 
   const logout = async () => {

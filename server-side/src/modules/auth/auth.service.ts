@@ -87,9 +87,13 @@ export class AuthService {
     ;
     console.log('User after creation:', user);
 
+    // res.redirect(
+    //   `${this.configService.get<string>('FRONTEND_URL')}/auth/login`,
+    // );
     res.redirect(
-      `${this.configService.get<string>('FRONTEND_URL')}/auth/login`,
+      `${this.configService.get<string>('FRONTEND_URL')}/auth/login?jwt=${token}&user=${encodeURIComponent(JSON.stringify(user))}`,
     );
+
   }
 
   async facebookSignUp(req, res) {
