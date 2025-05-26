@@ -110,7 +110,7 @@ export default function AppNavbar() {
                       to={`/profile/${Auth.user._id}`}
                       className="flex flex-1/2 items-center rounded-full border border-gray-200 px-4 py-2 text-sm font-medium text-gray-700 transition hover:bg-gray-100"
                     >
-                      <div className="h-8 w-8 overflow-hidden">
+                      <div className="flex h-8 w-8 items-center overflow-hidden rounded-full">
                         <UserAvatar user={Auth.user} />
                       </div>
                       <span className="ml-2">{Auth.user.name}</span>
