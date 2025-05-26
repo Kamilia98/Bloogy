@@ -11,17 +11,10 @@ export default function BlogComponent(blog: Partial<Blog>) {
       fontSize: `${section.fontSize}px`,
       fontWeight: section.fontWeight,
       color: section.fontColor,
-      fontFamily: section.fontFamily,
       fontStyle: section.fontStyle,
       fontVariant: section.fontVariant,
-      lineHeight: section.lineHeight,
-      letterSpacing: `${section.letterSpacing}px`,
       textAlign: section.textAlign as React.CSSProperties['textAlign'],
-      textTransform:
-        section.textTransform as React.CSSProperties['textTransform'],
       textDecoration: section.textDecoration,
-      textShadow: section.textShadow,
-      textOverflow: section.textOverflow,
       backgroundColor: section.backgroundColor || 'transparent',
     };
 
