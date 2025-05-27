@@ -142,14 +142,14 @@ export default function ProfilePage() {
               key={post._id}
               className="overflow-hidden rounded-xl border border-gray-200 bg-white transition-shadow hover:shadow-md"
             >
-              <div className="flex">
+              <div className="flex flex-col md:flex-row">
                 <img
                   src={post.blog.thumbnail}
                   alt={post.blog.title}
-                  className="h-32 w-48 object-cover"
+                  className="h-32 w-32 object-cover"
                 />
-                <div className="flex-1 p-6">
-                  <div className="mb-2 flex items-start justify-between">
+                <div className="flex-1 p-4 md:p-6">
+                  <div className="flex items-start justify-between">
                     <h4 className="line-clamp-2 font-semibold text-gray-900">
                       {post.blog.title}
                     </h4>
