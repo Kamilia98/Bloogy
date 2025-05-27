@@ -1,13 +1,6 @@
-@import 'tailwindcss';
-
-@custom-variant dark (&:where(.dark, .dark *));
-
-@theme {
-  --color-primary: #4364f7;
-  --color-tertiary: #3b58d9;
-  --color-danger: #ef4444;
-  --color-outline: #9ca3af;
-}
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
 
 @layer components {
   .btn {
@@ -15,15 +8,15 @@
   }
 
   .btn-primary {
-    @apply from-primary to-tertiary hover:from-tertiary hover:to-primary bg-gradient-to-r text-white;
+    @apply bg-gradient-to-r from-primary to-tertiary text-white hover:from-tertiary hover:to-primary;
   }
 
   .btn-secondary {
-    @apply bg-tertiary hover:bg-tertiary/90 text-white;
+    @apply bg-tertiary text-white hover:bg-tertiary/90;
   }
 
   .btn-outline {
-    @apply border border-gray-300 bg-white text-gray-900 hover:bg-gray-100;
+    @apply border border-outline bg-white text-gray-900 hover:bg-gray-100;
   }
 
   .btn-danger {
