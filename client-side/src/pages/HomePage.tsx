@@ -102,7 +102,7 @@ export default function BlogsPage() {
         </motion.div>
       </Box>
 
-      <Stack gap={5} px={4} pb={10}>
+      <Stack gap={5} px={4} pb={10} sx={{ backgroundColor: 'white' }}>
         {/* Search & Filter */}
         <Stack
           direction={{ xs: 'column', md: 'row' }}

@@ -6,19 +6,30 @@ export default function Hero() {
 
   return (
     <Stack
-      direction={'row'}
-      alignItems={'center'}
+      direction="row"
+      alignItems="center"
       sx={{
         height: '100vh',
-        backgroundColor: 'white',
-        backgroundImage: "url('/images/header.png')",
-        backgroundSize: 'cover',
-        backgroundAttachment: 'fixed',
-        backgroundPosition: 'top',
-        backgroundRepeat: 'no-repeat',
+        position: 'relative',
         p: 6,
       }}
     >
+      {/* Background div */}
+      <Box
+        sx={{
+          position: 'fixed',
+          top: 0,
+          left: 0,
+          width: '100vw',
+          height: '100vh',
+          backgroundImage: "url('/images/header.png')",
+          backgroundSize: 'cover',
+          backgroundPosition: 'top',
+          backgroundRepeat: 'no-repeat',
+          zIndex: -1,
+        }}
+      />
+      {/* Content */}
       <motion.div
         initial={{ opacity: 0, x: -20 }}
         animate={{ opacity: 1, x: 0 }}
