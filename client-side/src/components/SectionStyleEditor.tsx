@@ -14,8 +14,8 @@ import {
 import { cn } from '../utlils/cn';
 
 import Select from './ui/Select';
-import Slider from '@mui/joy/Slider';
 import { MuiColorInput } from 'mui-color-input';
+import { Slider } from '@mui/material';
 
 interface SectionStyleEditorProps {
   section: Section;
@@ -55,7 +55,7 @@ const SectionStyleEditor: React.FC<SectionStyleEditorProps> = ({
             onClick={() => onStyleChange({ fontWeight: option.value })}
             className={cn(
               'rounded p-2 hover:bg-gray-100',
-              section.fontWeight === option.value && 'text-primary bg-gray-100',
+              section.fontWeight === option.value && 'bg-gray-100 text-primary',
             )}
             title={`${option.label} (${option.value})`}
           >
@@ -72,7 +72,7 @@ const SectionStyleEditor: React.FC<SectionStyleEditorProps> = ({
           }
           className={cn(
             'rounded p-2 hover:bg-gray-100',
-            section.fontStyle === 'italic' && 'text-primary bg-gray-100',
+            section.fontStyle === 'italic' && 'bg-gray-100 text-primary',
           )}
           title="Italic"
         >
@@ -90,7 +90,7 @@ const SectionStyleEditor: React.FC<SectionStyleEditorProps> = ({
           className={cn(
             'rounded p-2 hover:bg-gray-100',
             section.textDecoration === 'underline' &&
-              'text-primary bg-gray-100',
+              'bg-gray-100 text-primary',
           )}
           title="Underline"
         >
@@ -109,7 +109,7 @@ const SectionStyleEditor: React.FC<SectionStyleEditorProps> = ({
               className={cn(
                 'rounded p-2 hover:bg-gray-100',
                 section.textAlign === option.value &&
-                  'text-primary bg-gray-100',
+                  'bg-gray-100 text-primary',
               )}
               title={option.label}
             >
@@ -125,7 +125,7 @@ const SectionStyleEditor: React.FC<SectionStyleEditorProps> = ({
           onClick={() => onStyleChange({ isQuote: !section.isQuote })}
           className={cn(
             'rounded p-2 hover:bg-gray-100',
-            section.isQuote && 'text-primary bg-gray-100',
+            section.isQuote && 'bg-gray-100 text-primary',
           )}
           title="Quote Style"
         >
@@ -137,7 +137,7 @@ const SectionStyleEditor: React.FC<SectionStyleEditorProps> = ({
           onClick={() => onStyleChange({ isHighlight: !section.isHighlight })}
           className={cn(
             'rounded p-2 hover:bg-gray-100',
-            section.isHighlight && 'text-primary bg-gray-100',
+            section.isHighlight && 'bg-gray-100 text-primary',
           )}
           title="Highlight"
         >
@@ -155,7 +155,7 @@ const SectionStyleEditor: React.FC<SectionStyleEditorProps> = ({
             <Slider
               min={10}
               max={72}
-              value={section.fontSize}
+              value={section.fontSize || 16}
               onChange={(_, value) =>
                 onStyleChange({
                   fontSize: Array.isArray(value) ? value[0] : value,
@@ -173,7 +173,7 @@ const SectionStyleEditor: React.FC<SectionStyleEditorProps> = ({
         {/* Font Weight */}
         <div>
           <Select
-            label="Font Weight"
+            label={'Font Weight'}
             value={section.fontWeight}
             options={fontWeightOptions.map((fontWeight) => ({
               value: fontWeight.value,
