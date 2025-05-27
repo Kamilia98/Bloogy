@@ -1,4 +1,4 @@
-import { Link, Outlet } from 'react-router-dom';
+import { Outlet } from 'react-router-dom';
 import Logo from '../components/ui/Logo';
 
 export default function AuthLayout() {
@@ -19,9 +19,7 @@ export default function AuthLayout() {
         <section className="flex-1 overflow-auto bg-white p-8 shadow-lg md:p-12">
           <div className="mx-auto flex min-h-full max-w-md flex-col justify-center gap-6">
             {/* Logo */}
-            <Link to="/">
-              <Logo />
-            </Link>
+            <Logo />
             <Outlet />
           </div>
         </section>
