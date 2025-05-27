@@ -89,38 +89,36 @@ export default function LoginPage() {
         />
 
         {/* Password */}
-        <div>
-          <div className="relative">
-            <Link
-              to="/auth/forget-password"
-              className="text-primary hover:text-tertiary absolute right-0 text-sm"
-            >
-              Forgot password?
-            </Link>
-            <Input
-              id="password"
-              label="Password"
-              placeholder="Your Password"
-              type={showPassword ? 'text' : 'password'}
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              error={passwordError}
-              leftIcon={<Lock size={20} />}
-              rightIcon={
-                showPassword ? (
-                  <EyeOff
-                    className="cursor-pointer"
-                    onClick={() => setShowPassword(!showPassword)}
-                  />
-                ) : (
-                  <Eye
-                    className="cursor-pointer"
-                    onClick={() => setShowPassword(!showPassword)}
-                  />
-                )
-              }
-            />
-          </div>
+        <div className="flex flex-col" style={{ alignItems: 'flex-end' }}>
+          <Link
+            to="/auth/forget-password"
+            className="w-auto self-end text-sm text-primary hover:text-tertiary"
+          >
+            Forgot password?
+          </Link>
+          <Input
+            id="password"
+            label="Password"
+            placeholder="Your Password"
+            type={showPassword ? 'text' : 'password'}
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            error={passwordError}
+            leftIcon={<Lock size={20} />}
+            rightIcon={
+              showPassword ? (
+                <EyeOff
+                  className="cursor-pointer"
+                  onClick={() => setShowPassword(!showPassword)}
+                />
+              ) : (
+                <Eye
+                  className="cursor-pointer"
+                  onClick={() => setShowPassword(!showPassword)}
+                />
+              )
+            }
+          />
         </div>
 
         {/* Remember Me */}
@@ -131,7 +129,7 @@ export default function LoginPage() {
             type="checkbox"
             checked={rememberMe}
             onChange={() => setRememberMe(!rememberMe)}
-            className="text-primary focus:ring-tertiary h-4 w-4 rounded border-gray-300"
+            className="h-4 w-4 rounded border-gray-300 text-primary focus:ring-tertiary"
           />
           <label htmlFor="remember-me" className="text-sm text-gray-700">
             Remember me
@@ -176,7 +174,7 @@ export default function LoginPage() {
         Don&apos;t have an account?{' '}
         <Link
           to="/auth/register"
-          className="text-primary hover:text-tertiary font-medium hover:underline"
+          className="font-medium text-primary hover:text-tertiary hover:underline"
         >
           Sign Up
         </Link>
