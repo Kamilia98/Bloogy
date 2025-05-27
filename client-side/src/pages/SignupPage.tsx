@@ -149,7 +149,7 @@ export default function SignupPage() {
         />
 
         {/* Password */}
-        <div className="flex flex-col gap-2">
+        <div className="flex flex-col gap-0.5">
           <Input
             id="password"
             label="Password"
