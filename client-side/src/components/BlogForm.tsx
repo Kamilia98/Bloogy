@@ -24,6 +24,7 @@ import { sectionType, type Section } from '../models/SectionModel';
 
 // Components
 import Button from '../components/ui/Button';
+import Select from './ui/Select';
 import SectionStyleEditor from '../components/SectionStyleEditor';
 import BackButton from './common/BackButton';
 import BlogComponent from './Blog';
@@ -36,7 +37,7 @@ import {
   fetchBlogById,
   updateBlog,
 } from '../store/features/blogs/blogsSlice';
-
+import Input from './ui/Input';
 
 export default function BlogForm() {
   const { id } = useParams<{ id: string }>();
@@ -327,7 +328,7 @@ export default function BlogForm() {
               }
               addSection(item.type);
             }}
-            className="hover:text-primary flex w-full items-center rounded-md px-4 py-2 text-left text-sm text-gray-700 transition-colors hover:bg-gray-50"
+            className="flex w-full items-center rounded-md px-4 py-2 text-left text-sm text-gray-700 transition-colors hover:bg-gray-50 hover:text-primary"
           >
             <Icon size={16} className="mr-2" /> {item.label}
           </button>
@@ -351,7 +352,7 @@ export default function BlogForm() {
           className={cn(
             'flex items-center rounded-md px-4 py-2 text-sm font-medium transition-colors',
             previewMode
-              ? 'bg-primary hover:bg-tertiary text-white'
+              ? 'bg-primary text-white hover:bg-tertiary'
               : 'bg-gray-100 text-gray-700 hover:bg-gray-200',
           )}
         >
@@ -377,41 +378,23 @@ export default function BlogForm() {
         <form onSubmit={handleSubmit} className="space-y-8">
           {/* Title input */}
           <div>
-            <label
-              htmlFor="title"
-              className="mb-2 block text-lg font-medium text-gray-800"
-            >
-              Title
-            </label>
-
-            <input
-              type="text"
-              id="title"
+            <Input
+              label="Title"
               value={title}
               onChange={(e) => setTitle(e.target.value)}
               placeholder="Enter a compelling title..."
-              className="focus:border-primary focus:ring-primary/20 w-full rounded-lg border border-gray-300 p-3 text-lg text-gray-800 shadow-sm transition-shadow focus:ring-2 focus:outline-none"
-              required
             />
           </div>
           <div>
-            <label
-              htmlFor="category"
-              className="mb-2 block text-lg font-medium text-gray-800"
-            >
-              Category
-            </label>
-
-            <select
+            <Select
+              label={'Category'}
               value={category}
-              onChange={(e) => setCategory(e.target.value as CATEGORY)}
-              className="w-full rounded-lg border border-gray-300 p-3 text-gray-800"
-            >
-              <option value="technology">Technology</option>
-              <option value="design">Design</option>
-              <option value="business">Business</option>
-              <option value="lifestyle">Lifestyle</option>
-            </select>
+              options={Object.values(CATEGORY).map((cat) => ({
+                value: cat,
+                label: cat.charAt(0).toUpperCase() + cat.slice(1),
+              }))}
+              onChange={(value) => setCategory(value as CATEGORY)}
+            />
           </div>
 
           {/* Thumbnail upload */}
@@ -468,9 +451,9 @@ export default function BlogForm() {
                               )
                             }
                             className={cn(
-                              'hover:text-primary rounded p-1.5 text-gray-500 transition-colors hover:bg-gray-200',
+                              'rounded p-1.5 text-gray-500 transition-colors hover:bg-gray-200 hover:text-primary',
                               editingSectionIndex === index
-                                ? 'text-primary bg-gray-200'
+                                ? 'bg-gray-200 text-primary'
                                 : '',
                             )}
                             aria-label="Edit section style"
@@ -486,7 +469,7 @@ export default function BlogForm() {
                           onClick={() => moveSectionUp(index)}
                           disabled={index === 0}
                           className={cn(
-                            'hover:text-primary rounded p-1.5 text-gray-500 transition-colors hover:bg-gray-200',
+                            'rounded p-1.5 text-gray-500 transition-colors hover:bg-gray-200 hover:text-primary',
                             index === 0 && 'cursor-not-allowed opacity-50',
                           )}
                           aria-label="Move section up"
@@ -499,7 +482,7 @@ export default function BlogForm() {
                           onClick={() => moveSectionDown(index)}
                           disabled={index === sections.length - 1}
                           className={cn(
-                            'hover:text-primary rounded p-1.5 text-gray-500 transition-colors hover:bg-gray-200',
+                            'rounded p-1.5 text-gray-500 transition-colors hover:bg-gray-200 hover:text-primary',
                             index === sections.length - 1 &&
                               'cursor-not-allowed opacity-50',
                           )}
@@ -564,7 +547,7 @@ export default function BlogForm() {
                         }
                         rows={section.sectionType === 'paragraph' ? 4 : 3}
                         className={cn(
-                          'focus:ring-primary/20 w-full resize-y rounded border-0 bg-transparent px-1 py-2 text-gray-800 focus:ring-1 focus:outline-none',
+                          'w-full resize-y rounded border-0 bg-transparent px-1 py-2 text-gray-800 focus:outline-none focus:ring-1 focus:ring-primary/20',
                           section.isQuote &&
                             'border-l-4 border-gray-300 pl-4 italic',
                           section.isHighlight && 'bg-yellow-50',
@@ -583,7 +566,7 @@ export default function BlogForm() {
                     setSelectedSectionIndex(null);
                     setShowSectionMenu(!showSectionMenu);
                   }}
-                  className="hover:border-primary hover:text-primary flex w-full items-center justify-center rounded-lg border border-dashed border-gray-300 p-4 text-gray-500 transition-colors duration-200 hover:bg-blue-50/30"
+                  className="flex w-full items-center justify-center rounded-lg border border-dashed border-gray-300 p-4 text-gray-500 transition-colors duration-200 hover:border-primary hover:bg-blue-50/30 hover:text-primary"
                 >
                   <PlusCircle size={20} className="mr-2" />
                   Add New Section
