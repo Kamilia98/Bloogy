@@ -341,7 +341,7 @@ export default function BlogForm() {
     <div className="mx-auto flex max-w-4xl flex-col gap-16 px-4 py-8">
       <BackButton />
 
-      <div className="flex items-center justify-between border-b pb-4">
+      <div className="flex items-center justify-between border-b pb-4 gap-2">
         <h1 className="text-3xl font-bold text-gray-800">
           {isEditMode ? 'Edit Blog Post' : 'Create New Blog Post'}
         </h1>
@@ -350,7 +350,7 @@ export default function BlogForm() {
           type="button"
           onClick={() => setPreviewMode(!previewMode)}
           className={cn(
-            'flex items-center rounded-md px-4 py-2 text-sm font-medium transition-colors',
+            'flex items-center roundedlogout-md px-4 py-2 text-sm font-medium transition-colors',
             previewMode
               ? 'bg-primary text-white hover:bg-tertiary'
               : 'bg-gray-100 text-gray-700 hover:bg-gray-200',
