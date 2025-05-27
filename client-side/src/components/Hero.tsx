@@ -11,7 +11,7 @@ export default function Hero() {
       sx={{
         height: '100vh',
         backgroundColor: 'white',
-        backgroundImage: "url('/images/header.jpg')",
+        backgroundImage: "url('/images/header.png')",
         backgroundSize: 'cover',
         backgroundAttachment: 'fixed',
         backgroundPosition: 'top',
