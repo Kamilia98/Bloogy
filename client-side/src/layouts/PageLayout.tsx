@@ -11,9 +11,8 @@ export default function PageLayout({
 }) {
   return (
     <div className="min-h-screen bg-white">
-      {/* Hero Section */}
-      <div className="from-primary to-tertiary bg-gradient-to-br py-16">
-        <div className="container mx-auto max-w-7xl px-4 text-center">
+      <div className="bg-gradient-to-br from-primary to-tertiary py-20">
+        <div className="container mx-auto max-w-7xl px-4 py-2 text-center">
           <h1 className="mb-4 text-4xl font-bold text-white md:text-5xl">
             {title}
           </h1>
