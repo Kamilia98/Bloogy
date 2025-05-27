@@ -1,21 +1,22 @@
-import Select, { selectClasses } from '@mui/joy/Select';
-import Option from '@mui/joy/Option';
-import KeyboardArrowDown from '@mui/icons-material/KeyboardArrowDown';
-import type { SxProps } from '@mui/material';
+import {
+  MenuItem,
+  Select,
+  InputLabel,
+  FormControl,
+  type SelectChangeEvent,
+} from '@mui/material';
+import { useId } from 'react';
 
 interface OptionType<T> {
   value: T;
   label: string;
-  sx?: SxProps; // or `SxProps` for full MUI styling support
 }
-  
 
-interface AppSelectProps<T> {
+interface AppSelectProps<T extends string | number> {
   label: string;
   value: T;
   options: OptionType<T>[];
   onChange: (value: T) => void;
-  className?: string;
 }
 
 function AppSelect<T extends string | number>({
@@ -23,36 +24,28 @@ function AppSelect<T extends string | number>({
   value,
   options,
   onChange,
-  className,
 }: AppSelectProps<T>) {
+  const id = useId();
+
   return (
-    <div>
-      <label className="mb-1 block text-xs font-medium text-gray-600">
-        {label}
-      </label>
+    <FormControl fullWidth variant="outlined" sx={{ mb: 2 }}>
+      <InputLabel id={`${id}-label`}>{label}</InputLabel>
       <Select
+        labelId={`${id}-label`}
+        id={`${id}-select`}
+        label={label}
         value={value}
-        onChange={(_, newValue) => {
-          if (newValue !== null) onChange(newValue);
-        }}
-        indicator={<KeyboardArrowDown />}
-        className={className}
-        sx={{
-          [`& .${selectClasses.indicator}`]: {
-            transition: '0.2s',
-            [`&.${selectClasses.expanded}`]: {
-              transform: 'rotate(-180deg)',
-            },
-          },
+        onChange={(e: SelectChangeEvent<T>) => {
+          onChange(e.target.value as T);
         }}
       >
         {options.map((opt) => (
-          <Option key={String(opt.value)} value={opt.value} sx={opt.sx}>
+          <MenuItem key={opt.value} value={opt.value}>
             {opt.label}
-          </Option>
+          </MenuItem>
         ))}
       </Select>
-    </div>
+    </FormControl>
   );
 }
 
