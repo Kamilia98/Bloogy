@@ -59,6 +59,7 @@ export default function ProfileEditModal({
           label="Name"
           type="text"
           id="name"
+          placeholder="name"
           value={name}
           onChange={(e) => setName(e.target.value)}
         />
@@ -66,6 +67,7 @@ export default function ProfileEditModal({
           label="Email"
           type="email"
           id="email"
+          placeholder='email'
           value={email}
           onChange={(e) => setEmail(e.target.value)}
         />
