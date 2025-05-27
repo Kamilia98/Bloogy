@@ -34,12 +34,12 @@ export default function AppNavbar() {
         isScrolled ? 'bg-white/80 shadow-md' : 'bg-transparent'
       }`}
     >
+      {/* <TestSlider/> */}
       <div className="container mx-auto max-w-7xl px-4 py-3">
         <div className="flex items-center justify-between">
           {/* Logo */}
-          <Link to="/" className="flex items-center">
-            <Logo />
-          </Link>
+
+          <Logo />
 
           {/* Desktop Auth Buttons */}
           <div className="hidden space-x-4 md:flex">
@@ -72,7 +72,7 @@ export default function AppNavbar() {
                 </Link>
                 <Link
                   to="/auth/register"
-                  className="bg-primary hover:bg-tertiary rounded-full px-4 py-2 text-sm font-medium text-white transition"
+                  className="rounded-full bg-primary px-4 py-2 text-sm font-medium text-white transition hover:bg-tertiary"
                 >
                   Sign Up
                 </Link>
@@ -84,7 +84,7 @@ export default function AppNavbar() {
           <div className="md:hidden">
             <button
               onClick={toggleMenu}
-              className="hover:text-primary text-gray-700 transition"
+              className="text-gray-700 transition hover:text-primary"
               aria-label={isMenuOpen ? 'Close menu' : 'Open menu'}
             >
               {isMenuOpen ? <X size={24} /> : <Menu size={24} />}
@@ -108,7 +108,7 @@ export default function AppNavbar() {
                   <div className="flex space-x-2 text-gray-700">
                     <Link
                       to={`/profile/${Auth.user._id}`}
-                      className="flex flex-1/2 items-center rounded-full border border-gray-200 px-4 py-2 text-sm font-medium text-gray-700 transition hover:bg-gray-100"
+                      className="flex-1/2 flex items-center rounded-full border border-gray-200 px-4 py-2 text-sm font-medium text-gray-700 transition hover:bg-gray-100"
                     >
                       <div className="flex h-8 w-8 items-center overflow-hidden rounded-full">
                         <UserAvatar user={Auth.user} />
@@ -135,7 +135,7 @@ export default function AppNavbar() {
                     <Link
                       to="/auth/register"
                       onClick={() => setIsMenuOpen(false)}
-                      className="bg-primary hover:bg-tertiary flex justify-center rounded-full px-4 py-2 text-sm font-medium text-white transition"
+                      className="flex justify-center rounded-full bg-primary px-4 py-2 text-sm font-medium text-white transition hover:bg-tertiary"
                     >
                       Sign Up
                     </Link>
