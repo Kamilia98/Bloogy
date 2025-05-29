@@ -1,13 +1,14 @@
 import { Outlet } from 'react-router-dom';
-import AppNavbar from '../components/AppNavbar';
-import AppFooter from '../components/AppFooter';
+import AppNavbar from '../components/layout/AppNavbar';
+import AppFooter from '../components/layout/AppFooter';
+import { Box } from '@mui/material';
 export default function AppLayout() {
   return (
     <div>
       <AppNavbar />
-      <main>
+      <Box component={'main'} sx={{ marginTop: 12 }}>
         <Outlet />
-      </main>
+      </Box>
       <AppFooter />
     </div>
   );

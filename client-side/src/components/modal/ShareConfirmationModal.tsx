@@ -1,10 +1,10 @@
-import { Modal } from './common/Modal';
+import { Modal } from '../ui/Modal';
 import toast from 'react-hot-toast';
-import useAuth from '../contexts/AuthProvider';
-import Button from './ui/Button';
-import type { Blog } from '../models/BlogModel';
-import { useAppDispatch } from '../store/hooks';
-import { shareBlog } from '../store/features/blogs/postsSlice';
+import useAuth from '../../contexts/AuthProvider';
+import Button from '../ui/Button';
+import type { Blog } from '../../models/BlogModel';
+import { useAppDispatch } from '../../store/hooks';
+import { shareBlog } from '../../store/features/posts/postsSlice';
 
 export default function ShareConfirmationModal({
   setShareModalOpen,

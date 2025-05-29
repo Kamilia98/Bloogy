@@ -1,15 +1,15 @@
 import { useState } from 'react';
-import type { User } from '../models/UserModel';
-import { Modal } from './common/Modal';
-import Input from './ui/Input';
-import ImageUploader from './common/ImageUploader';
-import Button from './ui/Button';
+import type { User } from '../../models/UserModel';
+import { Modal } from '../ui/Modal';
+import Input from '../ui/Input';
+import ImageUploader from '../common/ImageUploader';
+import Button from '../ui/Button';
 import { Loader2, Save } from 'lucide-react';
 import toast from 'react-hot-toast';
-import useAuth from '../contexts/AuthProvider';
+import useAuth from '../../contexts/AuthProvider';
 import { useDispatch } from 'react-redux';
-import { updateUser } from '../store/features/user/userSlice';
-import type { AppDispatch } from '../store';
+import { updateUser } from '../../store/features/user/userSlice';
+import type { AppDispatch } from '../../store';
 
 export default function ProfileEditModal({
   setProfileModalOpen,
@@ -67,7 +67,7 @@ export default function ProfileEditModal({
           label="Email"
           type="email"
           id="email"
-          placeholder='email'
+          placeholder="email"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
         />

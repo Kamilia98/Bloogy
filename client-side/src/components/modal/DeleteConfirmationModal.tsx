@@ -1,5 +1,5 @@
-import Button from './ui/Button';
-import { Modal } from './common/Modal';
+import Button from '../ui/Button';
+import { Modal } from '../ui/Modal';
 
 interface DeleteConfirmationModalProps {
   title: string;

@@ -9,6 +9,8 @@ import {
   Param,
   Request,
   Response,
+  Req,
+  Res,
 } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { LoginDto } from './dto/login.dto';
@@ -16,15 +18,17 @@ import { RegisterDto } from './dto/register.dto';
 import { ForgetPasswordDto } from './dto/forgetPassword.dto';
 import { ResetPasswordDto } from './dto/resetPassword.dto';
 import { AuthGuard } from '@nestjs/passport';
-import { RequestWithUser } from '../blogs/entities/request-with-user.interface';
-
+import { UsersService } from '../users/users.service';
 @Controller('auth')
 export class AuthController {
-  constructor(private readonly authService: AuthService) {}
+  constructor(
+    private readonly authService: AuthService,
+    private usersService: UsersService,
+  ) {}
 
   @Post('login')
-  login(@Body() loginDto: LoginDto) {
-    return this.authService.login(loginDto);
+  login(@Body() loginDto: LoginDto, @Response() res) {
+    return this.authService.login(loginDto, res);
   }
 
   @Get('google')
@@ -43,7 +47,7 @@ export class AuthController {
 
   @Get('facebook-redirect')
   @UseGuards(AuthGuard('facebook'))
-  facebookAuthRedirect(@Request() req, @Response() res) {
+  facebookAuthRedirect(@Request() req: Request, @Response() res: Response) {
     return this.authService.facebookSignUp(req, res);
   }
 
@@ -54,8 +58,8 @@ export class AuthController {
 
   @Post('logout')
   @UseGuards(AuthGuard('jwt'))
-  async logout(@Headers('authorization') authHeader: string) {
-    return await this.authService.logout(authHeader);
+  async logout(@Req() req, @Res() res) {
+    return await this.authService.logout(req, res);
   }
 
   @Post('forget-password')
@@ -65,11 +69,19 @@ export class AuthController {
 
   @Post('reset-password')
   resetPassword(@Body() resetPasswordDto: ResetPasswordDto, @Request() req) {
+    console.log(resetPasswordDto);
     return this.authService.resetPassword(resetPasswordDto, req);
   }
 
   @Get('validate-reset-token/:token')
   validateResetToken(@Param('token') token: string) {
     return this.authService.validateResetToken(token);
+  }
+
+  @Get('me')
+  @UseGuards(AuthGuard('jwt'))
+  getProfile(@Req() req) {
+    const user = req.user;
+    return this.usersService.findOne(user.userId);
   }
 }

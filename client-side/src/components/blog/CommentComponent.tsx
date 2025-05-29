@@ -1,8 +1,8 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
-import useAuth from '../contexts/AuthProvider';
-import type { Comment } from '../models/CommentModel';
-import UserAvatar from './UserAvatar';
+import useAuth from '../../contexts/AuthProvider';
+import type { Comment } from '../../models/CommentModel';
+import UserAvatar from '../common/UserAvatar';
 import { Edit, Trash2, Check, X } from 'lucide-react';
 
 export default function CommentComponent({
@@ -157,6 +157,8 @@ export default function CommentComponent({
             onChange={(e) => setEditContent(e.target.value)}
             className="w-full rounded border border-gray-300 p-2 text-sm focus:border-transparent focus:ring-2 focus:ring-blue-500 focus:outline-none"
             rows={3}
+            placeholder="Edit your comment"
+            title="Edit comment content"
           />
         )}
       </div>

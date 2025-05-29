@@ -1,9 +1,10 @@
 import './App.css';
 import { BrowserRouter as Router } from 'react-router-dom';
 import { AuthProvider } from './contexts/AuthProvider';
-import { ThemeProvider } from './contexts/ThemeProvider';
 import ProjectRoutes from './routes.tsx';
 import ScrollToTop from './ScrollToTop.tsx';
+import { ThemeProvider } from './contexts/ThemeProvider.tsx';
+
 function App() {
   return (
     <>

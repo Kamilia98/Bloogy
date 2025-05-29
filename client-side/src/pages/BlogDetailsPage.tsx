@@ -18,13 +18,13 @@ import {
 import useAuth from '../contexts/AuthProvider';
 
 import BackButton from '../components/common/BackButton';
-import BlogComponent from '../components/Blog';
-import BlogCard from '../components/BlogCard';
+import BlogComponent from '../components/blog/Blog';
+import BlogCard from '../components/blog/BlogCard';
 import Loading from '../components/common/Loading';
-import { DeleteConfirmationModal } from '../components/DeleteConfirmationModal';
+import { DeleteConfirmationModal } from '../components/modal/DeleteConfirmationModal';
 import Button from '../components/ui/Button';
 import { isUserBlog } from '../utlils/isUserBlog';
-import BlogActions from '../components/BlogActions';
+import BlogActions from '../components/blog/BlogActions';
 import { AnimatePresence } from 'framer-motion';
 import toast from 'react-hot-toast';
 import type { Blog } from '../models/BlogModel';
@@ -150,10 +150,7 @@ export default function BlogDetailsPage() {
           <p className="mb-6 text-gray-600">
             {error || "We couldn't find the blog you're looking for."}
           </p>
-          <Link
-            to="/blogs"
-            className="btn btn-primary"
-          >
+          <Link to="/blogs" className="btn btn-primary">
             <ArrowLeft size={16} className="mr-2" /> Back to Blogs
           </Link>
         </div>
@@ -162,74 +159,72 @@ export default function BlogDetailsPage() {
   }
 
   return (
-    <div className="bg-gradient-to-b from-blue-50 to-white py-8">
-      <div className="container mx-auto mt-16 px-4">
-        <div className="mx-auto flex max-w-4xl flex-col gap-8">
-          <BackButton />
-          {Auth.user && isUserBlog(blog, Auth.user) && (
-            <div className="flex justify-end">
-              <div>
-                <Link
-                  to={`/blogs/edit/${blog._id}`}
-                  className="btn btn-secondary"
-                >
-                  <Edit size={16} className="mr-2" />
-                  Edit Blog
-                </Link>
-              </div>
-              <div>
-                <Button
-                  label="Delete Blog"
-                  icon={<Trash2 size={16} />}
-                  variant="danger"
-                  className="ml-4"
-                  onClick={() => confirmDelete(blog)}
-                />
-              </div>
+    <div className="container mx-auto px-4">
+      <div className="mx-auto flex max-w-4xl flex-col gap-8">
+        <BackButton />
+        {Auth.user && isUserBlog(blog, Auth.user) && (
+          <div className="flex justify-end">
+            <div>
+              <Link
+                to={`/blogs/edit/${blog._id}`}
+                className="btn btn-secondary"
+              >
+                <Edit size={16} className="mr-2" />
+                Edit Blog
+              </Link>
             </div>
-          )}
-          <BlogComponent {...blog} />
+            <div>
+              <Button
+                label="Delete Blog"
+                icon={<Trash2 size={16} />}
+                variant="danger"
+                className="ml-4"
+                onClick={() => confirmDelete(blog)}
+              />
+            </div>
+          </div>
+        )}
+        <BlogComponent {...blog} />
 
-          {Auth.isLoggedIn && Auth.user && !isUserBlog(blog, Auth.user) && (
-            <BlogActions
-              blog={blog}
-              commentText={commentText}
-              setCommentText={setCommentText}
-              handleLike={handleLike}
-              handleCommentSubmit={handleCommentSubmit}
-              handleCommentEdit={handleCommentEdit}
-              handleCommentDelete={handleCommentDelete}
+        {Auth.isLoggedIn && Auth.user && !isUserBlog(blog, Auth.user) && (
+          <BlogActions
+            blog={blog}
+            commentText={commentText}
+            setCommentText={setCommentText}
+            handleLike={handleLike}
+            handleCommentSubmit={handleCommentSubmit}
+            handleCommentEdit={handleCommentEdit}
+            handleCommentDelete={handleCommentDelete}
+          />
+        )}
+
+        {relatedBlogs.length > 0 && (
+          <div className="mt-12">
+            <h2 className="mb-6 text-2xl font-bold text-gray-900">
+              Related Articles
+            </h2>
+            <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+              {relatedBlogs.map((relatedBlog, index) => (
+                <BlogCard
+                  key={relatedBlog._id || index}
+                  index={index}
+                  blog={relatedBlog}
+                  handleEditBlog={handleEditBlog}
+                  confirmDelete={confirmDelete}
+                />
+              ))}
+            </div>
+          </div>
+        )}
+        <AnimatePresence>
+          {deleteModalOpen && (
+            <DeleteConfirmationModal
+              title={selectedRelatedBlog?.title || ''}
+              setDeleteModalOpen={setDeleteModalOpen}
+              handleDelete={handleDelete}
             />
           )}
-
-          {relatedBlogs.length > 0 && (
-            <div className="mt-12">
-              <h2 className="mb-6 text-2xl font-bold text-gray-900">
-                Related Articles
-              </h2>
-              <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-                {relatedBlogs.map((relatedBlog, index) => (
-                  <BlogCard
-                    key={relatedBlog._id || index}
-                    index={index}
-                    blog={relatedBlog}
-                    handleEditBlog={handleEditBlog}
-                    confirmDelete={confirmDelete}
-                  />
-                ))}
-              </div>
-            </div>
-          )}
-          <AnimatePresence>
-            {deleteModalOpen && (
-              <DeleteConfirmationModal
-                title={selectedRelatedBlog?.title || ''}
-                setDeleteModalOpen={setDeleteModalOpen}
-                handleDelete={handleDelete}
-              />
-            )}
-          </AnimatePresence>
-        </div>
+        </AnimatePresence>
       </div>
     </div>
   );

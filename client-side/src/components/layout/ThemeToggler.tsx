@@ -1,4 +1,4 @@
-import useTheme from '../contexts/ThemeProvider';
+import useTheme from '../../contexts/ThemeProvider';
 
 export default function ThemeToggler() {
   const { theme, setTheme } = useTheme();

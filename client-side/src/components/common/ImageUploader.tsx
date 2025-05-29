@@ -1,4 +1,15 @@
 import React, { useState } from 'react';
+import {
+  Box,
+  Typography,
+  IconButton,
+  Alert,
+  CircularProgress,
+  Paper,
+  styled,
+  useTheme,
+  alpha,
+} from '@mui/material';
 import { Upload, X } from 'lucide-react';
 import axios from 'axios';
 
@@ -7,10 +18,65 @@ interface ImageUploaderProps {
   initial?: string;
 }
 
+// Styled components using the theme
+const UploadArea = styled(Paper)(({ theme }) => ({
+  border: `2px dashed ${theme.palette.divider}`,
+  borderRadius: theme.shape.borderRadius * 1.5,
+  padding: theme.spacing(6),
+  textAlign: 'center',
+  cursor: 'pointer',
+  transition: theme.transitions.create(['border-color', 'background-color'], {
+    duration: theme.transitions.duration.standard,
+  }),
+  backgroundColor: alpha(theme.palette.background.default, 0.5),
+  '&:hover': {
+    borderColor: theme.palette.primary.main,
+    backgroundColor: alpha(theme.palette.primary.main, 0.04),
+  },
+  '&.disabled': {
+    cursor: 'not-allowed',
+    opacity: 0.6,
+  },
+}));
+
+const ImagePreviewContainer = styled(Box)(({ theme }) => ({
+  position: 'relative',
+  display: 'inline-block',
+  borderRadius: theme.shape.borderRadius * 1.5,
+  overflow: 'hidden',
+  boxShadow: theme.shadows[4],
+}));
+
+const ImagePreview = styled('img')(({ theme }) => ({
+  height: 192, // 48 * 4 (theme spacing)
+  maxWidth: '100%',
+  objectFit: 'contain',
+  borderRadius: theme.shape.borderRadius * 1.5,
+}));
+
+const RemoveButton = styled(IconButton)(({ theme }) => ({
+  position: 'absolute',
+  top: theme.spacing(1),
+  right: theme.spacing(1),
+  backgroundColor: alpha(theme.palette.common.black, 0.5),
+  color: theme.palette.common.white,
+  backdropFilter: 'blur(4px)',
+  '&:hover': {
+    backgroundColor: alpha(theme.palette.common.black, 0.7),
+  },
+  width: 32,
+  height: 32,
+}));
+
+const HiddenInput = styled('input')({
+  display: 'none',
+});
+
 export default function ImageUploader({
   onUpload,
   initial = '',
 }: ImageUploaderProps) {
+  const theme = useTheme();
   const [file, setFile] = useState<File | null>(null);
   const [imagePreview, setImagePreview] = useState<string | null>(
     initial || null,
@@ -79,47 +145,82 @@ export default function ImageUploader({
   };
 
   return (
-    <>
+    <Box sx={{ width: '100%' }}>
       {imagePreview ? (
-        <div className="relative">
-          <img
-            src={imagePreview}
-            alt="Image preview"
-            className="mx-auto h-48 max-w-full rounded-lg object-contain"
-          />
-          <button
-            type="button"
-            onClick={removeImage}
-            className="bg-opacity-50 hover:bg-opacity-70 absolute top-2 right-2 rounded-full bg-gray-800 p-1 text-white"
-            aria-label="Remove image"
-          >
-            <X size={16} />
-          </button>
-        </div>
+        <Box sx={{ display: 'flex', justifyContent: 'center', mb: 2 }}>
+          <ImagePreviewContainer>
+            <ImagePreview src={imagePreview} alt="Image preview" />
+            <RemoveButton
+              onClick={removeImage}
+              aria-label="Remove image"
+              size="small"
+            >
+              <X size={16} />
+            </RemoveButton>
+          </ImagePreviewContainer>
+        </Box>
       ) : (
-        <div className="flex flex-col items-center justify-center">
-          <label
-            htmlFor="image-upload"
-            className="hover:border-primary flex w-full cursor-pointer flex-col items-center justify-center rounded-lg border-2 border-dashed border-gray-300 bg-gray-50 p-6 text-center transition-colors hover:bg-blue-50/30"
-          >
-            <Upload size={32} className="mb-2 text-gray-400" />
-            <p className="mb-1 text-sm text-gray-600">
-              {file ? file.name : 'Click to upload image'}
-            </p>
-            <p className="text-xs text-gray-400">PNG, JPG, GIF (Max 5MB)</p>
-            <input
-              id="image-upload"
-              type="file"
-              accept="image/*"
-              onChange={handleImageChange}
-              className="hidden"
-              disabled={uploading}
-            />
+        <Box sx={{ mb: 2 }}>
+          <label htmlFor="image-upload" style={{ width: '100%', display: 'block' }}>
+            <UploadArea
+              className={uploading ? 'disabled' : ''}
+              elevation={0}
+            >
+              <Box
+                sx={{
+                  display: 'flex',
+                  flexDirection: 'column',
+                  alignItems: 'center',
+                  gap: 2,
+                }}
+              >
+                <Upload size={32} color={theme.palette.text.secondary} />
+                <Box>
+                  <Typography
+                    variant="body1"
+                    color="text.primary"
+                    sx={{ mb: 0.5 }}
+                  >
+                    {file ? file.name : 'Click to upload image'}
+                  </Typography>
+                  <Typography variant="body2" color="text.secondary">
+                    PNG, JPG, GIF (Max {maxFileSizeMB}MB)
+                  </Typography>
+                </Box>
+              </Box>
+              <HiddenInput
+                id="image-upload"
+                type="file"
+                accept="image/*"
+                onChange={handleImageChange}
+                disabled={uploading}
+              />
+            </UploadArea>
           </label>
-          {error && <p className="mt-2 text-sm text-red-600">{error}</p>}
-        </div>
+        </Box>
       )}
-      {uploading && <p className="text-sm text-gray-500">Uploading...</p>}
-    </>
+
+      {error && (
+        <Alert severity="error" sx={{ mb: 2 }} onClose={() => setError('')}>
+          {error}
+        </Alert>
+      )}
+
+      {uploading && (
+        <Box
+          sx={{
+            display: 'flex',
+            alignItems: 'center',
+            gap: 1,
+            justifyContent: 'center',
+          }}
+        >
+          <CircularProgress size={16} />
+          <Typography variant="body2" color="text.secondary">
+            Uploading...
+          </Typography>
+        </Box>
+      )}
+    </Box>
   );
 }

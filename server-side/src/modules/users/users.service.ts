@@ -13,8 +13,9 @@ export class UsersService {
     return this.userModel.find({ isDeleted: false });
   }
 
-  async findOne(id: string) {
+  async findOne(id: string): Promise<User | null> {
     const user = await this.userModel.findById(id).select('name email avatar');
+    console.log(user)
     if (!user || user.isDeleted) {
       throw new NotFoundException('User not found');
     }

@@ -8,7 +8,7 @@ export default function AuthLayout() {
         {/* Left Image */}
         <aside className="relative hidden w-3/5 md:block">
           <img
-            src="/images/login.webp"
+            src="/images/login.png"
             alt="Bloogy login background"
             className="h-full w-full object-cover object-center"
             loading="lazy"

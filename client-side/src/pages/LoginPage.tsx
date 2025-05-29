@@ -89,7 +89,7 @@ export default function LoginPage() {
         />
 
         {/* Password */}
-        <div className="flex flex-col" style={{ alignItems: 'flex-end' }}>
+        <div className="flex flex-col items-end">
           <Link
             to="/auth/forget-password"
             className="w-auto self-end text-sm text-primary hover:text-tertiary"

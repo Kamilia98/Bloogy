@@ -8,13 +8,13 @@ import {
 import axios from 'axios';
 import toast, { Toaster } from 'react-hot-toast';
 import type { User } from '../models/UserModel';
+import { data } from 'react-router-dom';
 
 // ============================
 // Context Interface
 // ============================
 interface AuthContextType {
   isLoggedIn: boolean;
-  token: string | null;
   user: User | null;
   onUserUpdate: (user: User) => void;
   updateToken: (token: string) => void;
@@ -72,27 +72,26 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     rememberMe: boolean,
   ) => {
     try {
-      const { data } = await axios.post(`${BASE_URL}/auth/login`, {
-        email,
-        password,
+      await axios.post(
+        `${BASE_URL}/auth/login`,
+        { email, password },
+        { withCredentials: true },
+      );
+
+      const response = await axios.get(`${BASE_URL}/auth/me`, {
+        withCredentials: true,
       });
-      const { token, user } = data;
+      const user = response.data;
 
       setIsLoggedIn(true);
-      setToken(token);
       setUser(user);
 
-      localStorage.clear();
-      sessionStorage.clear();
-
       const storage = rememberMe ? localStorage : sessionStorage;
-      storage.setItem('token', token);
       storage.setItem('user', JSON.stringify(user));
 
       toast.success('Logged in successfully!');
     } catch (error) {
       setIsLoggedIn(false);
-      setToken(null);
       setUser(null);
       handleError(error, 'Login failed');
     }
@@ -102,15 +101,16 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const facebookSignUp = () =>
     window.open(`${BASE_URL}/auth/facebook`, '_self');
 
-  const handleGoogleLogin = (token: string, user: User) => {
-    console.log('Handling Google login...');
+  const handleGoogleLogin = async () => {
+    const response = await axios.get(`${BASE_URL}/auth/me`, {
+      withCredentials: true,
+    });
+    const user = response.data;
     setIsLoggedIn(true);
-    setToken(token);
     setUser(user);
 
     localStorage.clear();
     sessionStorage.clear();
-    localStorage.setItem('token', token);
     localStorage.setItem('user', JSON.stringify(user));
 
     toast.success('Logged in successfully!');
@@ -118,35 +118,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
   const checkGoogleLogin = () => {
     console.log('Checking Google login...');
-    // const cookies = document.cookie.split(';');
-    // const jwtCookie = cookies.find((c) => c.trim().startsWith('jwt='));
-    // const userCookie = cookies.find((c) => c.trim().startsWith('user='));
-    // console.log('JWT Cookie:', jwtCookie);
-    // console.log('User Cookie:', userCookie);
-    // if (jwtCookie && userCookie) {
-    //   try {
-    //     const userStr = decodeURIComponent(userCookie.split('=')[1]);
-    //     const userObj = JSON.parse(userStr);
-    //     const jwt = jwtCookie.split('=')[1];
-    //     handleGoogleLogin(jwt, userObj);
-    //   } catch (e) {
-    //     console.error('Failed to parse user cookie:', e);
-    //   } finally {
-    //     document.cookie =
-    //       'jwt=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;';
-    //     document.cookie =
-    //       'user=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;';
-    //   }
-    // }
-
-    const params = new URLSearchParams(window.location.search);
-    const jwt = params.get('jwt');
-    const userStr = params.get('user');
-    if (jwt && userStr) {
-      const userObj = JSON.parse(decodeURIComponent(userStr));
-      handleGoogleLogin(jwt, userObj);
-    }
-
+    handleGoogleLogin();
   };
 
   const logout = async () => {
@@ -154,13 +126,10 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       await axios.post(
         `${BASE_URL}/auth/logout`,
         {},
-        {
-          headers: { Authorization: `Bearer ${token}` },
-        },
+        { withCredentials: true },
       );
 
       setIsLoggedIn(false);
-      setToken(null);
       setUser(null);
 
       localStorage.clear();
@@ -174,7 +143,11 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
   const register = async (name: string, email: string, password: string) => {
     try {
-      await axios.post(`${BASE_URL}/auth/register`, { name, email, password });
+      await axios.post(
+        `${BASE_URL}/auth/register`,
+        { name, email, password },
+        { withCredentials: true },
+      );
       toast.success('Registered successfully!');
     } catch (error) {
       handleError(error, 'Registration failed');
@@ -226,9 +199,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   };
 
   const updateToken = (newToken: string) => {
-    setToken(newToken);
     setIsLoggedIn(true);
-    sessionStorage.setItem('token', newToken);
   };
 
   const onUserUpdate = (updateedUser: User) => {
@@ -244,7 +215,6 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const authValues = useMemo(
     () => ({
       isLoggedIn,
-      token,
       user,
       onUserUpdate,
       updateToken,

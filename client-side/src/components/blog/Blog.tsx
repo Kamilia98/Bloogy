@@ -1,8 +1,8 @@
 import { Calendar } from 'lucide-react';
-import type { Blog } from '../models/BlogModel';
-import { formatDate } from '../utlils/formateDate';
-import type { Section } from '../models/SectionModel';
-import UserAvatar from './UserAvatar';
+import type { Blog } from '../../models/BlogModel';
+import { formatDate } from '../../utlils/formateDate';
+import type { Section } from '../../models/SectionModel';
+import UserAvatar from '../common/UserAvatar';
 import { Link } from 'react-router-dom';
 
 export default function BlogComponent(blog: Partial<Blog>) {
@@ -118,7 +118,7 @@ export default function BlogComponent(blog: Partial<Blog>) {
             )}
           </div>
           {blog.category && (
-            <div className="bg-primary/10 text-primary inline-block rounded-full px-3 py-1 text-xs font-medium">
+            <div className="inline-block rounded-full bg-primary/10 px-3 py-1 text-xs font-medium text-primary">
               {blog.category}
             </div>
           )}

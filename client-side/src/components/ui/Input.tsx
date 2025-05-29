@@ -9,18 +9,22 @@ import { cloneElement, isValidElement, type InputHTMLAttributes } from 'react';
 
 interface InputProps extends InputHTMLAttributes<HTMLInputElement> {
   placeholder: string;
+  type?: string;
   label?: string;
   leftIcon?: React.ReactNode;
   rightIcon?: React.ReactNode;
   error?: string;
+  onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
 }
 
 export default function Input({
+  type,
   placeholder,
   label,
   leftIcon,
   rightIcon,
   error,
+  onChange,
 }: InputProps) {
   const leftAdornment =
     isValidElement(leftIcon) &&
@@ -50,9 +54,11 @@ export default function Input({
       sx={{ mb: 2 }}
     >
       <TextField
+        type={type}
         placeholder={placeholder}
         label={label}
         error={Boolean(error)}
+        onChange={onChange}
         slotProps={{
           input: {
             startAdornment: leftAdornment ? (

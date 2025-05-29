@@ -1,5 +1,5 @@
 import React from 'react';
-import { type Section } from '../models/SectionModel';
+import { type Section } from '../../models/SectionModel';
 import {
   Bold,
   Italic,
@@ -11,9 +11,9 @@ import {
   Quote,
   Highlighter,
 } from 'lucide-react';
-import { cn } from '../utlils/cn';
+import { cn } from '../../utlils/cn';
 
-import Select from './ui/Select';
+import Select from '../ui/Select';
 import { MuiColorInput } from 'mui-color-input';
 import { Slider } from '@mui/material';
 

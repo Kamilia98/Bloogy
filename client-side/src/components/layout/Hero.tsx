@@ -43,7 +43,7 @@ export default function Hero() {
             gap: 2,
             borderRadius: 3,
             p: 6,
-            backgroundColor: theme.palette.primary.main + '20',
+            backgroundColor: theme.palette.primary.main+'50',
           }}
         >
           <Typography

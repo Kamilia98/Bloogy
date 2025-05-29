@@ -1,4 +1,4 @@
-import '../../assets/spinner.css';
+import '../../assets/css/spinner.css';
 
 export default function Loading() {
   return (

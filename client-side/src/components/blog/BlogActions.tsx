@@ -1,13 +1,13 @@
-import useAuth from '../contexts/AuthProvider';
-import type { Blog } from '../models/BlogModel';
+import useAuth from '../../contexts/AuthProvider';
+import type { Blog } from '../../models/BlogModel';
 import { Heart, MessageSquare, Send, Share2, Users } from 'lucide-react';
 import { AnimatePresence, motion } from 'framer-motion';
 import { useEffect, useState } from 'react';
 import CommentComponent from './CommentComponent';
-import UserAvatar from './UserAvatar';
+import UserAvatar from '../common/UserAvatar';
 import { Link } from 'react-router-dom';
-import type { Comment } from '../models/CommentModel';
-import ShareConfirmationModal from './ShareConfirmationModal';
+import type { Comment } from '../../models/CommentModel';
+import ShareConfirmationModal from '../modal/ShareConfirmationModal';
 export default function BlogActions({
   blog,
   commentText,

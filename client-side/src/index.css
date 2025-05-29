@@ -2,6 +2,10 @@
 @tailwind components;
 @tailwind utilities;
 
+img {
+  color: #030d38;
+}
+
 @layer components {
   .btn {
     @apply flex w-full items-center justify-center rounded-lg px-4 py-3 font-medium transition duration-300;

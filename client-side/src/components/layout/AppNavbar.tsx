@@ -1,10 +1,11 @@
 import { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Menu, X, LogOut } from 'lucide-react';
-import useAuth from '../contexts/AuthProvider';
-import Logo from './ui/Logo';
-import UserAvatar from './UserAvatar';
+import useAuth from '../../contexts/AuthProvider';
+import Logo from '../ui/Logo';
+import UserAvatar from '../common/UserAvatar';
 import { motion, AnimatePresence } from 'framer-motion';
+import ThemeToggler from './ThemeToggler';
 
 export default function AppNavbar() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -40,6 +41,8 @@ export default function AppNavbar() {
           {/* Logo */}
 
           <Logo />
+
+          {/* <ThemeToggler /> */}
 
           {/* Desktop Auth Buttons */}
           <div className="hidden space-x-4 md:flex">

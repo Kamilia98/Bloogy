@@ -1,14 +1,28 @@
-import { ArrowLeft } from 'lucide-react';
-import { Link } from 'react-router-dom';
+import { ArrowBack } from '@mui/icons-material';
+import { Link as RouterLink } from 'react-router-dom';
+import { Box, Typography, useTheme } from '@mui/material';
 
 export default function BackButton() {
+  const theme = useTheme();
+
   return (
-    <Link
-      to={'/blogs'}
-      className="flex items-center gap-2 text-gray-600 transition-colors hover:text-primary"
+    <Box
+      component={RouterLink}
+      to="/blogs"
+      sx={{
+        display: 'flex',
+        alignItems: 'center',
+        gap: 1,
+        color: theme.palette.text.secondary,
+        textDecoration: 'none',
+        transition: 'color 0.2s',
+        '&:hover': {
+          color: theme.palette.primary.main,
+        },
+      }}
     >
-      <ArrowLeft size={18} />
-      Back to blogs
-    </Link>
+      <ArrowBack fontSize="small" />
+      <Typography variant="body2">Back to blogs</Typography>
+    </Box>
   );
 }

@@ -14,9 +14,9 @@ import { useDispatch, useSelector } from 'react-redux';
 
 import useAuth from '../contexts/AuthProvider';
 import Button from '../components/ui/Button';
-import UserAvatar from '../components/UserAvatar';
-import ProfileEditModal from '../components/ProfileEditModal';
-import { DeleteConfirmationModal } from '../components/DeleteConfirmationModal';
+import UserAvatar from '../components/common/UserAvatar';
+import ProfileEditModal from '../components/modal/ProfileEditModal';
+import { DeleteConfirmationModal } from '../components/modal/DeleteConfirmationModal';
 import Loading from '../components/common/Loading';
 
 import { isUserBlog } from '../utlils/isUserBlog';
@@ -26,7 +26,7 @@ import type { RootState, AppDispatch } from '../store';
 import {
   deleteShare,
   fetchUserPosts,
-} from '../store/features/blogs/postsSlice';
+} from '../store/features/posts/postsSlice';
 import { deleteBlog } from '../store/features/blogs/blogsSlice';
 import type { Post } from '../models/PostModel';
 import toast from 'react-hot-toast';
