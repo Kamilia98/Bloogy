@@ -55,11 +55,11 @@ export default function ProfilePage() {
 
   // Fetch profile data
   useEffect(() => {
-    if (id && Auth.token) {
-      dispatch(fetchUserById({ userId: id, token: Auth.token }));
-      dispatch(fetchUserPosts({ userId: id, token: Auth.token }));
+    if (id) {
+      dispatch(fetchUserById({ userId: id }));
+      dispatch(fetchUserPosts({ userId: id }));
     }
-  }, [id, Auth.token, dispatch]);
+  }, [id, dispatch]);
 
   const handleEditBlog = (blogId: string) => navigate(`/blogs/edit/${blogId}`);
   const confirmDelete = (post: Post) => {
@@ -74,7 +74,7 @@ export default function ProfilePage() {
     }
 
     if (selectedPost.blog && isUserBlog(selectedPost.blog, user)) {
-      dispatch(deleteBlog({ id: selectedPost.blog._id, token: Auth.token! }))
+      dispatch(deleteBlog({ id: selectedPost.blog._id }))
         .unwrap()
         .then(() => {
           toast.success('Blog deleted successfully');
@@ -85,7 +85,7 @@ export default function ProfilePage() {
           console.error(err);
         });
     } else if (selectedPost._id) {
-      dispatch(deleteShare({ id: selectedPost._id, token: Auth.token! }))
+      dispatch(deleteShare({ id: selectedPost._id }))
         .unwrap()
         .then(() => {
           toast.success('Post deleted successfully');

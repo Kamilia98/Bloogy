@@ -33,7 +33,7 @@ export default function ProfileEditModal({
     try {
       const updatedData = { name, email, avatar };
       const resultAction = await dispatch(
-        updateUser({ userId: user._id, updatedData, token: Auth.token! }),
+        updateUser({ userId: user._id, updatedData }),
       );
 
       if (updateUser.fulfilled.match(resultAction)) {

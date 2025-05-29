@@ -19,7 +19,7 @@ export default function ShareConfirmationModal({
   const handleShare = async () => {
     if (!selectedBlog) return;
 
-    await dispatch(shareBlog({ blogId: selectedBlog._id, token: Auth.token! }))
+    await dispatch(shareBlog({ blogId: selectedBlog._id }))
       .unwrap()
       .then(() => {
         shareSound.currentTime = 0;

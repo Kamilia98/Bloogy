@@ -19,13 +19,9 @@ const BASE_URL = import.meta.env.VITE_API_BASE_URL || '/api';
 // Async thunk to fetch user by ID
 export const fetchUserById = createAsyncThunk(
   'user/fetchById',
-  async (
-    { userId, token }: { userId: string; token: string },
-    { rejectWithValue },
-  ) => {
+  async ({ userId }: { userId: string }, { rejectWithValue }) => {
     try {
       const response = await axios.get(`${BASE_URL}/users/${userId}`, {
-        headers: { Authorization: `Bearer ${token}` },
         withCredentials: true,
       });
       return response.data;
@@ -40,21 +36,17 @@ export const fetchUserById = createAsyncThunk(
 export const updateUser = createAsyncThunk(
   'user/update',
   async (
-    {
-      userId,
-      updatedData,
-      token,
-    }: { userId: string; updatedData: Partial<User>; token: string },
+    { userId, updatedData }: { userId: string; updatedData: Partial<User> },
     { rejectWithValue },
   ) => {
     try {
-      const response = await axios.patch(`${BASE_URL}/users/${userId}`, updatedData, {
-        withCredentials: true,
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${token}`,
+      const response = await axios.patch(
+        `${BASE_URL}/users/${userId}`,
+        updatedData,
+        {
+          withCredentials: true,
         },
-      });
+      );
       return response.data;
     } catch (err: any) {
       return rejectWithValue(

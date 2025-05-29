@@ -51,7 +51,7 @@ export default function BlogsPage() {
 
   const handleDelete = () => {
     if (!selectedBlog) return;
-    dispatch(deleteBlog({ id: selectedBlog._id, token: Auth.token! }))
+    dispatch(deleteBlog({ id: selectedBlog._id }))
       .unwrap()
       .then(() => {
         toast.success('Blog deleted successfully');

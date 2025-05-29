@@ -18,27 +18,15 @@ const initialState: PostsState = {
   error: null,
 };
 
-// Utility to get auth headers
-const authHeaders = (token: string) => ({
-  headers: { Authorization: `Bearer ${token}` },
-});
-
-
 const BASE_URL = import.meta.env.VITE_API_BASE_URL || '/api';
 // === Async Thunks ===
 
 // Fetch blogs by user
 export const fetchUserPosts = createAsyncThunk(
   'blogs/fetchUserPosts',
-  async (
-    { userId, token }: { userId: string; token: string },
-    { rejectWithValue },
-  ) => {
+  async ({ userId }: { userId: string }, { rejectWithValue }) => {
     try {
-      const { data } = await axios.get(
-        `${BASE_URL}/blogs/user/${userId}`,
-        authHeaders(token),
-      );
+      const { data } = await axios.get(`${BASE_URL}/blogs/user/${userId}`);
       return data;
     } catch (err: any) {
       return rejectWithValue(
@@ -51,12 +39,15 @@ export const fetchUserPosts = createAsyncThunk(
 // Sharing
 export const shareBlog = createAsyncThunk(
   'blogs/shareBlog',
-  async (
-    { blogId, token }: { blogId: string; token: string },
-    { rejectWithValue },
-  ) => {
+  async ({ blogId }: { blogId: string }, { rejectWithValue }) => {
     try {
-      await axios.post(`${BASE_URL}/blogs/share/${blogId}`, {}, authHeaders(token));
+      await axios.post(
+        `${BASE_URL}/blogs/share/${blogId}`,
+        {},
+        {
+          withCredentials: true,
+        },
+      );
       return blogId;
     } catch (err: any) {
       return rejectWithValue(
@@ -68,9 +59,11 @@ export const shareBlog = createAsyncThunk(
 
 export const deleteShare = createAsyncThunk(
   'blogs/deleteShare',
-  async ({ id, token }: { id: string; token: string }, { rejectWithValue }) => {
+  async ({ id }: { id: string }, { rejectWithValue }) => {
     try {
-      await axios.delete(`${BASE_URL}/blogs/share/${id}`, authHeaders(token));
+      await axios.delete(`${BASE_URL}/blogs/share/${id}`, {
+        withCredentials: true,
+      });
       return id;
     } catch (err: any) {
       return rejectWithValue(

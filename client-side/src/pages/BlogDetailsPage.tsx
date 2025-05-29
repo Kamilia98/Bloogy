@@ -69,7 +69,7 @@ export default function BlogDetailsPage() {
 
   const handleDelete = () => {
     if (!blog) return;
-    dispatch(deleteBlog({ id: blog._id, token: Auth.token! }))
+    dispatch(deleteBlog({ id: blog._id }))
       .unwrap()
       .then(() => {
         toast.success('Blog deleted successfully');
@@ -89,7 +89,6 @@ export default function BlogDetailsPage() {
     dispatch(
       toggleLikeBlog({
         blogId: blog._id,
-        token: Auth.token!,
         userId: Auth.user._id,
       }),
     )
@@ -112,7 +111,6 @@ export default function BlogDetailsPage() {
       addComment({
         blogId: blog._id,
         content: commentText,
-        token: Auth.token!,
       }),
     )
       .unwrap()
@@ -124,7 +122,7 @@ export default function BlogDetailsPage() {
   };
 
   const handleCommentDelete = (id: string) => {
-    dispatch(deleteComment({ commentId: id, token: Auth.token! }))
+    dispatch(deleteComment({ commentId: id }))
       .unwrap()
       .then(() => toast.success('Comment deleted successfully'))
       .catch(() => toast.error('Failed to delete comment'));
@@ -132,7 +130,7 @@ export default function BlogDetailsPage() {
 
   const handleCommentEdit = (id: string, content: string) => {
     if (!content.trim()) return;
-    dispatch(editComment({ commentId: id, content, token: Auth.token! }))
+    dispatch(editComment({ commentId: id, content }))
       .unwrap()
       .then(() => toast.success('Comment updated successfully'))
       .catch(() => toast.error('Failed to update comment'));
