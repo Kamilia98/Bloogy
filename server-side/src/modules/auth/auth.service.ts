@@ -50,7 +50,7 @@ export class AuthService {
     res.cookie('jwt', token, {
       httpOnly: true,
       secure: true,
-      sameSite: 'Strict',
+      sameSite: 'none',
       maxAge: 3600000,
     });
 
@@ -89,7 +89,7 @@ export class AuthService {
     res.cookie('jwt', token, {
       httpOnly: true,
       secure: true,
-      sameSite: 'Strict',
+      sameSite: 'none',
       maxAge: 3600000,
     });
 
@@ -124,7 +124,7 @@ export class AuthService {
     res.cookie('jwt', token, {
       httpOnly: true,
       secure: true,
-      sameSite: 'Strict',
+      sameSite: 'none',
       maxAge: 3600000,
     });
 
