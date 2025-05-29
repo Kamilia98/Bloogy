@@ -176,7 +176,6 @@ export default function BlogForm() {
 
   // Fetch blog data if in edit mode
   useEffect(() => {
-    console.log(5)
     if (isEditMode && id) {
       setIsLoading(true);
       dispatch(fetchBlogById(id))

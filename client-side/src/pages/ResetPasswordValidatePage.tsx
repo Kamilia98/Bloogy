@@ -29,7 +29,6 @@ export default function ResetPasswordValidatePage() {
         .then(() => {
           setIsTokenValid(true);
           setIsTokenChecking(false);
-          console.log('hi');
           navigate('/auth/reset-password', { replace: true });
         })
         .catch(() => {
