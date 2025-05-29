@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { Mail, Lock, LogIn, Loader2, Eye, EyeOff } from 'lucide-react';
 import { motion } from 'framer-motion';
 import useAuth from '../contexts/AuthProvider';
