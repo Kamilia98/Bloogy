@@ -19,6 +19,7 @@ import ContactPage from './pages/ContactPage';
 import PrivacyPage from './pages/PrivacyPage';
 import TermsPage from './pages/TermsPage';
 import CookiesPage from './pages/CookiesPage';
+import { LoginCallBack } from './pages/LoginCallBack';
 const ProjectRoutes = (): React.ReactNode => {
   const element = useRoutes([
     {
@@ -38,6 +39,14 @@ const ProjectRoutes = (): React.ReactNode => {
           element: (
             <RequireLoggedOut>
               <LoginPage />
+            </RequireLoggedOut>
+          ),
+        },
+        {
+          path: 'login/callback',
+          element: (
+            <RequireLoggedOut>
+              <LoginCallBack />
             </RequireLoggedOut>
           ),
         },

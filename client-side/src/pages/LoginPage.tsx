@@ -17,10 +17,6 @@ export default function LoginPage() {
   const [passwordError, setPasswordError] = useState('');
   const [rememberMe, setRememberMe] = useState(false);
 
-  useEffect(() => {
-    Auth.checkGoogleLogin();
-  }, []);
-
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     let valid = true;

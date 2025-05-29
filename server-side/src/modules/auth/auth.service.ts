@@ -94,7 +94,7 @@ export class AuthService {
     });
 
     res.redirect(
-      `${this.configService.get<string>('FRONTEND_URL')}/auth/login`,
+      `${this.configService.get<string>('FRONTEND_URL')}/auth/login/callback`,
     );
   }
 
@@ -129,7 +129,7 @@ export class AuthService {
     });
 
     res.redirect(
-      `${this.configService.get<string>('FRONTEND_URL')}/auth/login`,
+      `${this.configService.get<string>('FRONTEND_URL')}/auth/login/callback`,
     );
   }
 
