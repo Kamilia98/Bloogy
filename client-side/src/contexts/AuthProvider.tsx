@@ -41,21 +41,18 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 // ============================
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const getInitialStorage = () => {
-    const token =
-      localStorage.getItem('token') || sessionStorage.getItem('token');
     const userStr =
       localStorage.getItem('user') || sessionStorage.getItem('user');
     return {
-      token,
       user: userStr ? JSON.parse(userStr) : null,
-      isLoggedIn: Boolean(token),
+      isLoggedIn: Boolean(userStr),
     };
   };
 
   const initial = useMemo(() => getInitialStorage(), []);
   const [isLoggedIn, setIsLoggedIn] = useState<boolean>(initial.isLoggedIn);
   const [user, setUser] = useState<User | null>(initial.user);
-  const [token, setToken] = useState<string | null>(initial.token);
+  const [token, setToken] = useState<string | null>();
 
   const handleError = (error: any, defaultMessage: string) => {
     toast.error(

@@ -6,7 +6,7 @@ export default function AppLayout() {
   return (
     <div>
       <AppNavbar />
-      <Box component={'main'} sx={{ marginTop: 12 }}>
+      <Box component={'main'}>
         <Outlet />
       </Box>
       <AppFooter />

@@ -157,7 +157,7 @@ export default function BlogDetailsPage() {
   }
 
   return (
-    <div className="container mx-auto px-4">
+    <div className="container mx-auto mt-8 py-12">
       <div className="mx-auto flex max-w-4xl flex-col gap-8">
         <BackButton />
         {Auth.user && isUserBlog(blog, Auth.user) && (

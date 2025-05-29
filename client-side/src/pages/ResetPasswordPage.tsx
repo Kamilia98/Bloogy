@@ -1,7 +1,7 @@
-import { useState, useEffect } from 'react';
-import { Lock, Eye, EyeOff, Loader2, Check, AlertTriangle } from 'lucide-react';
+import { useState } from 'react';
+import { Lock, Eye, EyeOff, Loader2, Check } from 'lucide-react';
 import { AnimatePresence, motion } from 'framer-motion';
-import { Link, useNavigate, useSearchParams } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import Button from '../components/ui/Button';
 import validatePassword from '../utlils/validatePassword';
 import useAuth from '../contexts/AuthProvider';
@@ -18,39 +18,6 @@ export default function ResetPasswordPage() {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [isSubmitted, setIsSubmitted] = useState(false);
-  const [isTokenValid, setIsTokenValid] = useState(true);
-  const [isTokenChecking, setIsTokenChecking] = useState(true);
-
-  const [params] = useSearchParams();
-
-  // Simulate token validation
-  useEffect(() => {
-    if (!params.get('token')) {
-      setIsTokenValid(false);
-      setIsTokenChecking(false);
-      return;
-    }
-
-    const validateToken = async () => {
-      const token = params.get('token');
-      if (!token) {
-        setIsTokenValid(false);
-        setIsTokenChecking(false);
-        return;
-      }
-      Auth.validateResetToken(token)
-        .then(() => {
-          setIsTokenValid(true);
-          setIsTokenChecking(false);
-        })
-        .catch(() => {
-          setIsTokenValid(false);
-          setIsTokenChecking(false);
-        });
-    };
-
-    validateToken();
-  }, [params]);
 
   const handleSubmit = () => {
     let valid = true;
@@ -92,34 +59,6 @@ export default function ResetPasswordPage() {
         setPasswordError('Failed to reset password. Please try again.');
       });
   };
-
-  if (isTokenChecking) {
-    return (
-      <div className="flex h-full w-full flex-col items-center justify-center text-center">
-        <Loader2 className="text-primary mb-4 h-10 w-10 animate-spin" />
-        <p className="text-gray-600">Verifying your reset link...</p>
-      </div>
-    );
-  }
-
-  if (!isTokenValid) {
-    return (
-      <div className="flex h-full w-full flex-col items-center justify-center text-center">
-        <div className="mx-auto mb-6 flex h-16 w-16 items-center justify-center rounded-full bg-red-100">
-          <AlertTriangle size={32} className="text-red-500" />
-        </div>
-        <h2 className="mb-2 text-2xl font-bold text-gray-800">
-          Invalid or Expired Link
-        </h2>
-        <p className="mb-8 text-gray-600">
-          This password reset link is invalid or has expired.
-        </p>
-        <Link to="/auth/forget-password">
-          <Button type="button" label="Request New Reset Link" />
-        </Link>
-      </div>
-    );
-  }
 
   return (
     <>
@@ -221,7 +160,7 @@ export default function ResetPasswordPage() {
               <div className="text-center text-sm text-gray-600">
                 <Link
                   to="/auth/login"
-                  className="text-primary hover:text-tertiary font-medium hover:underline"
+                  className="font-medium text-primary hover:text-tertiary hover:underline"
                 >
                   Back to login
                 </Link>

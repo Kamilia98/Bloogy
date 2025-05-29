@@ -183,15 +183,15 @@ export class AuthService {
     const token = this.jwtService.sign(
       { email: user.email },
       {
-        secret: this.configService.get<string>('RESET_PASSWORD_SECRET'),
-        expiresIn: '15m', // Token expires in 15 minutes
+        secret: this.configService.get<string>('JWT_SECRET'),
+        expiresIn: '15m'
       },
     );
 
     const html = `
       <div style="font-family: Arial, sans-serif; max-width: 600px; margin: auto; background-color: #f9f9f9; padding: 30px; border-radius: 10px; border: 1px solid #ddd;">
         <div style="text-align: center; margin-bottom: 30px;">
-          <img src="https://i.ibb.co/XfxtCdVz/logo.png" alt="Bloogy Logo" style="height: 50px;" />
+          <img src="https://i.ibb.co/tPHrJkW8/logo.png" alt="Bloogy Logo" style="height: 50px;" />
         </div>
         <h2 style="color: #333; text-align: center;">Password Reset Request</h2>
         <p style="font-size: 16px; color: #555; line-height: 1.5;">
@@ -199,7 +199,7 @@ export class AuthService {
           We received a request to reset your password. Click the button below to set a new one:
         </p>
         <div style="text-align: center; margin: 30px 0;">
-          <a href="${this.configService.get<string>('FRONTEND_URL')}/auth/reset-password?token=${token}"
+          <a href="${this.configService.get<string>('FRONTEND_URL')}/auth/reset-password-validate?token=${token}"
             style="display: inline-block; padding: 12px 24px; font-size: 16px; font-weight: bold; color: #fff; background-color: #4364F7; text-decoration: none; border-radius: 6px;">
             Reset Password
           </a>

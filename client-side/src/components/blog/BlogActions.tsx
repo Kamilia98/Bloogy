@@ -1,6 +1,6 @@
 import useAuth from '../../contexts/AuthProvider';
 import type { Blog } from '../../models/BlogModel';
-import { Heart, MessageSquare, Send, Share2, Users } from 'lucide-react';
+import { Heart, MessageSquare, Send, Share2, Users, X } from 'lucide-react';
 import { AnimatePresence, motion } from 'framer-motion';
 import { useEffect, useState } from 'react';
 import CommentComponent from './CommentComponent';
@@ -102,11 +102,11 @@ export default function BlogActions({
                 </h3>
                 <button
                   onClick={() => setLikedUsersOpen(false)}
-                  className="text-gray-500 hover:text-gray-700"
+                  className="text-gray-500 hover:text-gray-700 "
                   title="Close"
                   aria-label="Close"
                 >
-                  Close
+                 <X/>
                 </button>
               </div>
 
@@ -163,8 +163,8 @@ export default function BlogActions({
                 <button
                   onClick={() => handleCommentSubmit(commentText)}
                   className="rounded-r-lg bg-blue-500 px-4 py-2 text-white hover:bg-blue-600"
-                  title="Add comment"
-                  aria-label="Add comment"
+                  title="Submit comment"
+                  aria-label="Submit comment"
                 >
                   <Send size={16} />
                 </button>

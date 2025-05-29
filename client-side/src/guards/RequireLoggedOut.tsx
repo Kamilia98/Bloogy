@@ -3,7 +3,6 @@ import { useAuth } from '../contexts/AuthProvider';
 
 const RequireGuest = ({ children }: { children: React.ReactNode }) => {
   const auth = useAuth();
-
   if (auth.isLoggedIn) {
     return <Navigate to="/" />;
   }

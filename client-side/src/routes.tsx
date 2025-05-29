@@ -20,6 +20,7 @@ import PrivacyPage from './pages/PrivacyPage';
 import TermsPage from './pages/TermsPage';
 import CookiesPage from './pages/CookiesPage';
 import { LoginCallBack } from './pages/LoginCallBack';
+import ResetPasswordValidatePage from './pages/ResetPasswordValidatePage';
 const ProjectRoutes = (): React.ReactNode => {
   const element = useRoutes([
     {
@@ -52,11 +53,28 @@ const ProjectRoutes = (): React.ReactNode => {
         },
         {
           path: 'forget-password',
-          element: <ForgetPasswordPage />,
+          element: (
+            <RequireLoggedOut>
+              <ForgetPasswordPage />
+            </RequireLoggedOut>
+          ),
         },
         {
           path: 'reset-password',
-          element: <ResetPasswordPage />,
+
+          element: (
+            <RequireLoggedOut>
+              <ResetPasswordPage />
+            </RequireLoggedOut>
+          ),
+        },
+        {
+          path: 'reset-password-validate',
+          element: (
+            <RequireLoggedOut>
+              <ResetPasswordValidatePage />
+            </RequireLoggedOut>
+          ),
         },
       ],
     },
