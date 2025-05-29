@@ -4,23 +4,19 @@ import {
   useContext,
   type ReactNode,
   useMemo,
+  useEffect,
 } from 'react';
 import axios from 'axios';
 import toast, { Toaster } from 'react-hot-toast';
 import type { User } from '../models/UserModel';
+import Loading from '../components/common/Loading';
 
-// ============================
-// Context Interface
-// ============================
 interface AuthContextType {
   isLoggedIn: boolean;
   user: User | null;
+  isLoading: boolean;
   onUserUpdate: (user: User) => void;
-  login: (
-    email: string,
-    password: string,
-    rememberMe: boolean,
-  ) => Promise<void>;
+  login: (email: string, password: string) => Promise<void>;
   googleSignUp: () => void;
   facebookSignUp: () => void;
   handleGoogleLogin: () => void;
@@ -31,28 +27,52 @@ interface AuthContextType {
   validateResetToken: (token: string) => Promise<any>;
 }
 
-// ============================
-// Context Setup
-// ============================
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
-// ============================
-// Provider Component
-// ============================
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
-  const getInitialStorage = () => {
-    const userStr =
-      localStorage.getItem('user') || sessionStorage.getItem('user');
-    return {
-      user: userStr ? JSON.parse(userStr) : null,
-      isLoggedIn: Boolean(userStr),
-    };
+  const BASE_URL = import.meta.env.VITE_API_BASE_URL || '/api';
+
+  const [authState, setAuthState] = useState<{
+    isLoggedIn: boolean;
+    user: User | null;
+    isLoading: boolean;
+  }>({
+    isLoggedIn: false,
+    user: null,
+    isLoading: true,
+  });
+
+  const [resetToken, setRestToken] = useState<string | null>();
+
+  const checkAuthStatus = async () => {
+    try {
+      const response = await axios.get(`${BASE_URL}/auth/isAuthenticated`, {
+        withCredentials: true,
+      });
+
+      if (response.data.isAuthenticated) {
+        return {
+          isLoggedIn: true,
+          user: response.data.user,
+        };
+      }
+    } catch (error) {
+      console.error('Auth check failed:', error);
+    }
+    return { isLoggedIn: false, user: null };
   };
 
-  const initial = useMemo(() => getInitialStorage(), []);
-  const [isLoggedIn, setIsLoggedIn] = useState<boolean>(initial.isLoggedIn);
-  const [user, setUser] = useState<User | null>(initial.user);
-  const [resetToken, setRestToken] = useState<string | null>();
+  useEffect(() => {
+    const initializeAuth = async () => {
+      const authStatus = await checkAuthStatus();
+      setAuthState({
+        ...authStatus,
+        isLoading: false,
+      });
+    };
+
+    initializeAuth();
+  }, []);
 
   const handleError = (error: any, defaultMessage: string) => {
     toast.error(
@@ -61,12 +81,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     throw error;
   };
 
-  const BASE_URL = import.meta.env.VITE_API_BASE_URL || '/api';
-  const login = async (
-    email: string,
-    password: string,
-    rememberMe: boolean,
-  ) => {
+  const login = async (email: string, password: string) => {
     try {
       await axios.post(
         `${BASE_URL}/auth/login`,
@@ -74,21 +89,23 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         { withCredentials: true },
       );
 
-      const response = await axios.get(`${BASE_URL}/auth/me`, {
+      const { data: user } = await axios.get(`${BASE_URL}/auth/me`, {
         withCredentials: true,
       });
-      const user = response.data;
 
-      setIsLoggedIn(true);
-      setUser(user);
-
-      const storage = rememberMe ? localStorage : sessionStorage;
-      storage.setItem('user', JSON.stringify(user));
+      setAuthState({
+        isLoggedIn: true,
+        user,
+        isLoading: false,
+      });
 
       toast.success('Logged in successfully!');
     } catch (error) {
-      setIsLoggedIn(false);
-      setUser(null);
+      setAuthState({
+        isLoggedIn: false,
+        user: null,
+        isLoading: false,
+      });
       handleError(error, 'Login failed');
     }
   };
@@ -98,18 +115,26 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     window.open(`${BASE_URL}/auth/facebook`, '_self');
 
   const handleGoogleLogin = async () => {
-    const response = await axios.get(`${BASE_URL}/auth/me`, {
-      withCredentials: true,
-    });
-    const user = response.data;
-    setIsLoggedIn(true);
-    setUser(user);
+    try {
+      const { data: user } = await axios.get(`${BASE_URL}/auth/me`, {
+        withCredentials: true,
+      });
 
-    localStorage.clear();
-    sessionStorage.clear();
-    localStorage.setItem('user', JSON.stringify(user));
+      setAuthState({
+        isLoggedIn: true,
+        user,
+        isLoading: false,
+      });
 
-    toast.success('Logged in successfully!');
+      toast.success('Logged in successfully!');
+    } catch (error) {
+      setAuthState({
+        isLoggedIn: false,
+        user: null,
+        isLoading: false,
+      });
+      handleError(error, 'Google login failed');
+    }
   };
 
   const logout = async () => {
@@ -120,11 +145,11 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         { withCredentials: true },
       );
 
-      setIsLoggedIn(false);
-      setUser(null);
-
-      localStorage.clear();
-      sessionStorage.clear();
+      setAuthState({
+        isLoggedIn: false,
+        user: null,
+        isLoading: false,
+      });
 
       toast.success('Logged out successfully!');
     } catch (error) {
@@ -185,20 +210,17 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     }
   };
 
-  const onUserUpdate = (updateedUser: User) => {
-    if (user && user._id === updateedUser._id) {
-      setUser(updateedUser);
-      const storage = localStorage.getItem('user')
-        ? localStorage
-        : sessionStorage;
-      storage.setItem('user', JSON.stringify(user));
+  const onUserUpdate = (updatedUser: User) => {
+    if (authState.user && authState.user._id === updatedUser._id) {
+      setAuthState((prev) => ({ ...prev, user: updatedUser }));
     }
   };
 
   const authValues = useMemo(
     () => ({
-      isLoggedIn,
-      user,
+      isLoggedIn: authState.isLoggedIn,
+      user: authState.user,
+      isLoading: authState.isLoading,
       onUserUpdate,
       login,
       googleSignUp,
@@ -210,8 +232,16 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       resetPassword,
       validateResetToken,
     }),
-    [isLoggedIn, resetToken, user],
+    [authState, resetToken],
   );
+
+  if (authState.isLoading) {
+    return (
+      <div>
+        <Loading />
+      </div>
+    );
+  }
 
   return (
     <AuthContext.Provider value={authValues}>
@@ -221,9 +251,6 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   );
 };
 
-// ============================
-// Custom Hook
-// ============================
 export const useAuth = (): AuthContextType => {
   const context = useContext(AuthContext);
   if (!context) {
