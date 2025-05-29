@@ -19,11 +19,6 @@ const initialState: BlogsState = {
   error: null,
 };
 
-// Utility to get auth headers
-const authHeaders = (token: string) => ({
-  headers: { Authorization: `Bearer ${token}` },
-});
-
 const BASE_URL = import.meta.env.VITE_API_BASE_URL || '/api';
 
 // === Async Thunks ===
@@ -66,20 +61,14 @@ export const addBlog = createAsyncThunk(
   'blogs/addBlog',
   async (
     {
-      token,
       blog,
     }: {
-      token: string;
       blog: Omit<Blog, 'id' | 'createdAt' | 'updatedAt'>;
     },
     { rejectWithValue },
   ) => {
     try {
-      const { data } = await axios.post(
-        `${BASE_URL}/blogs`,
-        blog,
-        authHeaders(token),
-      );
+      const { data } = await axios.post(`${BASE_URL}/blogs`, blog);
       return data;
     } catch (err: any) {
       return rejectWithValue(
@@ -92,15 +81,12 @@ export const addBlog = createAsyncThunk(
 // Update blog
 export const updateBlog = createAsyncThunk(
   'blogs/updateBlog',
-  async (
-    { token, blog }: { token: string; blog: Blog },
-    { rejectWithValue },
-  ) => {
+  async ({ blog }: { blog: Blog }, { rejectWithValue }) => {
     try {
       const { data } = await axios.patch(
         `${BASE_URL}/blogs/${blog._id}`,
         blog,
-        authHeaders(token),
+        { withCredentials: true },
       );
       return data;
     } catch (err: any) {
@@ -114,9 +100,9 @@ export const updateBlog = createAsyncThunk(
 // Delete blog
 export const deleteBlog = createAsyncThunk(
   'blogs/deleteBlog',
-  async ({ id, token }: { id: string; token: string }, { rejectWithValue }) => {
+  async ({ id }: { id: string }, { rejectWithValue }) => {
     try {
-      await axios.delete(`${BASE_URL}/blogs/${id}`, authHeaders(token));
+      await axios.delete(`${BASE_URL}/blogs/${id}`, { withCredentials: true });
       return id;
     } catch (err: any) {
       return rejectWithValue(
@@ -130,18 +116,16 @@ export const deleteBlog = createAsyncThunk(
 export const toggleLikeBlog = createAsyncThunk(
   'blogs/toggleLikeBlog',
   async (
-    {
-      blogId,
-      token,
-      userId,
-    }: { blogId: string; token: string; userId: string },
+    { blogId, userId }: { blogId: string; userId: string },
     { rejectWithValue },
   ) => {
     try {
       const { data } = await axios.post(
         `${BASE_URL}/blogs/like/${blogId}`,
         {},
-        authHeaders(token),
+        {
+          withCredentials: true,
+        },
       );
       const isLiked = data.likes.some((like: User) => like._id === userId);
       return { blogId, likes: data.likes, isLiked };
@@ -157,18 +141,16 @@ export const toggleLikeBlog = createAsyncThunk(
 export const addComment = createAsyncThunk(
   'blogs/addComment',
   async (
-    {
-      blogId,
-      content,
-      token,
-    }: { blogId: string; content: string; token: string },
+    { blogId, content }: { blogId: string; content: string },
     { rejectWithValue },
   ) => {
     try {
       const { data } = await axios.post(
         `${BASE_URL}/comments/${blogId}`,
         { content },
-        authHeaders(token),
+        {
+          withCredentials: true,
+        },
       );
       return { blogId, comment: data };
     } catch (err: any) {
@@ -181,15 +163,11 @@ export const addComment = createAsyncThunk(
 
 export const deleteComment = createAsyncThunk(
   'blogs/deleteComment',
-  async (
-    { commentId, token }: { commentId: string; token: string },
-    { rejectWithValue },
-  ) => {
+  async ({ commentId }: { commentId: string }, { rejectWithValue }) => {
     try {
-      await axios.delete(
-        `${BASE_URL}/comments/${commentId}`,
-        authHeaders(token),
-      );
+      await axios.delete(`${BASE_URL}/comments/${commentId}`, {
+        withCredentials: true,
+      });
       return { commentId };
     } catch (err: any) {
       return rejectWithValue(
@@ -202,18 +180,14 @@ export const deleteComment = createAsyncThunk(
 export const editComment = createAsyncThunk(
   'blogs/editComment',
   async (
-    {
-      commentId,
-      content,
-      token,
-    }: { commentId: string; content: string; token: string },
+    { commentId, content }: { commentId: string; content: string },
     { rejectWithValue },
   ) => {
     try {
       const { data } = await axios.patch(
         `${BASE_URL}/comments/${commentId}`,
         { content },
-        authHeaders(token),
+        { withCredentials: true },
       );
       return { commentId, content: data.content };
     } catch (err: any) {

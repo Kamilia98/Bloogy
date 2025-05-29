@@ -61,6 +61,8 @@ export default function BlogActions({
             <button
               onClick={() => setLikedUsersOpen(true)}
               className="flex cursor-pointer items-center focus:outline-none"
+              title="Show users who liked this blog"
+              aria-label="Show users who liked this blog"
             >
               <Users size={20} className="mr-1 text-gray-500" />
               <span className="text-sm text-gray-600">Who liked</span>
@@ -101,8 +103,11 @@ export default function BlogActions({
                 <button
                   onClick={() => setLikedUsersOpen(false)}
                   className="text-gray-500 hover:text-gray-700"
+                  title="Close"
+                  aria-label="Close"
                 >
-                  &times;
+                  <span aria-hidden="true">&times;</span>
+                  <span className="sr-only">Close</span>
                 </button>
               </div>
 

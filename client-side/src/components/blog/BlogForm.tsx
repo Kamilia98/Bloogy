@@ -313,7 +313,6 @@ export default function BlogForm() {
       if (isEditMode && id) {
         await dispatch(
           updateBlog({
-            token: Auth.token ?? '',
             blog: { _id: id, ...blogData } as Blog,
           }),
         ).unwrap();
@@ -322,7 +321,6 @@ export default function BlogForm() {
       } else {
         const createdBlog = await dispatch(
           addBlog({
-            token: Auth.token ?? '',
             blog: blogData as Omit<Blog, 'id' | 'createdAt' | 'updatedAt'>,
           }),
         ).unwrap();
