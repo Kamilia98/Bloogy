@@ -75,6 +75,16 @@ export class AuthController {
     return this.authService.validateResetToken(token);
   }
 
+  @Get('isAuthenticated')
+  @UseGuards(AuthGuard('jwt'))
+  async isAuthenticated(@Req() req) {
+    const user = await this.usersService.findOne(req.user.userId);
+    return {
+      isAuthenticated: true,
+      user,
+    };
+  }
+
   @Get('me')
   @UseGuards(AuthGuard('jwt'))
   getProfile(@Req() req) {
