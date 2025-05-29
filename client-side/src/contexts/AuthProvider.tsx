@@ -116,7 +116,6 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   };
 
   const checkGoogleLogin = () => {
-    console.log('Checking Google login...');
     handleGoogleLogin();
   };
 

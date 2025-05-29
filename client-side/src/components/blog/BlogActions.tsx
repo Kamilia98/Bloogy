@@ -106,8 +106,7 @@ export default function BlogActions({
                   title="Close"
                   aria-label="Close"
                 >
-                  <span aria-hidden="true">&times;</span>
-                  <span className="sr-only">Close</span>
+                  Close
                 </button>
               </div>
 
@@ -164,6 +163,8 @@ export default function BlogActions({
                 <button
                   onClick={() => handleCommentSubmit(commentText)}
                   className="rounded-r-lg bg-blue-500 px-4 py-2 text-white hover:bg-blue-600"
+                  title="Add comment"
+                  aria-label="Add comment"
                 >
                   <Send size={16} />
                 </button>
