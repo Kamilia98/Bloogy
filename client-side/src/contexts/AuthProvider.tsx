@@ -23,7 +23,7 @@ interface AuthContextType {
   ) => Promise<void>;
   googleSignUp: () => void;
   facebookSignUp: () => void;
-  checkGoogleLogin: () => void;
+  handleGoogleLogin: () => void;
   register: (name: string, email: string, password: string) => Promise<void>;
   logout: () => Promise<void>;
   forgetPassword: (email: string) => Promise<void>;
@@ -110,10 +110,6 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     localStorage.setItem('user', JSON.stringify(user));
 
     toast.success('Logged in successfully!');
-  };
-
-  const checkGoogleLogin = () => {
-    handleGoogleLogin();
   };
 
   const logout = async () => {
@@ -207,7 +203,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       login,
       googleSignUp,
       facebookSignUp,
-      checkGoogleLogin,
+      handleGoogleLogin,
       logout,
       register,
       forgetPassword,

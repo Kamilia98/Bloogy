@@ -4,7 +4,7 @@ import useAuth from '../contexts/AuthProvider';
 export const LoginCallBack = () => {
   const Auth = useAuth();
   useEffect(() => {
-    Auth.checkGoogleLogin();
+    Auth.handleGoogleLogin();
   }, []);
   return <></>;
 };

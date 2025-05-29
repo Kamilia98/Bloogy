@@ -52,6 +52,7 @@ export class AuthService {
       secure: true,
       sameSite: 'none',
       maxAge: 3600000,
+      
     });
 
     return res.status(200).json({
@@ -92,6 +93,9 @@ export class AuthService {
       sameSite: 'none',
       maxAge: 3600000,
     });
+
+
+    console.log(res)
 
     res.redirect(
       `${this.configService.get<string>('FRONTEND_URL')}/auth/login/callback`,
