@@ -61,6 +61,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     toast.error(
       error?.response?.data?.message || error.message || defaultMessage,
     );
+    throw error;
   };
 
   const BASE_URL = import.meta.env.VITE_API_BASE_URL || '/api';
@@ -149,7 +150,6 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       toast.success('Registered successfully!');
     } catch (error) {
       handleError(error, 'Registration failed');
-      throw error;
     }
   };
 
@@ -159,7 +159,6 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       toast.success('Password reset email sent!');
     } catch (error) {
       handleError(error, 'Password reset failed');
-      throw error;
     }
   };
 
@@ -179,7 +178,6 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       setToken(null);
     } catch (error) {
       handleError(error, 'Password reset failed');
-      throw error;
     }
   };
 
@@ -192,7 +190,6 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       return data;
     } catch (error) {
       handleError(error, 'Reset token validation failed');
-      throw error;
     }
   };
 
