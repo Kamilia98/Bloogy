@@ -1,6 +1,5 @@
 import { Modal } from '../ui/Modal';
 import toast from 'react-hot-toast';
-import useAuth from '../../contexts/AuthProvider';
 import Button from '../ui/Button';
 import type { Blog } from '../../models/BlogModel';
 import { useAppDispatch } from '../../store/hooks';
@@ -13,7 +12,6 @@ export default function ShareConfirmationModal({
   setShareModalOpen: (open: boolean) => void;
   selectedBlog: Blog;
 }) {
-  const Auth = useAuth();
   const dispatch = useAppDispatch();
   const shareSound = new Audio('/sounds/share.mp3');
   const handleShare = async () => {

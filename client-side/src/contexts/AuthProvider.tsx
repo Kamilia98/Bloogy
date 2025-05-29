@@ -8,7 +8,6 @@ import {
 import axios from 'axios';
 import toast, { Toaster } from 'react-hot-toast';
 import type { User } from '../models/UserModel';
-import { data } from 'react-router-dom';
 
 // ============================
 // Context Interface
@@ -17,7 +16,6 @@ interface AuthContextType {
   isLoggedIn: boolean;
   user: User | null;
   onUserUpdate: (user: User) => void;
-  updateToken: (token: string) => void;
   login: (
     email: string,
     password: string,
@@ -198,10 +196,6 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     }
   };
 
-  const updateToken = (newToken: string) => {
-    setIsLoggedIn(true);
-  };
-
   const onUserUpdate = (updateedUser: User) => {
     if (user && user._id === updateedUser._id) {
       setUser(updateedUser);
@@ -217,7 +211,6 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       isLoggedIn,
       user,
       onUserUpdate,
-      updateToken,
       login,
       googleSignUp,
       facebookSignUp,

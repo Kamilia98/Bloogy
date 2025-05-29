@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import type { User } from '../models/UserModel';
+import type { User } from '../../models/UserModel';
 
 export default function UserAvatar({ user }: { user: User }) {
   const [imageError, setImageError] = useState(false);

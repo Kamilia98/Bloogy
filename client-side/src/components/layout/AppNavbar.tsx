@@ -5,7 +5,6 @@ import useAuth from '../../contexts/AuthProvider';
 import Logo from '../ui/Logo';
 import UserAvatar from '../common/UserAvatar';
 import { motion, AnimatePresence } from 'framer-motion';
-import ThemeToggler from './ThemeToggler';
 
 export default function AppNavbar() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
