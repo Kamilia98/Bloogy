@@ -15,7 +15,6 @@ export default function LoginPage() {
   const [password, setPassword] = useState('');
   const [emailError, setEmailError] = useState('');
   const [passwordError, setPasswordError] = useState('');
-  const [rememberMe, setRememberMe] = useState(false);
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -38,7 +37,7 @@ export default function LoginPage() {
 
     setIsLoading(true);
 
-    Auth.login(email, password, rememberMe)
+    Auth.login(email, password)
       .then(() => {
         setIsLoading(false);
       })
@@ -115,21 +114,6 @@ export default function LoginPage() {
               )
             }
           />
-        </div>
-
-        {/* Remember Me */}
-        <div className="flex items-center gap-2">
-          <input
-            id="remember-me"
-            name="remember-me"
-            type="checkbox"
-            checked={rememberMe}
-            onChange={() => setRememberMe(!rememberMe)}
-            className="h-4 w-4 rounded border-gray-300 text-primary focus:ring-tertiary"
-          />
-          <label htmlFor="remember-me" className="text-sm text-gray-700">
-            Remember me
-          </label>
         </div>
 
         {/* Submit */}
