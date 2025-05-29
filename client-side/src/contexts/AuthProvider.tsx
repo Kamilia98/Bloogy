@@ -52,7 +52,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const initial = useMemo(() => getInitialStorage(), []);
   const [isLoggedIn, setIsLoggedIn] = useState<boolean>(initial.isLoggedIn);
   const [user, setUser] = useState<User | null>(initial.user);
-  const [token, setToken] = useState<string | null>();
+  const [resetToken, setRestToken] = useState<string | null>();
 
   const handleError = (error: any, defaultMessage: string) => {
     toast.error(
@@ -166,12 +166,12 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         {
           headers: {
             'Content-Type': 'application/json',
-            Authorization: `Bearer ${token}`,
+            Authorization: `Bearer ${resetToken}`,
           },
         },
       );
       toast.success('Password reset successfully!');
-      setToken(null);
+      setRestToken(null);
     } catch (error) {
       handleError(error, 'Password reset failed');
     }
@@ -182,7 +182,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       const { data } = await axios.get(
         `${BASE_URL}/auth/validate-reset-token/${resetToken}`,
       );
-      setToken(resetToken);
+      setRestToken(resetToken);
       return data;
     } catch (error) {
       handleError(error, 'Reset token validation failed');
@@ -214,7 +214,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       resetPassword,
       validateResetToken,
     }),
-    [isLoggedIn, token, user],
+    [isLoggedIn, resetToken, user],
   );
 
   return (
