@@ -93,22 +93,6 @@ export class AuthService {
       maxAge: 3600000,
     });
 
-    res.cookie(
-      'user',
-      JSON.stringify({
-        _id: user._id,
-        name: user.name,
-        email: user.email,
-        avatar: user.avatar,
-      }),
-      {
-        httpOnly: true,
-        secure: true,
-        sameSite: 'Strict',
-        maxAge: 3600000,
-      },
-    );
-
     res.redirect(
       `${this.configService.get<string>('FRONTEND_URL')}/auth/login`,
     );
@@ -143,21 +127,6 @@ export class AuthService {
       sameSite: 'Strict',
       maxAge: 3600000,
     });
-
-    res.cookie(
-      'user',
-      JSON.stringify({
-        _id: user._id,
-        name: user.name,
-        email: user.email,
-      }),
-      {
-        httpOnly: true,
-        secure: true,
-        sameSite: 'Strict',
-        maxAge: 3600000,
-      },
-    );
 
     res.redirect(
       `${this.configService.get<string>('FRONTEND_URL')}/auth/login`,
@@ -254,7 +223,7 @@ export class AuthService {
   }
 
   async resetPassword(resetPasswordDto: ResetPasswordDto, req) {
-    console.log(resetPasswordDto)
+    console.log(resetPasswordDto);
     const token = req.headers.authorization?.split(' ')[1];
     if (!token) {
       throw new UnauthorizedException('Token not provided');
