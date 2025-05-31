@@ -19,6 +19,8 @@ export default function LoginPage() {
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     let valid = true;
+    setEmailError('');
+    setPasswordError('');
 
     if (!email) {
       setEmailError('Email is required.');
