@@ -14,6 +14,7 @@ export default function CommentComponent({
   onDelete: (id: string) => void;
   onUpdate: (id: string, content: string) => void;
 }) {
+  console.log(comment);
   const Auth = useAuth();
   const [isEditing, setIsEditing] = useState(false);
   const [editContent, setEditContent] = useState(comment.content);
@@ -57,7 +58,7 @@ export default function CommentComponent({
     setIsDeleting(false);
   };
 
-  const isOwner = Auth.user?._id === comment.user._id;
+  const isOwner = Auth.user?._id === comment.user?._id;
 
   return (
     <div className="rounded-xl border border-gray-200 bg-white p-4 shadow-sm">
@@ -66,7 +67,7 @@ export default function CommentComponent({
         <div className="flex items-start justify-between">
           {/* User Info */}
           <Link
-            to={`/user/${comment.user._id}`}
+            to={`/user/${comment.user?._id}`}
             className="flex items-center gap-3 hover:underline"
           >
             <div className="flex h-8 w-8 items-center overflow-hidden rounded-full">
@@ -74,7 +75,7 @@ export default function CommentComponent({
             </div>
             <div>
               <span className="text-sm font-semibold text-gray-900">
-                {comment.user.name}
+                {comment.user?.name}
               </span>
               <div className="text-xs text-gray-500">
                 {new Date(comment.createdAt).toLocaleDateString()}
@@ -148,14 +149,14 @@ export default function CommentComponent({
 
         {/* Comment Content */}
         {!isEditing ? (
-          <p className="text-sm leading-relaxed whitespace-pre-line text-gray-800">
+          <p className="whitespace-pre-line text-sm leading-relaxed text-gray-800">
             {comment.content}
           </p>
         ) : (
           <textarea
             value={editContent}
             onChange={(e) => setEditContent(e.target.value)}
-            className="w-full rounded border border-gray-300 p-2 text-sm focus:border-transparent focus:ring-2 focus:ring-blue-500 focus:outline-none"
+            className="w-full rounded border border-gray-300 p-2 text-sm focus:border-transparent focus:outline-none focus:ring-2 focus:ring-blue-500"
             rows={3}
             placeholder="Edit your comment"
             title="Edit comment content"
