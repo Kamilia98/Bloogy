@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Mail, Lock, User, Eye, EyeOff, Loader2, UserPlus } from 'lucide-react';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import { useNavigate, Link } from 'react-router-dom';
 import useAuth from '../contexts/AuthProvider';
 import Input from '../components/ui/Input';
@@ -9,6 +9,12 @@ import validatePassword from '../utlils/validatePassword';
 import SocialLogin from '../components/common/SocialLogin';
 import Button from '../components/ui/Button';
 import PasswordTips from '../components/common/PasswordTips';
+import {
+  Checkbox,
+  FormControl,
+  FormControlLabel,
+  FormHelperText,
+} from '@mui/material';
 
 export default function SignupPage() {
   const navigate = useNavigate();
@@ -34,6 +40,11 @@ export default function SignupPage() {
   const [agreeToTermsError, setAgreeToTermsError] = useState('');
 
   const validateFields = () => {
+    setNameError('');
+    setEmailError('');
+    setPasswordError('');
+    setConfirmPasswordError('');
+    setAgreeToTermsError('');
     let valid = true;
 
     if (!name) {
@@ -203,28 +214,46 @@ export default function SignupPage() {
           }
         />
 
-        {/* Agree to Terms */}
-        <div className="flex flex-col gap-1">
-          <div className="flex items-center gap-2">
-            <input
-              id="terms"
-              type="checkbox"
-              checked={agreeToTerms}
-              onChange={(e) => setAgreeToTerms(e.target.checked)}
-              className="text-primary h-4 w-4"
-            />
-            <label htmlFor="terms" className="text-sm text-gray-700">
-              I agree to the{' '}
-              <Link to="/terms" className="text-blue-600 underline">
-                terms and conditions
-              </Link>
-              .
-            </label>
-          </div>
-          {agreeToTermsError && (
-            <p className="text-sm text-red-600">{agreeToTermsError}</p>
-          )}
-        </div>
+        <FormControl
+          error={Boolean(agreeToTermsError)}
+          component="fieldset"
+          variant="standard"
+        >
+          <FormControlLabel
+            control={
+              <Checkbox
+                id="terms"
+                checked={agreeToTerms}
+                onChange={(e) => setAgreeToTerms(e.target.checked)}
+                color="primary"
+              />
+            }
+            label={
+              <span>
+                I agree to the{' '}
+                <Link
+                  to="/terms"
+                  style={{ color: '#1976d2', textDecoration: 'underline' }}
+                >
+                  terms and conditions
+                </Link>
+                .
+              </span>
+            }
+          />
+          <AnimatePresence>
+            {agreeToTermsError && (
+              <motion.div
+                initial={{ opacity: 0, height: 0 }}
+                animate={{ opacity: 1, height: 'auto' }}
+                exit={{ opacity: 0, height: 0 }}
+                transition={{ duration: 0.3 }}
+              >
+                <FormHelperText>{agreeToTermsError}</FormHelperText>
+              </motion.div>
+            )}
+          </AnimatePresence>
+        </FormControl>
 
         {/* Submit */}
 
@@ -266,7 +295,7 @@ export default function SignupPage() {
         Already have an account?{' '}
         <Link
           to="/auth/login"
-          className="text-primary hover:text-tertiary font-medium hover:underline"
+          className="font-medium text-primary hover:text-tertiary hover:underline"
         >
           Sign In
         </Link>
